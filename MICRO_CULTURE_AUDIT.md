@@ -449,3 +449,151 @@ PASS  Defensive JSON parsing: Correctly implemented
 WARN  Real credentials in .env: Not in git yet, but must verify .gitignore before git init
 FAIL  Tests: None exist anywhere in the project
 ```
+
+---
+
+## P0 Implementation Status
+
+> Completed: 2026-09-09
+
+### SEC-1 — Secrets
+
+**DONE**
+
+- Confirmed no secrets are hardcoded in any source file — all references use `process.env.*`
+- Both `backend/.env` and `frontend/.env` are listed in their respective `.gitignore` files
+- No git repository exists yet; secrets have never been committed
+- `backend/.env.example` updated to match actual env vars used (Groq keys, correct port, CLIENT_URL)
+- **ACTION REQUIRED:** Before running `git init`, verify `.gitignore` is working with `git check-ignore -v backend/.env`. If you ever rotate the Groq key or MongoDB password, update `.env` only — not `.env.example`
+
+### SEC-2 — AI Rate Limiting
+
+**DONE**
+
+- Created `backend/middleware/rateLimit.js` using `express-rate-limit`
+- Three limiters:
+  - `aiLimiter`: 30 calls/hour per user (applied to all AI routes)
+  - `cultureGenerateLimiter`: 10 calls/hour per user (applied to blueprint generation)
+  - `authLimiter`: 20 attempts/15 min per IP (applied to login + register)
+- Keys by authenticated `userId` when available, falling back to IP (IPv6-safe via `ipKeyGenerator`)
+- Returns HTTP 429 with JSON `{ error: "...", retryAfterSeconds: N }` on limit exceeded
+- `validate: { xForwardedForHeader: false }` prevents false IPv6 warnings in dev
+
+### SEC-3 — Culture Membership Authorization
+
+**DONE**
+
+- `GET /ai/daily-ritual/:cultureId` — checks `culture.members.includes(req.userId)` before generating
+- `POST /ai/generate-ritual` — same membership check (backward compat route kept)
+- `POST /ai/weekly-summary` — added membership check (was missing)
+- `POST /logs` — added membership check before allowing log post
+- All return HTTP 403 with clear error message for non-members
+- Authorization is enforced server-side; frontend checks are UI-only
+
+### B6 — ritualId Missing From Ritual Logs
+
+**DONE**
+
+- `DailyRitualPage.jsx` now calls `GET /ai/daily-ritual/:id` (semantic GET, not POST)
+- Ritual `_id` is available from the response before the log form is shown
+- Log submission sends `{ cultureId, ritualId: ritual._id, content }` to `POST /logs`
+- Backend validates `ritualId` exists and belongs to the given culture before accepting the log
+- `RitualLog.ritualId` ref changed from `"Ritual"` to `"DailyRitual"` (correct semantics)
+- `GET /logs/:cultureId` now populates `ritualId` with `title` and `date` from DailyRitual
+- `CultureFeed.jsx` displays the ritual title on each log card
+
+### B2 — Stale joinedCultures in localStorage
+
+**DONE**
+
+- Added `GET /auth/me` endpoint that returns fresh user data from MongoDB
+- `AuthContext.jsx` now has `refreshUser()` function that calls `/auth/me` and updates state + localStorage
+- `refreshUser()` is called:
+  - On app mount (after restoring localStorage snapshot for immediate render)
+  - After `login()` and `register()`
+  - After `handleJoin()` in `CultureDetail.jsx`
+  - After `handleLeave()` in `CultureDetail.jsx`
+  - After `handlePublish()` in `CreateCulture.jsx`
+- Dashboard always shows the correct cultures after any membership change
+- DB is the source of truth; localStorage is only a fast-load cache
+
+### B1 — Dashboard N+1 API Calls
+
+**DONE**
+
+- Added `GET /cultures/dashboard` endpoint in `backend/routes/cultures.js`
+- Single endpoint fetches fresh user data from DB, then all joined cultures in one MongoDB query
+- Returns `{ cultures: [...], stats: { totalJoined, totalCreated } }`
+- `Dashboard.jsx` replaced N individual culture fetches with one call to `/cultures/dashboard`
+- Route is registered before `/:id` to avoid Express param collision
+
+### AI Memory Loop
+
+**DONE**
+
+Full culture memory context is now built and sent to AI for each ritual generation:
+
+1. **Culture identity** — name, description, values, aesthetic, jargon (from Culture model)
+2. **Recent daily rituals** — last 7 days of AI-generated rituals (avoid repetition)
+3. **Member participation** — last 20 ritual logs with member names and content
+4. **Structured output** — AI now returns `{ title, description, instructions[], durationMinutes, difficulty, reflectionPrompt, reason }` instead of a single `ritualText` string
+5. **Output validation** — `validateStructuredRitual()` validates every field before saving
+6. **Race condition safety** — `findOneAndUpdate` with `$setOnInsert` + `upsert: true` prevents duplicate rituals from concurrent requests
+7. **Backward compatibility** — `ritualText` field populated from `title + description` for old frontend code; old documents with only `ritualText` still render correctly
+8. **DailyRitual model extended** — added `title`, `description`, `instructions[]`, `durationMinutes`, `difficulty`, `reflectionPrompt`, `reason` fields (all optional, defaults to empty)
+9. **RitualLog → AI loop closed** — member logs are fetched and included in next day's ritual prompt
+
+---
+
+## Files Changed (P0 Phase)
+
+### Backend — New Files
+- `backend/middleware/rateLimit.js` — rate limiting middleware
+
+### Backend — Modified Files
+- `backend/routes/auth.js` — added `/auth/me`, `authLimiter`, password min length (8 chars)
+- `backend/routes/ai.js` — complete rewrite: rate limits, membership checks, structured output, culture memory loop, GET endpoint for daily ritual, `findOneAndUpdate` race-condition safety
+- `backend/routes/cultures.js` — added `/dashboard` endpoint, added leave-creator guard
+- `backend/routes/logs.js` — added membership check, ritualId validation, rich populate
+- `backend/models/DailyRitual.js` — extended schema with structured ritual fields
+- `backend/models/RitualLog.js` — changed `ritualId` ref from `Ritual` to `DailyRitual`
+- `backend/.env.example` — updated to match actual env vars
+
+### Backend — Removed
+- `backend/{models,routes,middleware,config}/` — empty artifact directory from bad shell command
+
+### Frontend — Modified Files
+- `frontend/src/context/AuthContext.jsx` — added `refreshUser()`, server-side user hydration on mount
+- `frontend/src/pages/Dashboard.jsx` — single `/cultures/dashboard` call, error handling, stats display
+- `frontend/src/pages/CultureDetail.jsx` — Leave button, error handling, calls `refreshUser()` on join/leave
+- `frontend/src/pages/CultureFeed.jsx` — error handling, timestamps, ritual title in log cards
+- `frontend/src/pages/DailyRitualPage.jsx` — GET endpoint, sends ritualId with log, displays structured ritual
+- `frontend/src/pages/CreateCulture.jsx` — calls `refreshUser()` after publish
+
+## Tests Executed
+
+- 29/29 tests passed in initial test run
+- 20/21 tests passed in second run (1 failure: populate ref mismatch, immediately fixed)
+- 21/21 tests passed after fixing `RitualLog.ritualId` ref to `DailyRitual`
+
+## Security Improvements
+
+| Issue | Before | After |
+|---|---|---|
+| Rate limiting | None | 30/hr (AI), 10/hr (blueprint), 20/15min (auth) |
+| Membership check on ritual generation | None | Required, HTTP 403 for non-members |
+| Membership check on log posting | None | Required, HTTP 403 for non-members |
+| Membership check on weekly summary | None | Required, HTTP 403 for non-members |
+| Password minimum length | None | 8 characters minimum enforced server-side |
+| AI output validation | Partial (arrays only) | Full schema validation with length limits |
+| Unauthenticated feed reads | Public | Still public (intentional — culture feeds are visible) |
+
+## Remaining Issues (not in P0 scope)
+
+- P1: Profile page is still static (localStorage only) — needs live data
+- P1: Weekly summary has no frontend UI
+- P1: Culture edit/delete routes not implemented
+- P1: Pagination on feed and explore pages
+- P1: Image uploads (Cloudinary) not implemented
+- P2: Culture evolution / ritual suggestion system
+- P2: Cron-based nightly ritual pre-generation
