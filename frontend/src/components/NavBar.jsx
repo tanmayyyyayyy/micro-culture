@@ -1,39 +1,170 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 export default function NavBar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinkStyle = ({ isActive }) =>
+    `px-3 py-1.5 rounded-lg text-sm transition-all duration-200 ${
+      isActive
+        ? "text-white bg-white/10 font-medium"
+        : "text-neutral-400 hover:text-neutral-200 hover:bg-white/5"
+    }`;
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
-      <Link to="/" className="font-semibold tracking-tight">Micro Culture</Link>
-      <div className="flex items-center gap-4 text-sm">
-        <Link to="/explore">Explore</Link>
-        {user ? (
-          <>
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/create">Create</Link>
-            <Link to="/profile">Profile</Link>
-            <button
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
-              className="text-neutral-400 hover:text-neutral-200"
-            >
-              Log out
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login">Log in</Link>
-            <Link to="/signup" className="px-3 py-1 bg-white text-black rounded-full">
-              Sign up
-            </Link>
-          </>
-        )}
+    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-neutral-950/80 backdrop-blur-xl">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        {/* Brand */}
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
+            μ
+          </div>
+          <span className="font-bold tracking-tight text-white text-base">
+            Micro<span className="text-violet-400">Culture</span>
+          </span>
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-1">
+          <NavLink to="/explore" className={navLinkStyle}>
+            Explore
+          </NavLink>
+          {user && (
+            <>
+              <NavLink to="/dashboard" className={navLinkStyle}>
+                Dashboard
+              </NavLink>
+              <NavLink to="/create" className={navLinkStyle}>
+                Create Culture
+              </NavLink>
+            </>
+          )}
+        </nav>
+
+        {/* User Auth Section */}
+        <div className="hidden md:flex items-center gap-3">
+          {user ? (
+            <div className="flex items-center gap-3">
+              <NavLink
+                to="/profile"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-xs text-neutral-300 hover:text-white hover:border-neutral-700 transition-all"
+              >
+                <div className="w-5 h-5 rounded-full bg-violet-600/30 text-violet-300 font-semibold flex items-center justify-center text-[10px]">
+                  {user.name?.[0]?.toUpperCase() || "U"}
+                </div>
+                <span className="font-medium max-w-[120px] truncate">{user.name}</span>
+              </NavLink>
+              <button
+                onClick={() => {
+                  logout();
+                  navigate("/");
+                }}
+                className="text-xs text-neutral-400 hover:text-white px-2 py-1.5 transition-colors"
+              >
+                Log out
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                to="/login"
+                className="px-3.5 py-1.5 text-sm text-neutral-300 hover:text-white transition-colors"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/signup"
+                className="px-4 py-1.5 text-sm font-medium bg-white text-neutral-950 rounded-full hover:bg-neutral-100 active:scale-95 transition-all shadow-sm"
+              >
+                Sign up
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile menu button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden p-2 text-neutral-400 hover:text-white focus:outline-none"
+          aria-label="Toggle navigation menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {mobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
       </div>
-    </nav>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-white/10 bg-neutral-950 px-4 py-4 space-y-2">
+          <Link
+            to="/explore"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-lg text-sm text-neutral-300 hover:bg-white/5"
+          >
+            Explore Cultures
+          </Link>
+          {user ? (
+            <>
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm text-neutral-300 hover:bg-white/5"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/create"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm text-neutral-300 hover:bg-white/5"
+              >
+                Create Culture
+              </Link>
+              <Link
+                to="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm text-neutral-300 hover:bg-white/5"
+              >
+                Profile ({user.name})
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileMenuOpen(false);
+                  navigate("/");
+                }}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <div className="pt-2 flex flex-col gap-2">
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full text-center py-2 text-sm text-neutral-300 bg-neutral-900 border border-neutral-800 rounded-lg"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full text-center py-2 text-sm font-medium text-neutral-950 bg-white rounded-lg"
+              >
+                Sign up
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </header>
   );
 }

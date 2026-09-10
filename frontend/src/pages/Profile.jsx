@@ -1,19 +1,190 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import api from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import GlassPanel from "../components/ui/GlassPanel.jsx";
+import GlowButton from "../components/ui/GlowButton.jsx";
+import CultureEmblem from "../components/ui/CultureEmblem.jsx";
+import LoadingState from "../components/ui/LoadingState.jsx";
+import ErrorState from "../components/ui/ErrorState.jsx";
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { logout } = useAuth();
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  async function loadProfile() {
+    setLoading(true);
+    setError("");
+    try {
+      const { data } = await api.get("/auth/me");
+      setProfileData(data.user);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to load live profile data.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto py-16">
+        <LoadingState message="Fetching your cultural footprint..." />
+      </div>
+    );
+  }
+
+  if (error && !profileData) {
+    return (
+      <div className="max-w-md mx-auto py-12">
+        <ErrorState message={error} onRetry={loadProfile} />
+      </div>
+    );
+  }
+
+  const initial = profileData?.name?.[0]?.toUpperCase() || "U";
+  const joinedList = Array.isArray(profileData?.joinedCultures) ? profileData.joinedCultures : [];
+  const createdList = Array.isArray(profileData?.createdCultures) ? profileData.createdCultures : [];
 
   return (
-    <div className="max-w-sm">
-      <h1 className="text-2xl font-semibold mb-6">Profile</h1>
-      <p className="text-neutral-400">Name: {user?.name}</p>
-      <p className="text-neutral-400">Email: {user?.email}</p>
-      <p className="text-neutral-400 mt-2">
-        Cultures joined: {user?.joinedCultures?.length || 0}
-      </p>
-      <p className="text-neutral-400">
-        Cultures created: {user?.createdCultures?.length || 0}
-      </p>
+    <div className="max-w-3xl mx-auto space-y-8 animate-fadeIn">
+      {/* Profile Header Card */}
+      <GlassPanel className="p-6 sm:p-8 relative overflow-hidden border-white/10 shadow-2xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white text-2xl font-bold flex items-center justify-center shadow-lg shadow-violet-500/25">
+              {initial}
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white tracking-tight">
+                {profileData?.name}
+              </h1>
+              <p className="text-xs text-neutral-400 mt-0.5">{profileData?.email}</p>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                  Verified Member
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <GlowButton size="sm" variant="secondary" onClick={loadProfile}>
+              ↻ Refresh Live Data
+            </GlowButton>
+            <GlowButton size="sm" variant="danger" onClick={logout}>
+              Log out
+            </GlowButton>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/5">
+          <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 text-center">
+            <div className="text-2xl font-bold text-white">
+              {joinedList.length}
+            </div>
+            <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mt-1">
+              Cultures Joined
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 text-center">
+            <div className="text-2xl font-bold text-violet-400">
+              {createdList.length}
+            </div>
+            <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mt-1">
+              Founded
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 text-center">
+            <div className="text-2xl font-bold text-amber-400">
+              {profileData?.logsCount ?? 0}
+            </div>
+            <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mt-1">
+              Rites Consecrated
+            </div>
+          </div>
+        </div>
+      </GlassPanel>
+
+      {/* Cultures Founded */}
+      <GlassPanel className="p-6 space-y-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+          <span>🏛️</span> Cultures Founded by You ({createdList.length})
+        </h2>
+        {createdList.length === 0 ? (
+          <p className="text-xs text-neutral-500 py-3">
+            You have not founded any cultures yet.{" "}
+            <Link to="/create" className="text-violet-400 hover:underline">
+              Start one now
+            </Link>.
+          </p>
+        ) : (
+          <div className="grid sm:grid-cols-2 gap-3">
+            {createdList.map((c) => {
+              const cultureId = typeof c === "object" ? c._id : c;
+              const cultureName = typeof c === "object" ? c.name : "Culture";
+              const symbol = typeof c === "object" ? c.symbol : "✨";
+              return (
+                <Link
+                  key={cultureId}
+                  to={`/cultures/${cultureId}`}
+                  className="p-3 rounded-xl bg-neutral-900/60 border border-neutral-800 hover:border-neutral-700 transition-all flex items-center gap-3"
+                >
+                  <CultureEmblem symbol={symbol} size="sm" />
+                  <div className="truncate">
+                    <p className="text-sm font-medium text-white truncate">{cultureName}</p>
+                    <p className="text-[10px] text-neutral-500">Founder</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </GlassPanel>
+
+      {/* Cultures Joined */}
+      <GlassPanel className="p-6 space-y-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+          <span>✨</span> All Joined Cultures ({joinedList.length})
+        </h2>
+        {joinedList.length === 0 ? (
+          <p className="text-xs text-neutral-500 py-3">
+            You haven&apos;t joined any cultures yet.{" "}
+            <Link to="/explore" className="text-violet-400 hover:underline">
+              Explore cultures
+            </Link>.
+          </p>
+        ) : (
+          <div className="grid sm:grid-cols-2 gap-3">
+            {joinedList.map((c) => {
+              const cultureId = typeof c === "object" ? c._id : c;
+              const cultureName = typeof c === "object" ? c.name : "Culture";
+              const symbol = typeof c === "object" ? c.symbol : "✨";
+              return (
+                <Link
+                  key={cultureId}
+                  to={`/cultures/${cultureId}`}
+                  className="p-3 rounded-xl bg-neutral-900/60 border border-neutral-800 hover:border-neutral-700 transition-all flex items-center gap-3"
+                >
+                  <CultureEmblem symbol={symbol} size="sm" />
+                  <div className="truncate">
+                    <p className="text-sm font-medium text-white truncate">{cultureName}</p>
+                    <p className="text-[10px] text-violet-400">View Charter →</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </GlassPanel>
     </div>
   );
 }

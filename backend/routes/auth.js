@@ -2,6 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import RitualLog from "../models/RitualLog.js";
 import { requireAuth } from "../middleware/auth.js";
 import { authLimiter } from "../middleware/rateLimit.js";
 
@@ -65,9 +66,16 @@ router.post("/login", authLimiter, async (req, res, next) => {
  */
 router.get("/me", requireAuth, async (req, res, next) => {
   try {
-    const user = await User.findById(req.userId);
+    const user = await User.findById(req.userId)
+      .populate("joinedCultures", "name symbol color description members")
+      .populate("createdCultures", "name symbol color description members");
     if (!user) return res.status(404).json({ error: "User not found" });
-    res.json({ user: user.toSafeJSON() });
+
+    const safeUser = user.toSafeJSON();
+    const logsCount = await RitualLog.countDocuments({ userId: req.userId });
+    safeUser.logsCount = logsCount;
+
+    res.json({ user: safeUser });
   } catch (err) {
     next(err);
   }

@@ -155,4 +155,59 @@ router.post("/:id/leave", requireAuth, async (req, res, next) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// PUT /cultures/:id — Update culture charter (founder only)
+// ---------------------------------------------------------------------------
+router.put("/:id", requireAuth, async (req, res, next) => {
+  try {
+    const culture = await Culture.findById(req.params.id);
+    if (!culture) return res.status(404).json({ error: "Culture not found" });
+
+    if (culture.creatorId.toString() !== req.userId.toString()) {
+      return res.status(403).json({ error: "Only the culture founder can edit this culture charter." });
+    }
+
+    const { description, vibeWords, symbol, color, values, aesthetic, jargon } = req.body;
+    if (description !== undefined) culture.description = description;
+    if (vibeWords !== undefined) culture.vibeWords = Array.isArray(vibeWords) ? vibeWords : [];
+    if (symbol !== undefined) culture.symbol = symbol;
+    if (color !== undefined) culture.color = color;
+    if (values !== undefined) culture.values = Array.isArray(values) ? values : [];
+    if (aesthetic !== undefined) culture.aesthetic = Array.isArray(aesthetic) ? aesthetic : [];
+    if (jargon !== undefined) culture.jargon = Array.isArray(jargon) ? jargon : [];
+
+    await culture.save();
+    res.json(culture);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// DELETE /cultures/:id — Delete culture (founder only)
+// ---------------------------------------------------------------------------
+router.delete("/:id", requireAuth, async (req, res, next) => {
+  try {
+    const culture = await Culture.findById(req.params.id);
+    if (!culture) return res.status(404).json({ error: "Culture not found" });
+
+    if (culture.creatorId.toString() !== req.userId.toString()) {
+      return res.status(403).json({ error: "Only the culture founder can delete this culture." });
+    }
+
+    // Clean up culture and user references
+    await Culture.findByIdAndDelete(req.params.id);
+    await User.updateMany(
+      { $or: [{ joinedCultures: req.params.id }, { createdCultures: req.params.id }] },
+      { $pull: { joinedCultures: req.params.id, createdCultures: req.params.id } }
+    );
+    await Ritual.deleteMany({ cultureId: req.params.id });
+    await RitualLog.deleteMany({ cultureId: req.params.id });
+
+    res.json({ message: "Culture deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;

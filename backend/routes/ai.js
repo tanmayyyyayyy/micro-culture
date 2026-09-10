@@ -246,13 +246,14 @@ RECENT MEMBER PARTICIPATION (last 20 logs — understand what members actually d
 ${recentLogsText}
 
 INSTRUCTIONS:
-- Create ONE new ritual appropriate to today.
+- Create ONE new sacred daily rite authentically grounded in this culture's specific identity, aesthetic, and values.
+- Naturally incorporate 1-2 words from this culture's terminology/jargon into the title, description, or instructions.
+- STRICTLY AVOID generic self-help/wellness clichés (e.g. "take a walk and reflect", "drink water and breathe") unless explicitly fundamental to this culture's identity. Every rite should feel uniquely native to this micro-culture.
 - It must be distinct from all recent rituals listed above.
-- It must be completable in a single day.
-- It must feel authentically on-theme with this culture's identity and values.
-- Build upon or respond to what members have been doing, if activity exists.
-- Vary difficulty and type over time to keep engagement fresh.
-- The ritual must not instruct anything unsafe, illegal, or harmful.
+- It must be completable in a single day (practical, safe, legal, achievable within 5-45 minutes).
+- Build upon or respond to recent member activity if logs exist, reinforcing cultural memory.
+- Provide step-by-step instructions that feel participatory and ceremonial.
+- In "reason", explain in 1-2 sentences why this rite was chosen today based on the culture's momentum or recent member reflections.
 
 Return ONLY valid JSON with no prose and no code fences:
 {
@@ -261,8 +262,8 @@ Return ONLY valid JSON with no prose and no code fences:
   "instructions": ["step 1 (1-2 sentences)", "step 2", "step 3"],
   "durationMinutes": 15,
   "difficulty": "easy",
-  "reflectionPrompt": "a single question for members to reflect on after completing the ritual",
-  "reason": "1-2 sentences: why this ritual was chosen given this culture's recent history"
+  "reflectionPrompt": "a single poignant question for members to reflect on after completing the ritual",
+  "reason": "1-2 sentences: why this ritual was chosen given this culture's recent history and member logs"
 }`;
 
   const completion = await client.chat.completions.create({
