@@ -8,6 +8,53 @@ import { requireAuth } from "../middleware/auth.js";
 const router = express.Router();
 
 // ---------------------------------------------------------------------------
+// Culture Progression Calculator
+// ---------------------------------------------------------------------------
+// Score = members * 4 + ritualLogs * 2 + ageDays * 0.2   (integer, min 0)
+// Stages (deterministic — same inputs always produce same output):
+//   SEED        0–9    level 1
+//   AWAKENING  10–24   level 2
+//   GROWING    25–49   level 3
+//   ESTABLISHED 50–99  level 4
+//   THRIVING   100+    level 5
+// progress (0-100) = how far through the current stage the culture is.
+// ---------------------------------------------------------------------------
+const STAGES = [
+  { stage: "SEED",        level: 1, min: 0,   max: 10  },
+  { stage: "AWAKENING",   level: 2, min: 10,  max: 25  },
+  { stage: "GROWING",     level: 3, min: 25,  max: 50  },
+  { stage: "ESTABLISHED", level: 4, min: 50,  max: 100 },
+  { stage: "THRIVING",    level: 5, min: 100, max: null },
+];
+
+function calcProgression(memberCount, logCount, createdAt) {
+  const ageDays = (Date.now() - new Date(createdAt).getTime()) / 86_400_000;
+  const score   = memberCount * 4 + logCount * 2 + ageDays * 0.2;
+
+  let stageObj = STAGES[STAGES.length - 1];
+  for (const s of STAGES) {
+    if (s.max === null || score < s.max) { stageObj = s; break; }
+  }
+
+  let progress;
+  if (stageObj.max === null) {
+    progress = 100;
+  } else {
+    progress = Math.min(
+      100,
+      Math.round(((score - stageObj.min) / (stageObj.max - stageObj.min)) * 100)
+    );
+  }
+
+  return {
+    stage:    stageObj.stage,
+    level:    stageObj.level,
+    progress: Math.max(0, progress),
+    score:    Math.round(score),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // POST /cultures — Create a culture (requires AI blueprint pre-generated)
 // ---------------------------------------------------------------------------
 router.post("/", requireAuth, async (req, res, next) => {
@@ -90,8 +137,26 @@ router.get("/dashboard", requireAuth, async (req, res, next) => {
       .sort({ createdAt: -1 })
       .lean();
 
+    // Attach progression to each culture (one aggregation query for all)
+    const cultureIds = cultures.map((c) => c._id);
+    const logCounts = await RitualLog.aggregate([
+      { $match: { cultureId: { $in: cultureIds } } },
+      { $group: { _id: "$cultureId", count: { $sum: 1 } } },
+    ]);
+    const logCountMap = {};
+    for (const lc of logCounts) logCountMap[lc._id.toString()] = lc.count;
+
+    const culturesWithProgression = cultures.map((c) => ({
+      ...c,
+      progression: calcProgression(
+        (c.members || []).length,
+        logCountMap[c._id.toString()] || 0,
+        c.createdAt
+      ),
+    }));
+
     res.json({
-      cultures,
+      cultures: culturesWithProgression,
       stats: {
         totalJoined: joinedIds.length,
         totalCreated: createdIds.length,
@@ -109,8 +174,23 @@ router.get("/:id", async (req, res, next) => {
   try {
     const culture = await Culture.findById(req.params.id);
     if (!culture) return res.status(404).json({ error: "Culture not found" });
-    const rituals = await Ritual.find({ cultureId: culture._id, status: "active" });
-    res.json({ ...culture.toJSON(), activeRituals: rituals });
+
+    const [rituals, logCount] = await Promise.all([
+      Ritual.find({ cultureId: culture._id, status: "active" }),
+      RitualLog.countDocuments({ cultureId: culture._id }),
+    ]);
+
+    const progression = calcProgression(
+      (culture.members || []).length,
+      logCount,
+      culture.createdAt
+    );
+
+    res.json({
+      ...culture.toJSON(),
+      activeRituals: rituals,
+      progression: { ...progression, completedRituals: logCount, members: (culture.members || []).length },
+    });
   } catch (err) {
     next(err);
   }
