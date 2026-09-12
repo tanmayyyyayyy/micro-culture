@@ -55,6 +55,93 @@ function calcProgression(memberCount, logCount, createdAt) {
 }
 
 // ---------------------------------------------------------------------------
+// Streak Calculator
+// ---------------------------------------------------------------------------
+// Takes an array of Date objects (or ISO strings) — one per ritual log for a
+// single user in a single culture. Returns { currentStreak, longestStreak,
+// lastCompletedAt }.
+//
+// Algorithm:
+//   1. Deduplicate by calendar day (UTC date string YYYY-MM-DD).
+//   2. Sort ascending.
+//   3. Walk backwards from today counting consecutive days.
+//   4. Track the longest run seen anywhere in the history.
+//
+// "Today" is defined as UTC date of Date.now() so the server timezone is
+// irrelevant — all clients and the server agree on UTC day boundaries.
+// ---------------------------------------------------------------------------
+function calcStreak(logDates) {
+  if (!logDates || logDates.length === 0) {
+    return { currentStreak: 0, longestStreak: 0, lastCompletedAt: null };
+  }
+
+  const toDay = (d) => new Date(d).toISOString().slice(0, 10); // "YYYY-MM-DD"
+  const todayStr  = toDay(Date.now());
+
+  // Unique sorted set of day strings
+  const daySet = [...new Set(logDates.map(toDay))].sort();
+  const lastDay = daySet[daySet.length - 1];
+
+  // --- Longest streak (full pass) ---
+  let longest = 1, run = 1;
+  for (let i = 1; i < daySet.length; i++) {
+    const prev = new Date(daySet[i - 1]);
+    const curr = new Date(daySet[i]);
+    const diffDays = Math.round((curr - prev) / 86_400_000);
+    if (diffDays === 1) {
+      run++;
+      if (run > longest) longest = run;
+    } else {
+      run = 1;
+    }
+  }
+
+  // --- Current streak (backwards from today or yesterday) ---
+  // The streak is still valid if the last completion was yesterday (the user
+  // hasn't had a chance to complete today yet).
+  const diffFromToday = Math.round(
+    (new Date(todayStr) - new Date(lastDay)) / 86_400_000
+  );
+
+  let current = 0;
+  if (diffFromToday <= 1) {
+    // Count backwards from the last completed day
+    current = 1;
+    for (let i = daySet.length - 2; i >= 0; i--) {
+      const prev = new Date(daySet[i]);
+      const next = new Date(daySet[i + 1]);
+      if (Math.round((next - prev) / 86_400_000) === 1) {
+        current++;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return {
+    currentStreak:  current,
+    longestStreak:  Math.max(longest, current),
+    lastCompletedAt: new Date(lastDay).toISOString(),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Recognition Calculator
+// ---------------------------------------------------------------------------
+// Derived from total ritual log count — never stored, always computed.
+// Levels:
+//   INITIATE      ≥ 1 ritual
+//   PRACTITIONER  ≥ 7 rituals
+//   RITUAL_KEEPER ≥ 30 rituals
+// ---------------------------------------------------------------------------
+function calcRecognition(totalLogs) {
+  if (totalLogs >= 30) return { title: "Ritual Keeper",   key: "RITUAL_KEEPER",  totalLogs };
+  if (totalLogs >=  7) return { title: "Practitioner",    key: "PRACTITIONER",   totalLogs };
+  if (totalLogs >=  1) return { title: "Initiate",        key: "INITIATE",        totalLogs };
+  return null; // no rituals completed yet
+}
+
+// ---------------------------------------------------------------------------
 // POST /cultures — Create a culture (requires AI blueprint pre-generated)
 // ---------------------------------------------------------------------------
 router.post("/", requireAuth, async (req, res, next) => {
@@ -137,23 +224,48 @@ router.get("/dashboard", requireAuth, async (req, res, next) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    // Attach progression to each culture (one aggregation query for all)
+    // Attach progression + personal streak to each culture
+    // One aggregate query fetches all user's logs across their joined cultures.
     const cultureIds = cultures.map((c) => c._id);
-    const logCounts = await RitualLog.aggregate([
-      { $match: { cultureId: { $in: cultureIds } } },
-      { $group: { _id: "$cultureId", count: { $sum: 1 } } },
-    ]);
-    const logCountMap = {};
-    for (const lc of logCounts) logCountMap[lc._id.toString()] = lc.count;
 
-    const culturesWithProgression = cultures.map((c) => ({
-      ...c,
-      progression: calcProgression(
-        (c.members || []).length,
-        logCountMap[c._id.toString()] || 0,
-        c.createdAt
-      ),
-    }));
+    const [logCountAgg, userLogsAgg] = await Promise.all([
+      // Culture-wide log counts (for progression)
+      RitualLog.aggregate([
+        { $match: { cultureId: { $in: cultureIds } } },
+        { $group: { _id: "$cultureId", count: { $sum: 1 } } },
+      ]),
+      // User's personal logs (for streak + recognition) — dates only
+      RitualLog.aggregate([
+        { $match: { cultureId: { $in: cultureIds }, userId: user._id } },
+        { $project: { cultureId: 1, createdAt: 1, _id: 0 } },
+      ]),
+    ]);
+
+    const logCountMap = {};
+    for (const lc of logCountAgg) logCountMap[lc._id.toString()] = lc.count;
+
+    // Group user logs by culture
+    const userLogsByCulture = {};
+    for (const l of userLogsAgg) {
+      const key = l.cultureId.toString();
+      if (!userLogsByCulture[key]) userLogsByCulture[key] = [];
+      userLogsByCulture[key].push(l.createdAt);
+    }
+
+    const culturesWithProgression = cultures.map((c) => {
+      const cid = c._id.toString();
+      const totalLogs = logCountMap[cid] || 0;
+      const userDates = userLogsByCulture[cid] || [];
+      return {
+        ...c,
+        progression:  calcProgression((c.members || []).length, totalLogs, c.createdAt),
+        participation: {
+          ...calcStreak(userDates),
+          recognition:  calcRecognition(userDates.length),
+          totalPersonalRituals: userDates.length,
+        },
+      };
+    });
 
     res.json({
       cultures: culturesWithProgression,
@@ -169,11 +281,28 @@ router.get("/dashboard", requireAuth, async (req, res, next) => {
 
 // ---------------------------------------------------------------------------
 // GET /cultures/:id — Get culture detail + active rituals
+// Accepts optional auth — if the requester is a member, personal participation
+// data (streak + recognition) is returned. Non-members get no private data.
 // ---------------------------------------------------------------------------
 router.get("/:id", async (req, res, next) => {
   try {
     const culture = await Culture.findById(req.params.id);
     if (!culture) return res.status(404).json({ error: "Culture not found" });
+
+    // Optionally resolve authenticated user (do not fail if unauthenticated)
+    let userId = null;
+    try {
+      const authHeader = req.headers.authorization || "";
+      if (authHeader.startsWith("Bearer ")) {
+        const jwt = await import("jsonwebtoken");
+        const secret = process.env.JWT_SECRET || "change_me_in_env";
+        const decoded = jwt.default.verify(authHeader.slice(7), secret);
+        userId = decoded.userId || decoded.id || null;
+      }
+    } catch (_) { /* unauthenticated — skip personal data */ }
+
+    const isMember = userId &&
+      culture.members.some((m) => m.toString() === userId.toString());
 
     const [rituals, logCount] = await Promise.all([
       Ritual.find({ cultureId: culture._id, status: "active" }),
@@ -186,10 +315,26 @@ router.get("/:id", async (req, res, next) => {
       culture.createdAt
     );
 
+    // Personal participation (members only — private)
+    let participation = null;
+    if (isMember) {
+      const userLogs = await RitualLog.find(
+        { cultureId: culture._id, userId },
+        { createdAt: 1 }
+      ).lean();
+      const dates = userLogs.map((l) => l.createdAt);
+      participation = {
+        ...calcStreak(dates),
+        recognition: calcRecognition(userLogs.length),
+        totalPersonalRituals: userLogs.length,
+      };
+    }
+
     res.json({
       ...culture.toJSON(),
       activeRituals: rituals,
       progression: { ...progression, completedRituals: logCount, members: (culture.members || []).length },
+      ...(participation !== null ? { participation } : {}),
     });
   } catch (err) {
     next(err);

@@ -9,6 +9,7 @@ import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
 import WeeklySummaryModal from "../components/WeeklySummaryModal.jsx";
 import { ProgressionPanel } from "../components/ui/ProgressionBadge.jsx";
+import { StreakCard } from "../components/ui/ParticipationBadge.jsx";
 
 export default function CultureDetail() {
   const { id } = useParams();
@@ -200,7 +201,12 @@ export default function CultureDetail() {
 
         {/* Secondary Member Bar */}
         {isMember && (
-          <div className="mt-6 pt-6 border-t border-white/5 flex flex-wrap items-center justify-between gap-4 text-xs text-neutral-400">
+          <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
+            {/* Personal participation: streak + recognition */}
+            {culture.participation && (
+              <StreakCard participation={culture.participation} />
+            )}
+            <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-neutral-400">
             <div className="flex items-center gap-4">
               <button
                 type="button"
@@ -230,6 +236,7 @@ export default function CultureDetail() {
                 Leave culture
               </button>
             )}
+            </div>
           </div>
         )}
       </GlassPanel>

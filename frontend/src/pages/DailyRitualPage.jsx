@@ -6,6 +6,7 @@ import GlowButton from "../components/ui/GlowButton.jsx";
 import CultureEmblem from "../components/ui/CultureEmblem.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
+import { StreakCompletion } from "../components/ui/ParticipationBadge.jsx";
 
 export default function DailyRitualPage() {
   const { id } = useParams();
@@ -17,6 +18,7 @@ export default function DailyRitualPage() {
   const [posting, setPosting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [completedSteps, setCompletedSteps] = useState({});
+  const [participation, setParticipation] = useState(null);
 
   async function loadData() {
     setLoading(true);
@@ -64,6 +66,12 @@ export default function DailyRitualPage() {
         content: content.trim(),
       });
       setCompleted(true);
+      // Fetch updated participation data (streak + recognition) for this member.
+      // /cultures/:id now returns `participation` when the caller is authenticated.
+      try {
+        const { data } = await api.get(`/cultures/${id}`);
+        if (data.participation) setParticipation(data.participation);
+      } catch (_) { /* streak is bonus info — don't block completion UI */ }
     } catch (err) {
       setError(err.response?.data?.error || "Failed to consecrate your reflection.");
     } finally {
@@ -315,6 +323,9 @@ export default function DailyRitualPage() {
                   The communal memory loop will incorporate your experience into upcoming rites.
                 </p>
               </div>
+
+              {/* Streak + Recognition banner */}
+              <StreakCompletion participation={participation} />
 
               <div className="flex justify-center gap-3 pt-2">
                 <Link to={`/cultures/${id}/feed`}>

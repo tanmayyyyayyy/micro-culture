@@ -8,11 +8,13 @@ import CultureCard from "../components/ui/CultureCard.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
+import { StreakBadge } from "../components/ui/ParticipationBadge.jsx";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [cultures, setCultures] = useState([]);
   const [stats, setStats] = useState(null);
+  const [bestStreak, setBestStreak] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,8 +25,15 @@ export default function Dashboard() {
     try {
       // Single endpoint — no N+1 queries (B1 fix)
       const { data } = await api.get("/cultures/dashboard");
-      setCultures(data.cultures || []);
+      const loaded = data.cultures || [];
+      setCultures(loaded);
       setStats(data.stats || null);
+      // Best current streak across all joined cultures (no extra request)
+      const best = loaded.reduce((max, c) => {
+        const s = c.participation?.currentStreak || 0;
+        return s > max ? s : max;
+      }, 0);
+      setBestStreak(best);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to load your culture sanctuary.");
     } finally {
@@ -98,6 +107,18 @@ export default function Dashboard() {
                 Active & Listening
               </div>
             </div>
+
+            {bestStreak > 0 && (
+              <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/20">
+                <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+                  Current Rite Streak
+                </div>
+                <div className="text-2xl font-bold text-amber-400 mt-1 flex items-center gap-1.5">
+                  🔥 {bestStreak}
+                  <span className="text-sm font-normal text-amber-400/70">days</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </GlassPanel>
