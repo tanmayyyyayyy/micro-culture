@@ -8,6 +8,7 @@ import CultureEmblem from "../components/ui/CultureEmblem.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
 import WeeklySummaryModal from "../components/WeeklySummaryModal.jsx";
+import { ProgressionPanel } from "../components/ui/ProgressionBadge.jsx";
 
 export default function CultureDetail() {
   const { id } = useParams();
@@ -256,6 +257,11 @@ export default function CultureDetail() {
             </Link>
           )}
         </GlassPanel>
+      )}
+
+      {/* Culture Evolution / Progression */}
+      {culture.progression && (
+        <ProgressionPanel progression={culture.progression} />
       )}
 
       {/* Three Pillars Charter Grid */}

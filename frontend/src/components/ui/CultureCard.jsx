@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import GlassPanel from "./GlassPanel.jsx";
 import CultureEmblem from "./CultureEmblem.jsx";
+import { ProgressionBadge } from "./ProgressionBadge.jsx";
 
 export default function CultureCard({ culture, actionText, actionLink, isMember = false }) {
   if (!culture) return null;
@@ -48,6 +49,29 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
           </div>
         )}
       </Link>
+
+      {/* Progression mini-row */}
+      {culture.progression && (
+        <div style={{ marginBottom: "0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.35rem" }}>
+            <ProgressionBadge progression={culture.progression} />
+            <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.35)" }}>
+              {culture.progression.progress}%
+            </span>
+          </div>
+          <div style={{ height: "3px", borderRadius: "999px", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+            <div
+              style={{
+                height: "100%",
+                width: `${culture.progression.progress}%`,
+                borderRadius: "999px",
+                background: "linear-gradient(90deg, #8b5cf699, #8b5cf6)",
+                animation: "progressFill 0.7s cubic-bezier(0.22,0.61,0.36,1) both",
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
         <Link
