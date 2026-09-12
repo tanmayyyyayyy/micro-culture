@@ -17,16 +17,43 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
               size="md"
             />
             <div>
-              <h3 className="font-semibold text-neutral-100 group-hover:text-white transition-colors flex items-center gap-2">
-                {culture.name}
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-semibold text-neutral-100 group-hover:text-white transition-colors">
+                  {culture.name}
+                </h3>
                 {isMember && (
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
                     Member
                   </span>
                 )}
-              </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                {culture.membersCount ?? (culture.members?.length || 1)} members
+                {culture.discovery?.badge && (
+                  <span
+                    className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${
+                      culture.discovery.badge === "TRENDING"
+                        ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                        : culture.discovery.badge === "NEW"
+                        ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                        : "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
+                    }`}
+                  >
+                    {culture.discovery.badge === "TRENDING"
+                      ? "🔥 Trending"
+                      : culture.discovery.badge === "NEW"
+                      ? "✦ New"
+                      : "⚡ Active"}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-neutral-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                <span>{culture.membersCount ?? (culture.members?.length || 1)} members</span>
+                {culture.discovery?.recentActivityText && (
+                  <>
+                    <span className="text-neutral-600">•</span>
+                    <span className="text-neutral-300 font-medium text-[11px]">
+                      {culture.discovery.recentActivityText}
+                    </span>
+                  </>
+                )}
               </p>
             </div>
           </div>

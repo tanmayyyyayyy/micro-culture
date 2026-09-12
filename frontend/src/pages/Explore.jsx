@@ -7,7 +7,7 @@ import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 
-const QUICK_FILTERS = ["all", "quiet", "minimal", "creative", "philosophical", "starlit"];
+const DISCOVERY_CATEGORIES = ["all", "trending", "new", "active", "growing"];
 
 export default function Explore() {
   const [cultures, setCultures] = useState([]);
@@ -16,13 +16,15 @@ export default function Explore() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  async function loadCultures(query = "") {
+  async function loadCultures(query = q, filter = activeFilter) {
     setLoading(true);
     setError("");
     try {
-      const { data } = await api.get("/cultures", {
-        params: query ? { q: query } : {},
-      });
+      const params = {};
+      if (query && query.trim()) params.q = query.trim();
+      if (filter && filter !== "all") params.filter = filter;
+
+      const { data } = await api.get("/cultures", { params });
       setCultures(data);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to discover cultures.");
@@ -32,19 +34,17 @@ export default function Explore() {
   }
 
   useEffect(() => {
-    loadCultures();
+    loadCultures(q, activeFilter);
   }, []);
 
   function handleFilterClick(filter) {
     setActiveFilter(filter);
-    const query = filter === "all" ? "" : filter;
-    setQ(query);
-    loadCultures(query);
+    loadCultures(q, filter);
   }
 
   function handleSearchSubmit(e) {
     e.preventDefault();
-    loadCultures(q);
+    loadCultures(q, activeFilter);
   }
 
   return (
@@ -94,17 +94,17 @@ export default function Explore() {
         </div>
       </div>
 
-      {/* Quick Filter Tags */}
+      {/* Discovery Category Filters */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className="text-neutral-500 mr-1 font-medium">Filter:</span>
-        {QUICK_FILTERS.map((filter) => (
+        <span className="text-neutral-500 mr-1 font-medium">Category:</span>
+        {DISCOVERY_CATEGORIES.map((filter) => (
           <button
             key={filter}
             type="button"
             onClick={() => handleFilterClick(filter)}
-            className={`px-3 py-1 rounded-full capitalize transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-full uppercase text-[11px] tracking-wider font-semibold transition-all cursor-pointer ${
               activeFilter === filter
-                ? "bg-white text-neutral-950 font-semibold shadow-sm"
+                ? "bg-white text-neutral-950 shadow-sm"
                 : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
             }`}
           >
@@ -117,12 +117,12 @@ export default function Explore() {
       {loading ? (
         <LoadingState message="Discovering cultural sanctuaries..." />
       ) : error ? (
-        <ErrorState message={error} onRetry={() => loadCultures(q)} />
+        <ErrorState message={error} onRetry={() => loadCultures(q, activeFilter)} />
       ) : cultures.length === 0 ? (
         <EmptyState
           icon="🔍"
           title="No cultures match your query"
-          description="Try searching for a different vibe, or be the visionary founder who creates it."
+          description="Try exploring another category or search term, or found a new micro-culture."
           action={
             <div className="flex items-center gap-3">
               <GlowButton
@@ -131,7 +131,7 @@ export default function Explore() {
                 onClick={() => {
                   setQ("");
                   setActiveFilter("all");
-                  loadCultures("");
+                  loadCultures("", "all");
                 }}
               >
                 Clear Filters

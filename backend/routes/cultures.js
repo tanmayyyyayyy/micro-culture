@@ -142,6 +142,84 @@ function calcRecognition(totalLogs) {
 }
 
 // ---------------------------------------------------------------------------
+// Smart Culture Discovery Calculator
+// ---------------------------------------------------------------------------
+// Computes deterministic discovery metrics from real database activity:
+//   - isNew: created within 14 days
+//   - isActive: ritual completions in past 7 days (or within 30 days)
+//   - isGrowing: multiple members + recent activity or growing progression
+//   - isTrending: high recent ritual momentum relative to member base
+//   - score: deterministic composite prioritizing recent participation over size
+// ---------------------------------------------------------------------------
+function calcDiscoveryMetrics(culture, logStats = {}) {
+  const memberCount = culture.members?.length || 1;
+  const totalLogs = logStats.totalLogs || 0;
+  const recent7dLogs = logStats.recent7dLogs || 0;
+  const recent30dLogs = logStats.recent30dLogs || 0;
+  const lastActivityAt = logStats.lastActivityAt || null;
+
+  const ageMs = Date.now() - new Date(culture.createdAt).getTime();
+  const ageDays = Math.max(0, ageMs / 86_400_000);
+  const isNew = ageDays <= 14;
+
+  const progression = calcProgression(memberCount, totalLogs, culture.createdAt);
+
+  // Deterministic Discovery Score (recent activity prioritized over raw size)
+  // 5 pts per 7d log + 2 pts per 30d log + bounded member points (max 20) + small progression weight
+  const activityScore = recent7dLogs * 5 + recent30dLogs * 2;
+  const memberScore = Math.min(memberCount, 20) * 1.5;
+  const progressionScore = (progression.score || 0) * 0.1;
+  const recencyBoost = isNew && recent7dLogs > 0 ? 10 : (isNew ? 5 : 0);
+
+  const discoveryScore = Math.round(activityScore + memberScore + progressionScore + recencyBoost);
+
+  const isActive = Boolean(
+    recent7dLogs > 0 ||
+    (lastActivityAt && Date.now() - new Date(lastActivityAt).getTime() <= 30 * 86_400_000)
+  );
+  const isGrowing = Boolean(
+    (memberCount >= 2 && (recent7dLogs > 0 || recent30dLogs > 0)) ||
+    (memberCount >= 2 && progression.stage === "GROWING")
+  );
+  const isTrending = Boolean(recent7dLogs >= 2 || (recent7dLogs >= 1 && memberCount >= 2));
+
+  // Primary badge selection (single priority badge to avoid clutter)
+  let badge = null;
+  if (isTrending) {
+    badge = "TRENDING";
+  } else if (isActive && recent7dLogs > 0) {
+    badge = "ACTIVE";
+  } else if (isNew) {
+    badge = "NEW";
+  }
+
+  // Tasteful real-data activity snippet
+  let recentActivityText = null;
+  if (recent7dLogs > 0) {
+    recentActivityText = `${recent7dLogs} ${recent7dLogs === 1 ? "rite" : "rites"} this week`;
+  } else if (isNew) {
+    recentActivityText = "Newly founded";
+  } else if (totalLogs > 0) {
+    recentActivityText = `${totalLogs} ${totalLogs === 1 ? "rite" : "rites"} total`;
+  }
+
+  return {
+    badge,
+    score: discoveryScore,
+    recent7dLogs,
+    recent30dLogs,
+    totalLogs,
+    lastActivityAt,
+    isNew,
+    isActive,
+    isGrowing,
+    isTrending,
+    recentActivityText,
+    progression,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // POST /cultures — Create a culture (requires AI blueprint pre-generated)
 // ---------------------------------------------------------------------------
 router.post("/", requireAuth, async (req, res, next) => {
@@ -185,20 +263,110 @@ router.post("/", requireAuth, async (req, res, next) => {
 });
 
 // ---------------------------------------------------------------------------
-// GET /cultures — List / search published cultures
+// GET /cultures — Smart Culture Discovery & Search
+// Accepts optional `q` (search) and `filter` (all, trending, new, active, growing).
+// Aggregates real DB activity in 1 query across all matched cultures (Zero N+1).
 // ---------------------------------------------------------------------------
 router.get("/", async (req, res, next) => {
   try {
-    const { q } = req.query;
-    const filter = { isPublished: true };
-    if (q) {
-      filter.$or = [
-        { name: { $regex: q, $options: "i" } },
-        { vibeWords: { $regex: q, $options: "i" } },
+    const { q, filter } = req.query;
+    const queryFilter = { isPublished: true };
+
+    if (q && typeof q === "string" && q.trim()) {
+      const regex = { $regex: q.trim(), $options: "i" };
+      queryFilter.$or = [
+        { name: regex },
+        { description: regex },
+        { vibeWords: regex },
+        { aesthetic: regex },
+        { values: regex },
+        { jargon: regex },
       ];
     }
-    const cultures = await Culture.find(filter).sort({ createdAt: -1 }).lean();
-    res.json(cultures);
+
+    const cultures = await Culture.find(queryFilter).lean();
+    if (!cultures.length) {
+      return res.json([]);
+    }
+
+    const cultureIds = cultures.map((c) => c._id);
+
+    // Single aggregation query across all cultures for real participation stats
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const logStatsAgg = await RitualLog.aggregate([
+      { $match: { cultureId: { $in: cultureIds } } },
+      {
+        $group: {
+          _id: "$cultureId",
+          totalLogs: { $sum: 1 },
+          recent7dLogs: {
+            $sum: { $cond: [{ $gte: ["$createdAt", sevenDaysAgo] }, 1, 0] },
+          },
+          recent30dLogs: {
+            $sum: { $cond: [{ $gte: ["$createdAt", thirtyDaysAgo] }, 1, 0] },
+          },
+          lastActivityAt: { $max: "$createdAt" },
+        },
+      },
+    ]);
+
+    const logStatsMap = {};
+    for (const stat of logStatsAgg) {
+      logStatsMap[stat._id.toString()] = stat;
+    }
+
+    // Attach discovery metrics & progression
+    let enriched = cultures.map((c) => {
+      const stats = logStatsMap[c._id.toString()] || {};
+      const discovery = calcDiscoveryMetrics(c, stats);
+      return {
+        ...c,
+        progression: discovery.progression,
+        discovery,
+      };
+    });
+
+    // Apply category filter
+    const selectedFilter = (filter || "all").toLowerCase().trim();
+
+    if (selectedFilter === "trending") {
+      enriched = enriched
+        .filter((c) => c.discovery.isTrending || c.discovery.recent7dLogs > 0)
+        .sort((a, b) => b.discovery.score - a.discovery.score);
+    } else if (selectedFilter === "new") {
+      const newOnly = enriched.filter((c) => c.discovery.isNew);
+      if (newOnly.length > 0) {
+        enriched = newOnly.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else {
+        // Graceful fallback if older dataset: return newest cultures in DB
+        enriched = enriched.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
+    } else if (selectedFilter === "active") {
+      enriched = enriched
+        .filter((c) => c.discovery.isActive)
+        .sort((a, b) => {
+          if (b.discovery.recent7dLogs !== a.discovery.recent7dLogs) {
+            return b.discovery.recent7dLogs - a.discovery.recent7dLogs;
+          }
+          return (b.discovery.score || 0) - (a.discovery.score || 0);
+        });
+    } else if (selectedFilter === "growing") {
+      enriched = enriched
+        .filter((c) => c.discovery.isGrowing)
+        .sort((a, b) => (b.discovery.score || 0) - (a.discovery.score || 0));
+    } else {
+      // "all" - deterministic sort by discovery score then recency
+      enriched.sort((a, b) => {
+        if (b.discovery.score !== a.discovery.score) {
+          return b.discovery.score - a.discovery.score;
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    }
+
+    res.json(enriched);
   } catch (err) {
     next(err);
   }
@@ -434,5 +602,7 @@ router.delete("/:id", requireAuth, async (req, res, next) => {
     next(err);
   }
 });
+
+export { STAGES, calcProgression, calcStreak, calcRecognition, calcDiscoveryMetrics };
 
 export default router;
