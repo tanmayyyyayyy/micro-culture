@@ -55,3 +55,18 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Demo Data
+
+To populate realistic demo data for local development & demonstration:
+
+```bash
+cd backend
+npm run seed:demo
+```
+
+- **Development/demo use only**: Refuses execution in production (`NODE_ENV === "production"`).
+- **Never automatically executed**: Must be invoked manually.
+- **Idempotent**: Safe to run multiple times without duplicating users, cultures, rituals, or logs.
+- **Cleanup**: Run `npm run seed:demo:clean` to remove demo-seeded data.
+
