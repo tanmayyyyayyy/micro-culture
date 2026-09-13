@@ -9,6 +9,15 @@ export default function WeeklySummaryModal({ cultureId, cultureName, isOpen, onC
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  useEffect(() => {
     if (!isOpen || !cultureId) return;
 
     let mounted = true;
@@ -49,7 +58,7 @@ export default function WeeklySummaryModal({ cultureId, cultureName, isOpen, onC
       onClick={onClose}
     >
       <GlassPanel
-        className="max-w-lg w-full p-6 sm:p-8 bg-neutral-900/95 border-violet-500/20 shadow-2xl relative"
+        className="max-w-lg w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 bg-neutral-900/95 border-violet-500/20 shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button

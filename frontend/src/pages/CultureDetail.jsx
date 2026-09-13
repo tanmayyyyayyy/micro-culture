@@ -42,6 +42,15 @@ export default function CultureDetail() {
     loadCulture();
   }, [id]);
 
+  useEffect(() => {
+    if (!showEditModal) return;
+    function handleKeyDown(e) {
+      if (e.key === "Escape") setShowEditModal(false);
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showEditModal]);
+
   async function handleJoin() {
     setActionLoading(true);
     setError("");
@@ -403,7 +412,7 @@ export default function CultureDetail() {
           onClick={() => setShowEditModal(false)}
         >
           <GlassPanel
-            className="max-w-md w-full p-6 bg-neutral-900 border-white/10"
+            className="max-w-md w-full max-h-[85vh] overflow-y-auto p-6 bg-neutral-900 border-white/10"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-bold text-white mb-4">Edit Culture Charter</h2>
