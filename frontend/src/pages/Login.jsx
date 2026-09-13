@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import GlassPanel from "../components/ui/GlassPanel.jsx";
 import GlowButton from "../components/ui/GlowButton.jsx";
+import MicroCultureLogo from "../components/ui/MicroCultureLogo.jsx";
 
 export default function Login() {
   const { login } = useAuth();
@@ -30,7 +31,10 @@ export default function Login() {
   return (
     <div className="max-w-md mx-auto py-8 sm:py-16 animate-fadeIn">
       <GlassPanel className="p-8 sm:p-10 border-white/10 shadow-2xl space-y-6">
-        <div className="text-center space-y-1">
+        <div className="text-center space-y-2 flex flex-col items-center">
+          <Link to="/" className="inline-block mb-1 hover:opacity-90 transition-opacity">
+            <MicroCultureLogo size="lg" showWordmark={false} />
+          </Link>
           <h1 className="text-2xl font-bold text-white tracking-tight">Welcome Back</h1>
           <p className="text-xs text-neutral-400">
             Enter your credentials to return to your cultural sanctuary.

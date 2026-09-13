@@ -2,12 +2,17 @@ import { Link } from "react-router-dom";
 import GlowButton from "../components/ui/GlowButton.jsx";
 import GlassPanel from "../components/ui/GlassPanel.jsx";
 import CultureEmblem from "../components/ui/CultureEmblem.jsx";
+import MicroCultureLogo from "../components/ui/MicroCultureLogo.jsx";
 
 export default function Landing() {
   return (
     <div className="space-y-20 py-8 sm:py-16 animate-fadeIn">
       {/* Hero Section */}
       <div className="text-center max-w-3xl mx-auto space-y-6">
+        <div className="flex justify-center mb-1">
+          <MicroCultureLogo size="2xl" showWordmark={false} />
+        </div>
+
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-2">
           <span>✦</span> An AI-Powered Social Experiment
         </div>

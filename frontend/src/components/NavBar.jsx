@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import MicroCultureLogo from "./ui/MicroCultureLogo.jsx";
 
 export default function NavBar() {
   const { user, logout } = useAuth();
@@ -18,13 +19,8 @@ export default function NavBar() {
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-neutral-950/80 backdrop-blur-xl">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-            μ
-          </div>
-          <span className="font-bold tracking-tight text-white text-base">
-            Micro<span className="text-violet-400">Culture</span>
-          </span>
+        <Link to="/" className="flex items-center group">
+          <MicroCultureLogo size="md" />
         </Link>
 
         {/* Desktop Nav */}
