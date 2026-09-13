@@ -1,92 +1,255 @@
 # Micro Culture
 
-A full-stack website where users create fictional micro-cultures and AI generates daily rituals to keep them alive.
+> **An adaptive social platform where communities form their own rituals, language, identity, and evolving culture.**
 
-## What this is
+[![Live Demo](https://img.shields.io/badge/Live_Demo-micro--culture.onrender.com-violet?style=flat-square)](https://micro-culture.onrender.com)
+[![API Status](https://img.shields.io/badge/API_Status-Online-emerald?style=flat-square)](https://micro-culture-api.onrender.com/health)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-tanmayyyyayyy%2Fmicro--culture-blue?style=flat-square)](https://github.com/tanmayyyyayyy/micro-culture)
 
-- Users create small communities ("micro-cultures") with a name, vibe, and description.
-- AI expands that into a full culture blueprint: aesthetic keywords, core values, jargon, starter rituals, and a symbol/emoji.
-- Each culture gets a new AI-generated daily ritual, on-theme and consistent with its identity over time.
-- Members post short "ritual logs" (text + optional image) in a culture feed.
-- AI curates: ritual of the week, weekly summary, suggested new/retired rituals (creator approves).
+Micro Culture is a full-stack web application exploring how communities can develop living cultures over time. Rather than relying on generic discussion threads, members participate through daily communal rituals, reflective journaling, and a shared vernacular.
 
-No streaks, no penalties — this is about identity and vibe, not gamified consistency.
+What makes Micro Culture distinct is its **adaptive memory loop**: member reflections and completion signals feed directly into the culture's historical lore. The AI does not simply emit random daily prompts—it reads recent participant momentum, respects the founding charter, and evolves tomorrow's rites to match the community's lived experience.
 
-## Stack
+*Note: This is a personal portfolio project demonstrating full-stack architecture, defensive AI integration, real-time aggregate scoring, and production deployment.*
 
-- Frontend: React + Vite + Tailwind CSS + React Router + Axios
-- Backend: Node.js + Express + JWT auth
-- Database: MongoDB + Mongoose
-- AI: OpenAI API (or any LLM), backend-only calls, prompt → structured JSON
-- Media: Cloudinary (or local disk for MVP)
+---
 
-## Build order (MVP)
+## 🌐 Live Deployment
 
-1. Auth system (register/login, JWT, protected routes)
-2. Culture creation (no AI yet — just the form + DB save)
-3. AI culture generation (blueprint from name/vibe/description)
-4. Join / leave cultures, discovery/search
-5. Daily ritual generator (cron or on-demand, one per culture per day)
-6. Ritual logs (post + feed)
-7. Culture feed + AI weekly summary / ritual-of-the-week
+- **Web Application**: [https://micro-culture.onrender.com](https://micro-culture.onrender.com)
+- **REST API**: [https://micro-culture-api.onrender.com](https://micro-culture-api.onrender.com)
+- **Source Code**: [https://github.com/tanmayyyyayyy/micro-culture](https://github.com/tanmayyyyayyy/micro-culture)
 
-## Repo layout
+---
+
+## 🧠 The AI Memory Loop
+
+Micro Culture bridges persistent relational data with generative language models. Every culture maintains a sacred charter, a sequence of daily rituals, and a ledger of member reflections (`RitualLog`).
+
+```mermaid
+flowchart LR
+    A["Culture Identity\n(Charter, Values, Jargon)"] --> B["AI Ritual Engine\n(Groq / OpenAI)"]
+    B --> C["Daily Ritual\n(Instructions & Inquiry)"]
+    C --> D["Member Reflection\n(Text & Confirmation)"]
+    D --> E["RitualLog\n(MongoDB Ledger)"]
+    E --> F["Culture Memory\n(Recent Signals & Lore)"]
+    F --> B
+```
+
+### How the Cycle Works
+1. **Charter Formulation**: When a founder creates a culture, the AI synthesizes an initial blueprint with unique values, sacred jargon definitions, visual aesthetic keywords, and founding rites. Founders review and edit every term before publication.
+2. **Daily Rite Dispatch**: Each calendar day, the system lazily generates or retrieves the day's ritual for that culture.
+3. **Member Participation**: Members review step-by-step instructions, complete the ritual, and submit a reflective journal entry (`RitualLog`). Server-side duplicate checks ensure exactly one log per member per ritual per day.
+4. **Context Gathering**: The engine queries the culture's charter, the last 7 daily rituals, and the last 20 member reflection logs. Private user information is strictly excluded; only names and reflection thoughts are extracted.
+5. **Memory-Informed Evolution**: The AI uses participant reflections to adapt difficulty, reinforce emerging inside jokes or jargon, and choose themes that build upon recent momentum.
+6. **Chronicle Synthesis**: Weekly summaries distill member highlights and crown a "Rite of the Week" based on genuine participation.
+
+---
+
+## ✨ Key Features
+
+### 🏛️ Culture Creation & Blueprints
+- **AI-Assisted Blueprint Generation**: Formulates cohesive aesthetic descriptors, core values, specialized jargon dictionaries, and starter rites from a brief premise and vibe tags.
+- **Full Review & Fine-Tuning**: Complete editorial control over generated values, jargon definitions, symbols, and descriptions prior to database commitment.
+- **Custom Visual Identities**: Distinct color accents, custom emoji emblems, and curated aesthetic keywords for every culture.
+
+### 🕯️ Daily Rituals & Member Reflections
+- **Contextual Daily Rites**: Structured rituals with titles, durations, difficulty levels, reasonings, and reflective inquiries.
+- **Interactive Checklists**: Interactive step-by-step sacred instructions.
+- **Reflection Submissions**: In-browser reflection journaling with client and server character limits (up to 2,000 characters).
+- **Duplicate Completion Protection**: Calendar-day idempotency guards return `409 Conflict` on repeated submissions, preserving streak and progression metrics.
+
+### 📈 Progression, Streaks & Recognition
+- **Culture Progression System**: Evaluates real community activity (member count, ritual count, recent participation velocity) to classify cultures into stages (`SEED`, `SPROUT`, `BLOOM`, `ESTABLISHED`, `CANON`).
+- **Participation Streaks**: Computes consecutive daily completion streaks derived purely from actual `RitualLog` calendar timestamps.
+- **Member Recognition Tiers**: Awards participation milestones (`INITIATE`, `DEVOTEE`, `ACOLYTE`, `ELDER`) tied to verified ritual reflections.
+
+### 🧭 Smart Culture Discovery
+- **Multi-Field Search**: Instant keyword discovery searching culture names, descriptions, values, jargon terms, and aesthetic tags.
+- **Dynamic Exploration Categories**:
+  - `ALL`: Comprehensive directory ordered by overall vitality.
+  - `TRENDING`: Cultures with high recent log velocity and momentum.
+  - `NEW`: Recently founded communities.
+  - `ACTIVE`: Consistently practiced cultures with active daily participation.
+  - `GROWING`: Emerging communities expanding their member base.
+
+### 🛡️ Security & Production Hardening
+- **JWT Authentication & Rate Limiting**: Secure token-based authentication with bcrypt password hashing (10 salt rounds) and endpoint rate limiters.
+- **Sanitized Production Errors**: 500 status codes suppress internal stack traces and database errors in production.
+- **Dynamic CORS**: Multi-origin CORS support with trailing-slash normalization; wildcard `*` access is strictly prohibited.
+- **Zero Secret Leaks**: All secrets and credentials reside strictly in environment variables; zero hardcoded tokens.
+
+---
+
+## 🛠️ Architecture & Tech Stack
 
 ```
 microculture/
-  backend/     Express API, Mongoose models, AI integration
-  frontend/    React app (Vite)
-  CLAUDE.md    Instructions for Claude Code to continue building this
+├── backend/                  # Node.js Express REST API
+│   ├── config/               # Database connection & configurations
+│   ├── middleware/           # JWT auth & rate limiters
+│   ├── models/               # Mongoose schemas (User, Culture, DailyRitual, RitualLog)
+│   ├── routes/               # Express endpoints (auth, cultures, ai, logs)
+│   ├── scripts/              # Demo seeding (seedDemo.js, cleanDemo.js)
+│   └── tests/                # Standalone Node regression test suites
+├── frontend/                 # Single-Page React Application
+│   ├── src/
+│   │   ├── api/              # Axios HTTP client with auth interceptors
+│   │   ├── components/       # UI building blocks (NavBar, Modals, Badges, Panels)
+│   │   ├── context/          # React AuthContext
+│   │   └── pages/            # Application views (Explore, CultureDetail, DailyRitual, Dashboard, CreateCulture)
+│   ├── index.html
+│   └── vite.config.js
+└── README.md
 ```
 
-## Running locally
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 18, Vite, Tailwind CSS, React Router v6, Axios |
+| **Backend** | Node.js, Express 4, Mongoose 8, JSON Web Tokens (JWT), bcryptjs |
+| **Database** | MongoDB Atlas / Local MongoDB |
+| **AI Engine** | Groq SDK / OpenAI API (Structured JSON generation, fallback parsing) |
+| **Deployment** | Render (Web Service for Backend + Static Site for Frontend) |
 
-Backend:
+---
+
+## 🚀 Local Development Setup
+
+### Prerequisites
+- Node.js (v18 or higher)
+- Local MongoDB instance or MongoDB Atlas URI
+- Groq API key (or OpenAI API key)
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/tanmayyyyayyy/micro-culture.git
+cd microculture
 ```
+
+### 2. Configure Backend Environment
+```bash
 cd backend
-cp .env.example .env   # fill in MONGO_URI, JWT_SECRET, OPENAI_API_KEY
+cp .env.example .env
 npm install
+```
+
+Configure your `backend/.env` file:
+```env
+PORT=5001
+MONGO_URI=mongodb://localhost:27017/microculture
+JWT_SECRET=your_super_secret_jwt_key_minimum_32_characters
+GROQ_API_KEY=gsk_your_groq_api_key_here
+GROQ_MODEL=openai/gpt-oss-120b
+CLIENT_URL=http://localhost:5173,http://localhost:5174
+```
+
+### 3. Configure Frontend Environment
+```bash
+cd ../frontend
+cp .env.example .env
+npm install
+```
+
+Configure your `frontend/.env` file:
+```env
+VITE_API_URL=http://localhost:5001
+```
+
+### 4. Run Development Servers
+In the `backend` terminal:
+```bash
 npm run dev
 ```
 
-Frontend:
-```
-cd frontend
-npm install
+In the `frontend` terminal:
+```bash
 npm run dev
 ```
 
-## Demo Data
+Visit `http://localhost:5173` to explore the application locally.
 
-To populate realistic demo data for local development & demonstration:
+---
+
+## 🌱 Demo Data Seeding
+
+To preview the platform with rich, pre-populated cultures, historical rituals, and member reflections:
 
 ```bash
 cd backend
 npm run seed:demo
 ```
 
-- **Development/demo use only**: Refuses execution in production (`NODE_ENV === "production"`).
-- **Never automatically executed**: Must be invoked manually.
-- **Idempotent**: Safe to run multiple times without duplicating users, cultures, rituals, or logs.
-- **Cleanup**: Run `npm run seed:demo:clean` to remove demo-seeded data.
+This seeds:
+- **Nocturne Lens** (🌙 Night photography & shadow hunting) — *Highly Active*
+- **Sub Rosa Codex** (📚 Slow reading & marginalia exchange) — *Active*
+- **Concrete Frequency** (🎧 Field recordists & acoustic observation) — *Growing*
+- **Circuit & Solder** (⚡ Micro-controllers & tactile hardware) — *Newly Founded*
 
-## Deployment
+**Safety & Idempotency Features:**
+- **Disabled in Production**: Explicitly rejects execution when `NODE_ENV === "production"`.
+- **Strictly Idempotent**: Safe to run repeatedly; uses deterministic upsert keys without duplicating documents.
+- **Cleanup Utility**: Run `npm run seed:demo:clean` to remove all demo records.
 
-### 1. Backend Service
-- **Start Command**: `npm start` (or `node server.js` inside `/backend`)
-- **Host Binding**: Binds to `process.env.HOST` (default `0.0.0.0`) and `process.env.PORT` (default `5001`).
-- **Required Backend Environment Variables**:
-  - `PORT`: HTTP port for server (e.g. `5001`)
-  - `HOST`: Bind address for server (e.g. `0.0.0.0`)
-  - `MONGO_URI`: MongoDB connection string (`mongodb://...` or `mongodb+srv://...`)
-  - `JWT_SECRET`: Secret key for signing authentication tokens
-  - `GROQ_API_KEY` (or `OPENAI_API_KEY`): API key for AI daily ritual & blueprint generation
-  - `CLIENT_URL`: Allowed frontend origin URL(s) for CORS policy (comma-separated for multiple origins)
+---
 
-### 2. Frontend Static Application
-- **Build Command**: `npm run build` inside `/frontend` (outputs static assets to `/frontend/dist`)
-- **Required Frontend Environment Variable**:
-  - `VITE_API_URL`: Base HTTP URL pointing to the deployed backend service (e.g. `https://api.microculture.example.com`)
-- **Architecture**: The frontend is a static single-page React app served by Vite/Nginx/CDN that communicates via REST HTTP calls to the backend API.
+## 🧪 Verification & Testing
 
+The backend includes zero-dependency, standalone regression test suites verifying core invariants:
 
+```bash
+cd backend
+
+# 1. Core loop reliability & duplicate completion guards
+node tests/core-loop.test.js
+
+# 2. AI ritual prompt construction, bounded context & validation
+node tests/ritual-engine.test.js
+
+# 3. AI blueprint formulation & cliché detection
+node tests/blueprint-quality.test.js
+
+# 4. Multi-field search, activity metrics & discovery algorithms
+node tests/discovery.test.js
+
+# 5. Production safety & idempotency of demo seeding
+node tests/demo-seed.test.js
+```
+
+To verify the production frontend build:
+```bash
+cd ../frontend
+npm run build
+```
+
+---
+
+## 📦 Production Deployment
+
+### Backend Service (e.g. Render / Railway / Docker)
+- **Root Directory**: `backend`
+- **Build Command**: `npm install`
+- **Start Command**: `npm start`
+- **Host Binding**: Defaults to `0.0.0.0` on `process.env.PORT`.
+- **Environment Variables**:
+  - `PORT`: Server port (e.g., `5001`)
+  - `HOST`: Server bind address (`0.0.0.0`)
+  - `MONGO_URI`: MongoDB connection string
+  - `JWT_SECRET`: Random 32+ character string
+  - `GROQ_API_KEY`: Groq API key
+  - `CLIENT_URL`: Production frontend URL (e.g., `https://micro-culture.onrender.com`)
+
+### Frontend Static Site (e.g. Render / Vercel / Netlify)
+- **Root Directory**: `frontend`
+- **Build Command**: `npm run build`
+- **Publish Directory**: `dist`
+- **Environment Variables**:
+  - `VITE_API_URL`: Production backend URL (e.g., `https://micro-culture-api.onrender.com`)
+
+---
+
+## 👤 Author
+
+Developed by **Tanmay Jain** as an exploration in generative culture mechanics, adaptive AI memory architectures, and responsive full-stack product engineering.
+
+- **GitHub**: [@tanmayyyyayyy](https://github.com/tanmayyyyayyy)
+- **Repository**: [github.com/tanmayyyyayyy/micro-culture](https://github.com/tanmayyyyayyy/micro-culture)
