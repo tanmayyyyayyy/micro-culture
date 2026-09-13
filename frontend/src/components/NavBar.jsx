@@ -38,7 +38,7 @@ export default function NavBar() {
                 Dashboard
               </NavLink>
               <NavLink to="/create" className={navLinkStyle}>
-                Create Culture
+                Create Community
               </NavLink>
             </>
           )}
@@ -126,7 +126,7 @@ export default function NavBar() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
               >
-                Create Culture
+                Create Community
               </Link>
               <Link
                 to="/profile"

@@ -6,9 +6,16 @@ import { ProgressionBadge } from "./ProgressionBadge.jsx";
 export default function CultureCard({ culture, actionText, actionLink, isMember = false }) {
   if (!culture) return null;
 
+  const formattedRecentActivity = culture.discovery?.recentActivityText
+    ? culture.discovery.recentActivityText
+        .replace(/(\d+)\s+rites\s+this\s+week/i, "$1 activities this week")
+        .replace(/(\d+)\s+rite\s+this\s+week/i, "$1 activity this week")
+    : null;
+
   return (
     <GlassPanel interactive className="group p-5 flex flex-col justify-between h-full">
       <Link to={`/cultures/${culture._id}`} className="block">
+        {/* 1. Community Identity Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-3">
             <CultureEmblem
@@ -46,11 +53,11 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
               </div>
               <p className="text-xs text-neutral-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
                 <span>{culture.membersCount ?? (culture.members?.length || 1)} members</span>
-                {culture.discovery?.recentActivityText && (
+                {formattedRecentActivity && (
                   <>
                     <span className="text-neutral-600">•</span>
                     <span className="text-neutral-300 font-medium text-[11px]">
-                      {culture.discovery.recentActivityText.replace(/(\d+)\s+rites\s+this\s+week/i, "$1 activities this week").replace(/(\d+)\s+rite\s+this\s+week/i, "$1 activity this week")}
+                      {formattedRecentActivity}
                     </span>
                   </>
                 )}
@@ -59,12 +66,14 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
           </div>
         </div>
 
-        <p className="text-sm text-neutral-400 line-clamp-2 leading-relaxed mb-4">
+        {/* 2. What people do here / Community description */}
+        <p className="text-sm text-neutral-300 line-clamp-2 leading-relaxed mb-3">
           {culture.description}
         </p>
 
+        {/* 3. Vibe tags */}
         {culture.vibeWords?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-4">
+          <div className="flex flex-wrap gap-1.5 mb-3">
             {culture.vibeWords.slice(0, 3).map((word, i) => (
               <span
                 key={i}
@@ -73,6 +82,21 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
                 #{word}
               </span>
             ))}
+          </div>
+        )}
+
+        {/* 4. Today's Activity (feature of the community) */}
+        {culture.rituals?.[0] && (
+          <div className="p-3 rounded-xl bg-neutral-900/70 border border-neutral-800/80 mb-3 space-y-1">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-violet-400 font-semibold uppercase tracking-wider text-[10px] flex items-center gap-1">
+                <span>⚡</span> Today&apos;s Activity
+              </span>
+              <span className="text-neutral-500 font-mono text-[10px]">Daily</span>
+            </div>
+            <p className="text-xs font-medium text-neutral-200 line-clamp-1">
+              {culture.rituals[0]}
+            </p>
           </div>
         )}
       </Link>
@@ -100,6 +124,7 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
         </div>
       )}
 
+      {/* Action Row */}
       <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
         <Link
           to={`/cultures/${culture._id}`}
@@ -107,21 +132,12 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
         >
           View Community
         </Link>
-        {actionLink ? (
-          <Link
-            to={actionLink}
-            className="inline-flex items-center gap-1 font-medium text-violet-400 hover:text-violet-300 transition-colors"
-          >
-            {actionText || "Today's Rite"} →
-          </Link>
-        ) : (
-          <Link
-            to={`/cultures/${culture._id}`}
-            className="inline-flex items-center gap-1 font-medium text-neutral-300 hover:text-white transition-colors"
-          >
-            Enter →
-          </Link>
-        )}
+        <Link
+          to={actionLink || `/cultures/${culture._id}`}
+          className="inline-flex items-center gap-1 font-medium text-violet-400 hover:text-violet-300 transition-colors"
+        >
+          {actionText || (isMember ? "Today's Activity →" : "Join Community →")}
+        </Link>
       </div>
     </GlassPanel>
   );

@@ -187,17 +187,23 @@ export default function DailyRitualPage() {
         {/* Glow accent */}
         <div className="absolute top-0 right-0 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-violet-500/20 text-violet-300 border border-violet-500/30">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-white/5">
+          <div>
+            <div className="text-[11px] font-bold tracking-wider uppercase text-violet-400">
               Today&apos;s Activity
-            </span>
-            <span className="text-xs font-mono text-neutral-400">
-              {ritual.date}
-            </span>
+            </div>
+            <p className="text-xs text-neutral-400 mt-0.5">
+              Created for:{" "}
+              <Link to={`/cultures/${id}`} className="text-neutral-200 font-medium hover:underline">
+                {culture?.name || "Community"}
+              </Link>
+            </p>
           </div>
 
           <div className="flex items-center gap-2 text-xs">
+            <span className="text-xs font-mono text-neutral-500">
+              {ritual.date}
+            </span>
             {ritual.durationMinutes && (
               <span className="px-2.5 py-1 rounded-full bg-neutral-800/80 text-neutral-300 border border-neutral-700/60">
                 ⏱ ~{ritual.durationMinutes} min
@@ -220,16 +226,21 @@ export default function DailyRitualPage() {
           {hasStructured ? ritual.title : "Today's Activity"}
         </h1>
 
-        {/* Description */}
-        <p className="text-base text-neutral-300 leading-relaxed mb-6">
-          {hasStructured ? ritual.description : ritual.ritualText}
-        </p>
+        {/* What to do */}
+        <div className="mb-6 space-y-1.5">
+          <div className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+            What to do
+          </div>
+          <p className="text-base text-neutral-300 leading-relaxed">
+            {hasStructured ? ritual.description : ritual.ritualText}
+          </p>
+        </div>
 
-        {/* "Why this rite?" Rationale (Culture Memory differentiator) */}
+        {/* Why this activity? (AI Memory) */}
         {ritual.reason && (
           <div className="mb-8 p-4 rounded-xl bg-violet-950/25 border border-violet-500/25 relative">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-300 uppercase tracking-wider mb-1">
-              <span>✦</span> Why this activity? (Community Memory)
+              <span>✦</span> Why this activity? (AI Memory)
             </div>
             <p className="text-xs sm:text-sm text-violet-200/90 leading-relaxed">
               {ritual.reason}

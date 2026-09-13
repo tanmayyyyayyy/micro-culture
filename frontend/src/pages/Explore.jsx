@@ -56,10 +56,10 @@ export default function Explore() {
             <span>✧</span> Discover
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            Explore Communities
+            Find Your Community
           </h1>
           <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-md">
-            Browse active communities, see what they&apos;re about, and join to take part in today&apos;s activity.
+            Join a community built around something you care about. Take part in activities and help shape what comes next.
           </p>
         </div>
 

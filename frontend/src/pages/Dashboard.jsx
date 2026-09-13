@@ -66,7 +66,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             <Link to="/create">
               <GlowButton variant="glow" size="md">
-                + New Culture
+                + Create Community
               </GlowButton>
             </Link>
             <Link to="/explore">
@@ -82,7 +82,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 mt-6 pt-6 border-t border-white/5">
             <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 animate-slideUp stagger-1">
               <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
-                Joined Cultures
+                Communities Joined
               </div>
               <div className="text-2xl font-bold text-white mt-1">
                 {stats.totalJoined ?? cultures.length}
@@ -125,7 +125,7 @@ export default function Dashboard() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-white tracking-tight">
-            Your Active Cultures
+            Your Communities
           </h2>
           <span className="text-xs text-neutral-500 font-mono">
             {cultures.length} total

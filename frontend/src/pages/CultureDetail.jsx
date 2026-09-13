@@ -119,9 +119,15 @@ export default function CultureDetail() {
     user &&
     (culture.members?.some((m) => (m?._id || m)?.toString() === currentUserId) || isCreator);
 
+  const formattedRecentActivity = culture.discovery?.recentActivityText
+    ? culture.discovery.recentActivityText
+        .replace(/(\d+)\s+rites\s+this\s+week/i, "$1 activities this week")
+        .replace(/(\d+)\s+rite\s+this\s+week/i, "$1 activity this week")
+    : null;
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fadeIn">
-      {/* Hero Banner */}
+      {/* Hero Banner — Community Identity First */}
       <GlassPanel className="p-6 sm:p-10 relative overflow-hidden border-white/10 shadow-2xl">
         <div
           className="absolute -top-24 -right-24 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-20"
@@ -129,7 +135,7 @@ export default function CultureDetail() {
         />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
+          <div className="flex items-start sm:items-center gap-5">
             <CultureEmblem
               symbol={culture.symbol}
               color={culture.color}
@@ -146,15 +152,15 @@ export default function CultureDetail() {
                   </span>
                 )}
               </div>
-              <p className="text-xs text-neutral-400 flex items-center gap-3">
-                <span>{culture.membersCount ?? (culture.members?.length || 1)} Dedicated Members</span>
+              <p className="text-xs text-neutral-400 flex items-center gap-2">
+                <span>{culture.membersCount ?? (culture.members?.length || 1)} members</span>
                 <span>·</span>
-                <span>Active Living Culture</span>
+                <span>{formattedRecentActivity || "Active Community"}</span>
               </p>
             </div>
           </div>
 
-          {/* Primary Action Button based on membership state */}
+          {/* Primary Action Button */}
           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
             {user && !isMember ? (
               <GlowButton
@@ -164,7 +170,7 @@ export default function CultureDetail() {
                 onClick={handleJoin}
                 className="w-full sm:w-auto"
               >
-                Join Culture
+                Join Community
               </GlowButton>
             ) : isMember ? (
               <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
@@ -189,14 +195,14 @@ export default function CultureDetail() {
           </div>
         </div>
 
-        {/* Culture Description */}
-        <p className="mt-6 text-sm sm:text-base text-neutral-300 leading-relaxed max-w-2xl">
+        {/* Community Description — Placed directly below identity */}
+        <p className="mt-5 text-sm sm:text-base text-neutral-300 leading-relaxed max-w-2xl">
           {culture.description}
         </p>
 
         {/* Vibe Tags */}
         {culture.vibeWords?.length > 0 && (
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             {culture.vibeWords.map((v, idx) => (
               <span
                 key={idx}
@@ -216,35 +222,35 @@ export default function CultureDetail() {
               <StreakCard participation={culture.participation} />
             )}
             <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-neutral-400">
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={() => setShowSummaryModal(true)}
-                className="inline-flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors"
-              >
-                <span>📜</span> Weekly Summary
-              </button>
-              {isCreator && (
+              <div className="flex items-center gap-4">
                 <button
                   type="button"
-                  onClick={() => setShowEditModal(true)}
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  onClick={() => setShowSummaryModal(true)}
+                  className="inline-flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors"
                 >
-                  ✎ Edit Community
+                  <span>📜</span> Weekly Summary
+                </button>
+                {isCreator && (
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(true)}
+                    className="text-neutral-400 hover:text-white transition-colors"
+                  >
+                    ✎ Edit Community
+                  </button>
+                )}
+              </div>
+
+              {!isCreator && (
+                <button
+                  type="button"
+                  onClick={handleLeave}
+                  disabled={actionLoading}
+                  className="text-red-400/80 hover:text-red-300 transition-colors"
+                >
+                  Leave community
                 </button>
               )}
-            </div>
-
-            {!isCreator && (
-              <button
-                type="button"
-                onClick={handleLeave}
-                disabled={actionLoading}
-                className="text-red-400/80 hover:text-red-300 transition-colors"
-              >
-                Leave culture
-              </button>
-            )}
             </div>
           </div>
         )}
@@ -328,14 +334,14 @@ export default function CultureDetail() {
         <GlassPanel className="p-6 flex flex-col justify-between bg-neutral-900/60 border-amber-500/20">
           <div>
             <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span>★</span> Memory
+              <span>★</span> AI Memory
             </div>
             <p className="text-xs text-neutral-300 leading-relaxed mb-4">
-              Your activity logs are used by AI to create better daily activities for your community.
+              Your community gets smarter over time. AI looks at past activities and reflections to create better activities for the group.
             </p>
             <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 text-xs text-amber-200/90 flex items-center gap-2">
               <span className="animate-pulse">●</span>
-              <span>Memory Active &amp; Evolving</span>
+              <span>AI Memory Active</span>
             </div>
           </div>
         </GlassPanel>
