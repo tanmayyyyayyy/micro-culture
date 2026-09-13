@@ -50,7 +50,7 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
                   <>
                     <span className="text-neutral-600">•</span>
                     <span className="text-neutral-300 font-medium text-[11px]">
-                      {culture.discovery.recentActivityText}
+                      {culture.discovery.recentActivityText.replace(/(\d+)\s+rites\s+this\s+week/i, "$1 activities this week").replace(/(\d+)\s+rite\s+this\s+week/i, "$1 activity this week")}
                     </span>
                   </>
                 )}
@@ -105,7 +105,7 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
           to={`/cultures/${culture._id}`}
           className="text-neutral-400 hover:text-white transition-colors"
         >
-          View Charter
+          View Community
         </Link>
         {actionLink ? (
           <Link

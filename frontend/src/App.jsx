@@ -88,10 +88,10 @@ export default function App() {
           <div className="flex items-center gap-2">
             <span className="font-semibold text-neutral-400">Micro Culture</span>
             <span>·</span>
-            <span>Living communities powered by communal memory & AI rites</span>
+            <span>Living communities powered by community memory & AI activities</span>
           </div>
           <div className="text-neutral-500">
-            Every daily rite shapes tomorrow&apos;s cultural memory
+            Every daily activity helps shape the community&apos;s future
           </div>
         </div>
       </footer>

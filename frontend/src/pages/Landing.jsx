@@ -56,7 +56,7 @@ export default function Landing() {
               </div>
             </div>
             <span className="text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-medium">
-              Active Rite
+              Active Activity
             </span>
           </div>
 

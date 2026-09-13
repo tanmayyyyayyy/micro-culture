@@ -203,7 +203,7 @@ export function ProgressionPanel({ progression }) {
       <div style={{ display: "flex", gap: "1.5rem", marginTop: "1rem" }}>
         <div>
           <p style={{ fontSize: "1rem", fontWeight: 800, color: "#fff", margin: 0 }}>{progression.completedRituals ?? 0}</p>
-          <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.4)", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em" }}>Rites Completed</p>
+          <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.4)", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em" }}>Activities Completed</p>
         </div>
         <div>
           <p style={{ fontSize: "1rem", fontWeight: 800, color: "#fff", margin: 0 }}>{progression.members ?? 0}</p>
