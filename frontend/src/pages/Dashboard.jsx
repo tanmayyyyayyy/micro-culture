@@ -79,7 +79,7 @@ export default function Dashboard() {
 
         {/* Stats Ribbon */}
         {stats && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 mt-6 pt-6 border-t border-white/5">
             <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80">
               <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
                 Joined Cultures
@@ -98,7 +98,17 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="col-span-2 sm:col-span-1 p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 flex flex-col justify-between">
+            <div className={`p-3.5 rounded-xl border ${bestStreak > 0 ? "bg-amber-950/20 border-amber-500/30" : "bg-neutral-900/60 border-neutral-800/80"}`}>
+              <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+                Best Active Streak
+              </div>
+              <div className={`text-2xl font-bold mt-1 flex items-center gap-1.5 ${bestStreak > 0 ? "text-amber-400" : "text-neutral-400"}`}>
+                <span>{bestStreak > 0 ? "🔥" : "⚡"}</span> {bestStreak}
+                <span className="text-xs font-normal text-neutral-400/70">days</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 flex flex-col justify-between">
               <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
                 Culture Memory Loop
               </div>
@@ -107,18 +117,6 @@ export default function Dashboard() {
                 Active & Listening
               </div>
             </div>
-
-            {bestStreak > 0 && (
-              <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/20">
-                <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
-                  Current Rite Streak
-                </div>
-                <div className="text-2xl font-bold text-amber-400 mt-1 flex items-center gap-1.5">
-                  🔥 {bestStreak}
-                  <span className="text-sm font-normal text-amber-400/70">days</span>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </GlassPanel>

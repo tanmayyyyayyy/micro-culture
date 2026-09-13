@@ -332,17 +332,20 @@ export default function DailyRitualPage() {
               </div>
             </form>
           ) : (
-            <div className="p-6 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 text-center space-y-4 animate-fadeIn">
-              <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl mx-auto shadow-lg shadow-emerald-500/10">
+            <div className="relative p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-emerald-950/30 to-neutral-900/90 border border-emerald-500/30 text-center space-y-4 shadow-2xl shadow-emerald-500/10 animate-fadeIn">
+              <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl mx-auto shadow-lg shadow-emerald-500/20">
                 ✓
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Rite Complete</h3>
-                <p className="text-sm text-emerald-300 mt-1">
-                  Your reflection has become part of the culture&apos;s memory.
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase font-bold tracking-widest text-emerald-400">
+                  Sacred Reflection Consecrated
+                </div>
+                <h3 className="text-xl font-bold text-white tracking-tight">Rite Complete</h3>
+                <p className="text-sm text-emerald-300">
+                  Your reflection has become part of the culture&apos;s living memory.
                 </p>
-                <p className="text-xs text-neutral-400 mt-1">
-                  The communal memory loop will incorporate your experience into upcoming rites.
+                <p className="text-xs text-neutral-400 max-w-md mx-auto">
+                  The communal memory loop will incorporate your experience into upcoming daily rites.
                 </p>
               </div>
 
