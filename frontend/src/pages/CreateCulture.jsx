@@ -412,6 +412,41 @@ export default function CreateCulture() {
                 ))}
               </div>
             </div>
+
+            {/* Aesthetic Codes */}
+            <div className="pt-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
+                  Aesthetic Codes ({blueprint.aesthetic?.length || 0})
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => addListItem("aesthetic", "New aesthetic code")}
+                  className="text-xs text-emerald-400 hover:text-emerald-300"
+                >
+                  + Add Keyword
+                </button>
+              </div>
+              <div className="space-y-2">
+                {blueprint.aesthetic?.map((aes, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <input
+                      value={aes}
+                      onChange={(e) => updateListField("aesthetic", i, e.target.value)}
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-200 focus:outline-none focus:border-emerald-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeListItem("aesthetic", i)}
+                      className="text-neutral-500 hover:text-red-400 text-xs p-1"
+                      aria-label="Remove aesthetic keyword"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {error && <p className="text-xs text-red-400">{error}</p>}

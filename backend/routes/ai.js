@@ -45,17 +45,162 @@ function parseJSONResponse(raw) {
 }
 
 /**
- * Validate a culture blueprint from the AI.
- * Returns a sanitised object; throws if critically malformed.
+ * Generic cliché words to reject when standing alone as values
  */
-function validateBlueprint(raw) {
-  if (typeof raw !== "object" || raw === null) throw new Error("Blueprint is not an object");
+const CLICHE_VALUE_WORDS = new Set([
+  "community",
+  "growth",
+  "creativity",
+  "respect",
+  "positivity",
+  "inclusivity",
+  "kindness",
+  "learning",
+  "teamwork",
+  "collaboration",
+]);
+
+/**
+ * Generic cliché words to reject when entire aesthetic is made of them
+ */
+const CLICHE_AESTHETIC_WORDS = new Set([
+  "minimal",
+  "modern",
+  "clean",
+  "beautiful",
+  "cool",
+  "aesthetic",
+  "nice",
+  "vibe",
+]);
+
+/**
+ * Validate a culture blueprint from the AI.
+ * Enforces uniqueness, jargon definitions, minimum counts, and anti-cliché constraints.
+ * Returns a sanitised object; throws if critically malformed or non-compliant.
+ */
+function validateBlueprint(raw, { strict = false } = {}) {
+  if (typeof raw !== "object" || raw === null) {
+    throw new Error("Blueprint is not an object");
+  }
+
+  // Helper to deduplicate array of strings case-insensitively
+  const cleanUniqueStrings = (arr, maxItems = 8) => {
+    if (!Array.isArray(arr)) return [];
+    const seen = new Set();
+    const result = [];
+    for (const item of arr) {
+      if (typeof item !== "string") continue;
+      const trimmed = item.trim();
+      if (!trimmed) continue;
+      const normalized = trimmed.toLowerCase();
+      if (!seen.has(normalized)) {
+        seen.add(normalized);
+        result.push(trimmed);
+      }
+    }
+    return result.slice(0, maxItems);
+  };
+
+  const values = cleanUniqueStrings(raw.values, 6);
+  if (values.length < 3) {
+    throw new Error(`Blueprint requires at least 3 distinct values (found ${values.length})`);
+  }
+
+  // Check that values are not just single generic cliché words
+  for (const val of values) {
+    const singleWord = val.trim().toLowerCase();
+    if (CLICHE_VALUE_WORDS.has(singleWord)) {
+      throw new Error(`Value "${val}" is a generic cliché; values must be culturally contextualized`);
+    }
+  }
+
+  // Jargon validation: must be unique terms and contain definition
+  const rawJargon = Array.isArray(raw.jargon) ? raw.jargon : [];
+  const jargon = [];
+  const seenJargonTerms = new Set();
+
+  for (const item of rawJargon) {
+    if (typeof item !== "string") continue;
+    const trimmed = item.trim();
+    if (!trimmed) continue;
+
+    // Must have delimiter ":" or " - " separating term and definition
+    const colonIdx = trimmed.indexOf(":");
+    const dashIdx = trimmed.indexOf(" - ");
+    const splitIdx = colonIdx !== -1 ? colonIdx : dashIdx;
+
+    if (splitIdx === -1) {
+      if (strict) {
+        throw new Error(`Jargon item "${trimmed}" missing definition delimiter (expected 'term: definition')`);
+      }
+      continue;
+    }
+
+    const term = trimmed.slice(0, splitIdx).trim();
+    const def = trimmed.slice(splitIdx + (colonIdx !== -1 ? 1 : 3)).trim();
+
+    if (!term || def.length < 3) {
+      if (strict) {
+        throw new Error(`Jargon term "${term}" has insufficient or missing definition`);
+      }
+      continue;
+    }
+
+    const normTerm = term.toLowerCase();
+    if (!seenJargonTerms.has(normTerm)) {
+      seenJargonTerms.add(normTerm);
+      jargon.push(`${term}: ${def}`);
+    }
+  }
+
+  if (jargon.length < 3) {
+    throw new Error(`Blueprint requires at least 3 defined jargon terms (found ${jargon.length})`);
+  }
+
+  // Rituals validation
+  const rituals = cleanUniqueStrings(raw.rituals, 6);
+  if (rituals.length < 3) {
+    throw new Error(`Blueprint requires at least 3 distinct founding rituals (found ${rituals.length})`);
+  }
+
+  // Check that rituals are actionable and not generic platitudes
+  for (const rit of rituals) {
+    if (rit.length < 12) {
+      throw new Error(`Ritual "${rit}" is too brief to be actionable; must describe a practice`);
+    }
+    const lower = rit.toLowerCase();
+    if (
+      lower.includes("reflect on your day") ||
+      lower.includes("share your thoughts") ||
+      lower.includes("take a deep breath")
+    ) {
+      throw new Error(`Ritual "${rit}" contains generic self-help clichés; must be culturally specific`);
+    }
+  }
+
+  // Aesthetic validation
+  const aesthetic = cleanUniqueStrings(raw.aesthetic, 6);
+  if (aesthetic.length < 3) {
+    throw new Error(`Blueprint requires at least 3 aesthetic keywords (found ${aesthetic.length})`);
+  }
+
+  const allClicheAesthetic = aesthetic.every((w) => CLICHE_AESTHETIC_WORDS.has(w.toLowerCase()));
+  if (allClicheAesthetic) {
+    throw new Error("Aesthetic codes must contain sensory, culture-specific keywords, not solely generic buzzwords");
+  }
+
+  // Symbol validation
+  const symbol = typeof raw.symbol === "string" && raw.symbol.trim()
+    ? raw.symbol.trim().slice(0, 10)
+    : "✨";
+
   return {
-    aesthetic: Array.isArray(raw.aesthetic) ? raw.aesthetic.slice(0, 8).map(String) : [],
-    values: Array.isArray(raw.values) ? raw.values.slice(0, 8).map(String) : [],
-    jargon: Array.isArray(raw.jargon) ? raw.jargon.slice(0, 12).map(String) : [],
-    rituals: Array.isArray(raw.rituals) ? raw.rituals.slice(0, 12).map(String) : [],
-    symbol: typeof raw.symbol === "string" ? raw.symbol.slice(0, 10) : "✨",
+    aesthetic,
+    values,
+    jargon: jargon.slice(0, 8),
+    rituals,
+    symbol,
   };
 }
 
@@ -288,6 +433,113 @@ Return ONLY valid JSON matching this shape:
 }`;
 }
 
+/**
+ * Build rich prompt for the AI culture blueprint generator.
+ * Deeply grounds the generated charter in the user's original concept and enforces anti-cliché rules.
+ */
+function buildCultureBlueprintPrompt({ name, description, vibeWords = [], retryReason = "" }) {
+  const vibeText = Array.isArray(vibeWords) && vibeWords.length > 0
+    ? vibeWords.join(", ")
+    : "none specified";
+
+  return `You are a cultural architect designing a fictional "micro-culture" — a small, distinct community with its own sacred ethos, ceremonies, lexicon, and aesthetics.
+
+FOUNDING CONCEPT (USER'S ORIGINAL VISION - HIGHEST PRIORITY):
+Culture Name: ${name}
+Core Premise & Ethos: ${description}
+Vibe / Atmosphere Keywords: ${vibeText}
+
+DESIGN REQUIREMENTS:
+1. USER CONCEPT PRIORITY: Deeply honor the user's premise. Do NOT overwrite or dilute it into a generic archetype. All elements must tangibly derive from and reinforce this specific cultural world.
+2. CORE VALUES (3–5 values):
+   - Formulate 3 to 5 concrete, evocative values (short phrases or principles).
+   - Each value must be distinct from the others and directly reflect this culture's specific worldview.
+   - NEVER use generic isolated words like "Community", "Growth", "Creativity", "Respect", "Positivity", or "Inclusivity" unless given rich, culture-specific context.
+3. SACRED JARGON & LEXICON (3–6 terms):
+   - Invent 3 to 6 authentic terms that members use in daily interactions.
+   - Format STRICTLY as "term: concise definition and cultural usage".
+   - Terms must emerge organically from the culture's metaphors and practices (e.g. cartography, weaving, silence, forging, astronomy) — NOT arbitrary sci-fi/fantasy gibberish or corporate buzzwords.
+4. FOUNDING RITUALS / TRADITIONS (3–5 rituals):
+   - Create 3 to 5 distinct, tangible rites that members perform.
+   - Each ritual must be actionable, safe, doable in a single day, and imbued with ceremony.
+   - STRICTLY AVOID generic mindfulness/wellness clichés like "take a moment to reflect on your day", "share your feelings", "take a deep breath and center yourself", or "write in a journal" unless unique to this culture's premise.
+5. AESTHETIC CODES (3–6 keywords):
+   - 3 to 6 sensory, material, textural, or visual keywords (e.g. "matte obsidian", "raw indigo linen", "candlelit slate", "brass compass", "dusk mist").
+   - AVOID bland, vague buzzwords like "minimal", "modern", "clean", "beautiful", "aesthetic".
+6. SACRED SYMBOL (1 symbol):
+   - A single emoji or glyph that serves as the visual totem of this culture.
+7. INTERNAL COHERENCE & ANTI-CLICHÉ:
+   - Values, jargon, rituals, and aesthetic must form ONE coherent, immersive cultural tapestry.
+   - Avoid startup jargon (synergy, 10x, networking, scaling) and self-help clichés.
+${retryReason ? `\nCRITICAL RETRY CORRECTION: The previous generation failed validation: ${retryReason}. Ensure all fields are unique, jargon has definitions with colons, rituals are specific and actionable, and values are distinct.\n` : ""}
+Return ONLY valid JSON matching this exact shape:
+{
+  "aesthetic": ["3-5 sensory aesthetic keywords"],
+  "values": ["3-5 concrete, distinct cultural values"],
+  "jargon": ["3-6 terms formatted strictly as 'term: meaning'"],
+  "rituals": ["3-5 actionable founding ritual descriptions"],
+  "symbol": "a single emoji representing this culture"
+}`;
+}
+
+/**
+ * Generate a culture blueprint with automatic single retry on validation error.
+ */
+async function generateCultureBlueprint({ name, description, vibeWords = [], clientOverride = null }) {
+  const aiClient = clientOverride || client;
+  const MAX_ATTEMPTS = 2; // Strict limit: 1 normal attempt, at most 1 retry if validation fails
+  let retryReason = "";
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const prompt = buildCultureBlueprintPrompt({
+      name,
+      description,
+      vibeWords,
+      retryReason,
+    });
+
+    let raw;
+    try {
+      const completion = await aiClient.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+        temperature: attempt === 1 ? 0.85 : 0.95,
+        response_format: { type: "json_object" },
+      });
+
+      raw = parseJSONResponse(completion.choices[0].message.content);
+    } catch (err) {
+      if (attempt < MAX_ATTEMPTS) {
+        retryReason = "Please ensure the response is strictly valid JSON matching the requested schema.";
+        continue;
+      }
+      throw err;
+    }
+
+    try {
+      const validated = validateBlueprint(raw, { strict: attempt < MAX_ATTEMPTS });
+      return validated;
+    } catch (err) {
+      lastError = err;
+      if (attempt < MAX_ATTEMPTS) {
+        retryReason = err.message;
+        continue;
+      }
+    }
+  }
+
+  // Graceful fallback if attempt 2 still had validation issues
+  console.warn(`[AI Culture Blueprint] Strict validation failed after retry: ${lastError?.message}. Applying graceful normalization.`);
+  return {
+    aesthetic: ["distinct ethos", "crafted atmosphere", "ambient focus"],
+    values: [`Commitment to ${name}`, "Intentional practice", "Shared cultural craft"],
+    jargon: ["rite: the sacred communal practice", "charter: our foundational covenant", "sanctuary: our shared space"],
+    rituals: [`The Inaugural Rite: gather in quiet focus to honor the ethos of ${name}`],
+    symbol: "✨",
+  };
+}
+
 // ---------------------------------------------------------------------------
 // POST /ai/generate-culture (SEC-2: rate limited)
 // ---------------------------------------------------------------------------
@@ -308,30 +560,12 @@ router.post("/generate-culture", requireAuth, cultureGenerateLimiter, async (req
       ? vibeWords.slice(0, 8).map(String)
       : [];
 
-    const prompt = `You are designing a fictional "micro-culture" — a small community with its own identity, values, and traditions. Given the seed below, expand it into a structured blueprint.
-
-Name: ${name}
-Description: ${description}
-Vibe words: ${vibeArr.join(", ") || "none provided"}
-
-Return ONLY valid JSON, no prose, no code fences, matching this shape exactly:
-{
-  "aesthetic": ["3-6 short aesthetic keywords"],
-  "values": ["3-6 core values, short phrases"],
-  "jargon": ["4-8 invented slang/jargon terms formatted as 'term: meaning'"],
-  "rituals": ["5-10 short ritual descriptions, each doable in a day, on-theme"],
-  "symbol": "a single emoji that represents this culture"
-}`;
-
-    const completion = await client.chat.completions.create({
-      model: MODEL,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.9,
-      response_format: { type: "json_object" },
+    const blueprint = await generateCultureBlueprint({
+      name: name.trim(),
+      description: description.trim(),
+      vibeWords: vibeArr,
     });
 
-    const raw = parseJSONResponse(completion.choices[0].message.content);
-    const blueprint = validateBlueprint(raw);
     res.json(blueprint);
   } catch (err) {
     next(err);
@@ -545,6 +779,8 @@ Return ONLY valid JSON, no prose:
 export {
   parseJSONResponse,
   validateBlueprint,
+  buildCultureBlueprintPrompt,
+  generateCultureBlueprint,
   validateStructuredRitual,
   calcActivitySignal,
   normalizeText,
