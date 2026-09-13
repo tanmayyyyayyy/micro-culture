@@ -80,7 +80,7 @@ export default function Dashboard() {
         {/* Stats Ribbon */}
         {stats && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 mt-6 pt-6 border-t border-white/5">
-            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80">
+            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 animate-slideUp stagger-1">
               <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
                 Joined Cultures
               </div>
@@ -89,7 +89,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80">
+            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 animate-slideUp stagger-2">
               <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
                 Founded by You
               </div>
@@ -98,7 +98,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className={`p-3.5 rounded-xl border ${bestStreak > 0 ? "bg-amber-950/20 border-amber-500/30" : "bg-neutral-900/60 border-neutral-800/80"}`}>
+            <div className={`p-3.5 rounded-xl border hover:border-opacity-60 transition-colors duration-200 animate-slideUp stagger-3 ${bestStreak > 0 ? "bg-amber-950/20 border-amber-500/30" : "bg-neutral-900/60 border-neutral-800/80"}`}>
               <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
                 Best Active Streak
               </div>
@@ -108,13 +108,13 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 flex flex-col justify-between">
+            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 flex flex-col justify-between animate-slideUp stagger-4">
               <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
                 Culture Memory Loop
               </div>
               <div className="text-xs text-emerald-400 font-medium flex items-center gap-1.5 mt-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Active & Listening
+                Active &amp; Listening
               </div>
             </div>
           </div>

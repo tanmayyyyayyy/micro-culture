@@ -23,7 +23,7 @@ export default function MicroCultureLogo({
     >
       {/* Orbital Monogram Icon */}
       <div
-        className={`relative ${currentSize.icon} flex-shrink-0 flex items-center justify-center transition-transform duration-300 group-hover:scale-105`}
+        className={`relative ${currentSize.icon} flex-shrink-0 flex items-center justify-center transition-transform duration-250 ease-out group-hover:scale-[1.04]`}
       >
         {/* Ambient Backlight Glow */}
         {glow && (
@@ -40,19 +40,19 @@ export default function MicroCultureLogo({
         >
           <defs>
             <radialGradient id={`mc-glow-${size}`} cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.35" />
-              <stop offset="60%" stop-color="#6366f1" stop-opacity="0.12" />
-              <stop offset="100%" stop-color="#6366f1" stop-opacity="0" />
+              <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.35" />
+              <stop offset="60%" stopColor="#6366f1" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
             </radialGradient>
             <linearGradient id={`mc-grad-${size}`} x1="15%" y1="15%" x2="85%" y2="85%">
-              <stop offset="0%" stop-color="#ffffff" />
-              <stop offset="45%" stop-color="#ddd6fe" />
-              <stop offset="100%" stop-color="#818cf8" />
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="45%" stopColor="#ddd6fe" />
+              <stop offset="100%" stopColor="#818cf8" />
             </linearGradient>
             <linearGradient id={`mc-arc-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#c4b5fd" />
-              <stop offset="60%" stop-color="#818cf8" />
-              <stop offset="100%" stop-color="#a78bfa" />
+              <stop offset="0%" stopColor="#c4b5fd" />
+              <stop offset="60%" stopColor="#818cf8" />
+              <stop offset="100%" stopColor="#a78bfa" />
             </linearGradient>
           </defs>
 
@@ -88,7 +88,7 @@ export default function MicroCultureLogo({
       {/* Wordmark */}
       {showWordmark && (
         <span
-          className={`font-bold tracking-tight text-white ${currentSize.text} select-none`}
+          className={`font-bold tracking-tight text-white ${currentSize.text} select-none transition-opacity duration-200 group-hover:opacity-100`}
         >
           Micro<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-300">Culture</span>
         </span>

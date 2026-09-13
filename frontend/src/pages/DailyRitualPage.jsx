@@ -239,14 +239,14 @@ export default function DailyRitualPage() {
 
         {/* Instructions */}
         {ritual.instructions?.length > 0 && (
-          <div className="mb-8 space-y-3">
+          <div className="space-y-3">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
               <span>Sacred Steps</span>
               <span className="text-[10px] text-neutral-500 font-normal">
                 (Click step to mark as completed)
               </span>
             </h3>
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {ritual.instructions.map((step, idx) => {
                 const isDone = !!completedSteps[idx];
                 return (
@@ -254,22 +254,22 @@ export default function DailyRitualPage() {
                     key={idx}
                     type="button"
                     onClick={() => toggleStep(idx)}
-                    className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 cursor-pointer ${
+                    className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 ease-out flex items-start gap-3 cursor-pointer group/step ${
                       isDone
-                        ? "bg-violet-950/20 border-violet-500/30 text-neutral-300"
-                        : "bg-neutral-900/50 border-neutral-800/80 text-neutral-200 hover:border-neutral-700"
+                        ? "bg-violet-950/25 border-violet-500/30 text-neutral-300"
+                        : "bg-neutral-900/50 border-neutral-800/70 text-neutral-200 hover:border-neutral-700 hover:bg-neutral-900/80"
                     }`}
                   >
                     <div
-                      className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold transition-all ${
+                      className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold transition-all duration-200 ease-out ${
                         isDone
-                          ? "bg-violet-600 border-violet-500 text-white shadow-sm"
-                          : "border-neutral-700 bg-neutral-800/60 text-transparent hover:border-neutral-500"
+                          ? "bg-violet-600 border-violet-500 text-white shadow-sm shadow-violet-500/20"
+                          : "border-neutral-700 bg-neutral-800/60 text-transparent group-hover/step:border-neutral-500"
                       }`}
                     >
                       ✓
                     </div>
-                    <span className={`text-sm leading-relaxed ${isDone ? "line-through text-neutral-400" : ""}`}>
+                    <span className={`text-sm leading-relaxed transition-colors duration-200 ${isDone ? "line-through text-neutral-500" : ""}`}>
                       {step}
                     </span>
                   </button>
@@ -310,7 +310,7 @@ export default function DailyRitualPage() {
                 onChange={(e) => setContent(e.target.value)}
                 maxLength={2000}
                 rows={4}
-                className="w-full px-4 py-3 bg-neutral-900/90 border border-neutral-700/80 rounded-xl text-neutral-100 placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all resize-none"
+                className="w-full px-4 py-3 bg-neutral-900/90 border border-neutral-700/60 rounded-xl text-neutral-100 placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/40 focus:bg-neutral-900 transition-all duration-200 resize-none leading-relaxed"
               />
 
               {error && <p className="text-xs text-red-400">{error}</p>}
@@ -332,8 +332,8 @@ export default function DailyRitualPage() {
               </div>
             </form>
           ) : (
-            <div className="relative p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-emerald-950/30 to-neutral-900/90 border border-emerald-500/30 text-center space-y-4 shadow-2xl shadow-emerald-500/10 animate-fadeIn">
-              <div className="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl mx-auto shadow-lg shadow-emerald-500/20">
+            <div className="relative p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-emerald-950/30 to-neutral-900/90 border border-emerald-500/25 text-center space-y-4 shadow-2xl shadow-emerald-500/10 animate-scaleIn">
+              <div className="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-400 text-2xl mx-auto shadow-lg shadow-emerald-500/10">
                 ✓
               </div>
               <div className="space-y-1">

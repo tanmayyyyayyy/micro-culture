@@ -69,7 +69,7 @@ export default function Explore() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search by name, values, or vibe..."
-              className="w-full pl-9 pr-4 py-2 rounded-full bg-neutral-900/90 border border-neutral-700/80 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              className="w-full pl-9 pr-4 py-2 rounded-full bg-neutral-900/90 border border-neutral-700/60 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/40 transition-all duration-200"
             />
             <svg
               className="w-4 h-4 text-neutral-500 absolute left-3.5 top-3 pointer-events-none"
@@ -102,10 +102,10 @@ export default function Explore() {
             key={filter}
             type="button"
             onClick={() => handleFilterClick(filter)}
-            className={`px-3 py-1 rounded-full uppercase text-[11px] tracking-wider font-semibold transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-full uppercase text-[11px] tracking-wider font-semibold transition-all duration-200 ease-out cursor-pointer ${
               activeFilter === filter
                 ? "bg-white text-neutral-950 shadow-sm"
-                : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700"
+                : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 hover:bg-neutral-800/80"
             }`}
           >
             {filter}

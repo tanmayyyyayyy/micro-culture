@@ -18,7 +18,65 @@
   }
 }
 
-/* Glassmorphic panels */
+/* ============================================================
+   PAGE & ELEMENT ENTRANCE ANIMATIONS
+   ============================================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInFast {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fadeInFast {
+  animation: fadeInFast 0.15s ease-out both;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Stagger helpers */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.10s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.20s; }
+
+/* ============================================================
+   GLASSMORPHIC PANELS
+   ============================================================ */
+
 .glass-panel {
   background: rgba(18, 20, 29, 0.7);
   backdrop-filter: blur(16px);
@@ -32,17 +90,29 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.07);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Use specific properties (not `all`) for better compositing perf */
+  transition: background 0.22s ease-out,
+              border-color 0.22s ease-out,
+              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s ease-out;
 }
 
 .glass-panel-interactive:hover {
   background: rgba(26, 29, 43, 0.8);
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.14);
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5),
+              0 0 20px -8px rgba(139, 92, 246, 0.18);
 }
 
-/* Subtle glowing accents */
+.glass-panel-interactive:active {
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   SUBTLE GLOWING ACCENTS
+   ============================================================ */
+
 .glow-purple {
   box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.3);
 }
@@ -54,6 +124,10 @@
 .glow-cyan {
   box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.3);
 }
+
+/* ============================================================
+   GRADIENT TEXT UTILITIES
+   ============================================================ */
 
 .text-gradient {
   background: linear-gradient(135deg, #ffffff 0%, #d1d5db 50%, #9ca3af 100%);
@@ -73,7 +147,10 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Custom scrollbars */
+/* ============================================================
+   CUSTOM SCROLLBARS
+   ============================================================ */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -89,14 +166,13 @@
   background: #3b4261;
 }
 
-/* Shimmer animation for loading states */
+/* ============================================================
+   LOADING / SHIMMER ANIMATIONS
+   ============================================================ */
+
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
 
 @keyframes progressFill {
@@ -105,12 +181,19 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.03) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.03) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
 
-/* Ambient backdrop gradient orbs */
+/* ============================================================
+   AMBIENT BACKGROUND ORBS
+   ============================================================ */
+
 .ambient-glow-orb {
   position: fixed;
   border-radius: 50%;
@@ -118,4 +201,27 @@
   pointer-events: none;
   z-index: 0;
   opacity: 0.18;
+}
+
+/* ============================================================
+   FOCUS RING — global polished focus treatment
+   ============================================================ */
+
+.focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
+}
+
+/* ============================================================
+   REDUCED MOTION — respect user preference
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
