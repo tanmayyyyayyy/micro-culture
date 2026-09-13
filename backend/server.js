@@ -10,10 +10,28 @@ import logRoutes from "./routes/logs.js";
 
 const app = express();
 
-const allowedOrigins = process.env.CLIENT_URL
-  ? [process.env.CLIENT_URL, "http://localhost:5173", "http://localhost:5174"]
-  : ["http://localhost:5173", "http://localhost:5174"];
-app.use(cors({ origin: allowedOrigins }));
+const configuredOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(",").map((url) => url.trim().replace(/\/$/, ""))
+  : [];
+const allowedOrigins = [
+  ...configuredOrigins,
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS policy violation"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.get("/health", (req, res) => res.json({ ok: true }));
@@ -26,7 +44,11 @@ app.use("/logs", logRoutes);
 // Centralized error handler
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(err.status || 500).json({ error: err.message || "Server error" });
+  const status = err.status || err.statusCode || 500;
+  const isProd = process.env.NODE_ENV === "production";
+  const errorMessage =
+    isProd && status === 500 ? "Internal server error" : err.message || "Server error";
+  res.status(status).json({ error: errorMessage });
 });
 
 const PORT = process.env.PORT || 5001;
