@@ -28,7 +28,7 @@ Micro Culture bridges persistent relational data with generative language models
 
 ```mermaid
 flowchart LR
-    A["Culture Identity\n(Charter, Values, Jargon)"] --> B["AI Ritual Engine\n(Groq / OpenAI)"]
+    A["Culture Identity\n(Charter, Values, Jargon)"] --> B["AI Ritual Engine\n(Groq API)"]
     B --> C["Daily Ritual\n(Instructions & Inquiry)"]
     C --> D["Member Reflection\n(Text & Confirmation)"]
     D --> E["RitualLog\n(MongoDB Ledger)"]
@@ -108,7 +108,7 @@ microculture/
 | **Frontend** | React 18, Vite, Tailwind CSS, React Router v6, Axios |
 | **Backend** | Node.js, Express 4, Mongoose 8, JSON Web Tokens (JWT), bcryptjs |
 | **Database** | MongoDB Atlas / Local MongoDB |
-| **AI Engine** | Groq SDK / OpenAI API (Structured JSON generation, fallback parsing) |
+| **AI Engine** | Groq API (Server-side AI calls, structured JSON output, defensive parsing) |
 | **Deployment** | Render (Web Service for Backend + Static Site for Frontend) |
 
 ---
@@ -118,12 +118,12 @@ microculture/
 ### Prerequisites
 - Node.js (v18 or higher)
 - Local MongoDB instance or MongoDB Atlas URI
-- Groq API key (or OpenAI API key)
+- Groq API key
 
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/tanmayyyyayyy/micro-culture.git
-cd microculture
+cd micro-culture
 ```
 
 ### 2. Configure Backend Environment
