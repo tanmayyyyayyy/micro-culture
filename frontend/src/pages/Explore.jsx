@@ -53,13 +53,13 @@ export default function Explore() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5">
         <div>
           <div className="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-1">
-            <span>✧</span> The Microverse
+            <span>✧</span> Discover
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            Explore Micro-Cultures
+            Explore Communities
           </h1>
           <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-md">
-            Discover active communities, browse their sacred charters, and participate in today&apos;s rituals.
+            Browse active communities, see what they&apos;re about, and join to take part in today&apos;s activity.
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export default function Explore() {
 
           <Link to="/create">
             <GlowButton variant="glow" size="md" className="w-full sm:w-auto">
-              + Found One
+              + Create Community
             </GlowButton>
           </Link>
         </div>
@@ -115,14 +115,14 @@ export default function Explore() {
 
       {/* Cultures Grid */}
       {loading ? (
-        <LoadingState message="Discovering cultural sanctuaries..." />
+        <LoadingState message="Loading communities..." />
       ) : error ? (
         <ErrorState message={error} onRetry={() => loadCultures(q, activeFilter)} />
       ) : cultures.length === 0 ? (
         <EmptyState
           icon="🔍"
-          title="No cultures match your query"
-          description="Try exploring another category or search term, or found a new micro-culture."
+          title="No communities match your search"
+          description="Try a different search term or filter, or create your own community."
           action={
             <div className="flex items-center gap-3">
               <GlowButton
@@ -138,7 +138,7 @@ export default function Explore() {
               </GlowButton>
               <Link to="/create">
                 <GlowButton size="sm" variant="glow">
-                  Found this Culture
+                  Create a Community
                 </GlowButton>
               </Link>
             </div>
@@ -150,7 +150,7 @@ export default function Explore() {
             <CultureCard
               key={c._id}
               culture={c}
-              actionText="View Charter"
+              actionText="View Community"
               actionLink={`/cultures/${c._id}`}
             />
           ))}

@@ -14,27 +14,27 @@ export default function Landing() {
         </div>
 
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium mb-2">
-          <span>✦</span> An AI-Powered Social Experiment
+          <span>✦</span> AI-powered communities
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
-          Where small communities{" "}
-          <span className="text-gradient-purple">evolve their own lore</span>
+          Where communities don&apos;t just gather —{" "}
+          <span className="text-gradient-purple">they grow together</span>
         </h1>
 
         <p className="text-base sm:text-lg text-neutral-300 max-w-xl mx-auto leading-relaxed">
-          Create fictional micro-cultures with sacred values, invented jargon, and an AI ritual engine that remembers every member&apos;s reflection.
+          Create or join a small community with its own interests, activities, and traditions. AI creates a unique daily activity based on what your community does together.
         </p>
 
         <div className="flex flex-wrap justify-center items-center gap-4 pt-4">
           <Link to="/signup">
             <GlowButton variant="glow" size="lg">
-              Found a Culture →
+              Create a Community →
             </GlowButton>
           </Link>
           <Link to="/explore">
             <GlowButton variant="secondary" size="lg">
-              Explore Living Cultures
+              Explore Communities
             </GlowButton>
           </Link>
         </div>
@@ -63,7 +63,7 @@ export default function Landing() {
           <div className="p-4 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-2 mb-4">
             <div className="flex items-center justify-between text-xs">
               <span className="text-violet-400 font-semibold uppercase tracking-wider text-[10px]">
-                Today&apos;s Rite: The Horizon Ledger
+                Today&apos;s Activity: The Horizon Ledger
               </span>
               <span className="text-neutral-500 font-mono">15 min · Easy</span>
             </div>
@@ -75,10 +75,10 @@ export default function Landing() {
           <div className="flex items-center justify-between text-xs text-neutral-400 pt-2 border-t border-white/5">
             <div className="flex items-center gap-1.5 text-violet-300">
               <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-              <span>Cultural Memory Loop Active</span>
+              <span>Community Memory Active</span>
             </div>
             <Link to="/explore" className="text-white hover:text-violet-300 underline font-medium">
-              Partake in cultures like this →
+              Join communities like this →
             </Link>
           </div>
         </GlassPanel>
@@ -88,10 +88,10 @@ export default function Landing() {
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold text-white tracking-tight">
-            The Living Culture Loop
+            How it works
           </h2>
           <p className="text-xs sm:text-sm text-neutral-400">
-            A continuous dialogue between collective human reflection and generative ritual.
+            Three simple steps to build a community that grows over time.
           </p>
         </div>
 
@@ -100,9 +100,9 @@ export default function Landing() {
             <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center font-bold">
               1
             </div>
-            <h3 className="font-semibold text-white text-base">The Charter</h3>
+            <h3 className="font-semibold text-white text-base">Create your community</h3>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Generate an AI blueprint with custom lexicon, sacred values, and community aesthetics.
+              Give your community a name, a purpose, and a vibe. AI builds out the values, traditions, and style.
             </p>
           </GlassPanel>
 
@@ -110,9 +110,9 @@ export default function Landing() {
             <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
               2
             </div>
-            <h3 className="font-semibold text-white text-base">Daily Rites</h3>
+            <h3 className="font-semibold text-white text-base">Do the daily activity</h3>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Every day brings a unique ritual tailored to the culture&apos;s momentum and traditions.
+              Every day, AI generates a short activity tailored to your community&apos;s interests and history.
             </p>
           </GlassPanel>
 
@@ -120,9 +120,9 @@ export default function Landing() {
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
               3
             </div>
-            <h3 className="font-semibold text-white text-base">Communal Memory</h3>
+            <h3 className="font-semibold text-white text-base">Build shared memory</h3>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Member reflections enter the culture&apos;s memory bank, teaching the AI how to adapt tomorrow&apos;s rites.
+              Your reflections are remembered. AI learns what your community enjoys and makes future activities better.
             </p>
           </GlassPanel>
         </div>

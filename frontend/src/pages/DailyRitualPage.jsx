@@ -47,8 +47,8 @@ export default function DailyRitualPage() {
     } catch (err) {
       setError(
         err.response?.status === 403
-          ? "You must be a member of this culture to partake in today's sacred ritual."
-          : err.response?.data?.error || "Failed to summon today's ritual."
+          ? "You must be a member of this community to access today's activity."
+          : err.response?.data?.error || "Failed to load today's activity."
       );
     } finally {
       setLoading(false);
@@ -105,8 +105,8 @@ export default function DailyRitualPage() {
     return (
       <div className="max-w-2xl mx-auto py-12">
         <LoadingState
-          message="Consulting the cultural memory..."
-          subtext="Synthesizing today's ritual from member lore and communal momentum."
+          message="Loading today's activity..."
+          subtext="AI is preparing your community's daily activity."
         />
       </div>
     );
@@ -116,7 +116,7 @@ export default function DailyRitualPage() {
     return (
       <div className="max-w-xl mx-auto py-12">
         <ErrorState
-          title="Rite Unavailable"
+          title="Activity Unavailable"
           message={error}
           onRetry={loadData}
         />
@@ -125,7 +125,7 @@ export default function DailyRitualPage() {
             to={`/cultures/${id}`}
             className="text-xs text-neutral-400 hover:text-white underline"
           >
-            ← Return to Culture Charter
+            ← Back to Community
           </Link>
         </div>
       </div>
@@ -135,7 +135,7 @@ export default function DailyRitualPage() {
   if (!ritual) {
     return (
       <div className="max-w-xl mx-auto py-12 text-center">
-        <p className="text-neutral-400">No ritual recorded for today.</p>
+        <p className="text-neutral-400">No activity recorded for today.</p>
         <Link to={`/cultures/${id}`} className="mt-4 inline-block text-xs text-violet-400 underline">
           Back to culture
         </Link>
@@ -168,7 +168,7 @@ export default function DailyRitualPage() {
               {culture?.name || "Culture"}
             </Link>
             <h2 className="text-sm font-semibold text-neutral-200">
-              Today&apos;s Communal Rite
+              Today&apos;s Activity
             </h2>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function DailyRitualPage() {
             to={`/cultures/${id}/feed`}
             className="text-xs px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 transition-all flex items-center gap-1.5"
           >
-            <span>📜</span> View Communal Feed
+            <span>📋</span> View Feed
           </Link>
         </div>
       </div>
@@ -190,7 +190,7 @@ export default function DailyRitualPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-violet-500/20 text-violet-300 border border-violet-500/30">
-              Today&apos;s Rite
+              Today&apos;s Activity
             </span>
             <span className="text-xs font-mono text-neutral-400">
               {ritual.date}
@@ -217,7 +217,7 @@ export default function DailyRitualPage() {
 
         {/* Title */}
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3 leading-snug">
-          {hasStructured ? ritual.title : "Today's Sacred Rite"}
+          {hasStructured ? ritual.title : "Today's Activity"}
         </h1>
 
         {/* Description */}
@@ -229,7 +229,7 @@ export default function DailyRitualPage() {
         {ritual.reason && (
           <div className="mb-8 p-4 rounded-xl bg-violet-950/25 border border-violet-500/25 relative">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-300 uppercase tracking-wider mb-1">
-              <span>✦</span> Why this rite? (Culture Memory)
+              <span>✦</span> Why this activity? (Community Memory)
             </div>
             <p className="text-xs sm:text-sm text-violet-200/90 leading-relaxed">
               {ritual.reason}
@@ -241,9 +241,9 @@ export default function DailyRitualPage() {
         {ritual.instructions?.length > 0 && (
           <div className="space-y-3">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
-              <span>Sacred Steps</span>
+              <span>Steps</span>
               <span className="text-[10px] text-neutral-500 font-normal">
-                (Click step to mark as completed)
+                (Click a step to mark it done)
               </span>
             </h3>
             <div className="space-y-2">
@@ -283,7 +283,7 @@ export default function DailyRitualPage() {
         {ritual.reflectionPrompt && (
           <div className="p-4 rounded-xl bg-neutral-900/90 border border-neutral-800 mb-8">
             <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-1">
-              Reflection Inquiry
+              Reflection
             </div>
             <p className="text-sm italic text-neutral-200 leading-relaxed">
               &ldquo;{ritual.reflectionPrompt}&rdquo;
@@ -297,7 +297,7 @@ export default function DailyRitualPage() {
             <form onSubmit={handlePostReflection} className="space-y-4">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-neutral-200">
-                  Seal today&apos;s rite in the culture&apos;s memory
+                  Share your reflection to save it in the community memory
                 </label>
                 <span className="text-xs text-neutral-500">
                   {content.length}/2000
@@ -305,7 +305,7 @@ export default function DailyRitualPage() {
               </div>
 
               <textarea
-                placeholder="Describe how you observed today's rite, what insights arose, or how it felt..."
+                placeholder="Describe how you did today's activity, what you noticed, or how it felt..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 maxLength={2000}
@@ -316,10 +316,10 @@ export default function DailyRitualPage() {
               {error && <p className="text-xs text-red-400">{error}</p>}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                <p className="text-[11px] text-neutral-500 flex items-center gap-1.5">
-                  <span className="text-violet-400">✦</span>
-                  Your reflection actively guides the AI in crafting future rites.
-                </p>
+                  <p className="text-[11px] text-neutral-500 flex items-center gap-1.5">
+                    <span className="text-violet-400">✦</span>
+                    Your reflection helps AI create better activities for your community.
+                  </p>
 
                 <GlowButton
                   type="submit"
@@ -327,7 +327,7 @@ export default function DailyRitualPage() {
                   loading={posting}
                   disabled={posting || !content.trim()}
                 >
-                  {posting ? "Sealing in Memory..." : "Complete & Consecrate"}
+                  {posting ? "Saving..." : "Complete Activity"}
                 </GlowButton>
               </div>
             </form>
@@ -338,14 +338,14 @@ export default function DailyRitualPage() {
               </div>
               <div className="space-y-1">
                 <div className="text-[10px] uppercase font-bold tracking-widest text-emerald-400">
-                  Sacred Reflection Consecrated
+                  Activity Complete
                 </div>
-                <h3 className="text-xl font-bold text-white tracking-tight">Rite Complete</h3>
+                <h3 className="text-xl font-bold text-white tracking-tight">Done!</h3>
                 <p className="text-sm text-emerald-300">
-                  Your reflection has become part of the culture&apos;s living memory.
+                  Your reflection has been saved to the community memory.
                 </p>
                 <p className="text-xs text-neutral-400 max-w-md mx-auto">
-                  The communal memory loop will incorporate your experience into upcoming daily rites.
+                  Your community&apos;s past activities help AI create better activities tomorrow.
                 </p>
               </div>
 
@@ -355,7 +355,7 @@ export default function DailyRitualPage() {
               <div className="flex justify-center gap-3 pt-2">
                 <Link to={`/cultures/${id}/feed`}>
                   <GlowButton size="sm" variant="glow">
-                    View in Culture Feed →
+                    View in Feed →
                   </GlowButton>
                 </Link>
                 <Link to="/dashboard">

@@ -68,7 +68,7 @@ export default function CultureFeed() {
               {culture?.name || "Culture Charter"}
             </Link>
             <h1 className="text-xl font-bold text-white">
-              Communal Memory Feed
+              Community Feed
             </h1>
           </div>
         </div>
@@ -79,11 +79,11 @@ export default function CultureFeed() {
             variant="secondary"
             onClick={() => setShowSummaryModal(true)}
           >
-            Weekly Chronicle
+            Weekly Summary
           </GlowButton>
           <Link to={`/cultures/${id}/ritual`}>
             <GlowButton size="sm" variant="glow">
-              Today&apos;s Rite →
+              Today&apos;s Activity →
             </GlowButton>
           </Link>
         </div>
@@ -95,10 +95,10 @@ export default function CultureFeed() {
           <span className="text-violet-400 text-lg">✦</span>
           <div>
             <h4 className="text-xs font-semibold text-violet-300">
-              Your Culture Remembers
+              Community Memory
             </h4>
             <p className="text-[11px] text-neutral-400">
-              Every reflection logged below is passed into the AI prompt memory context when tomorrow&apos;s daily rite is generated.
+              Every reflection logged here is used by AI when creating tomorrow&apos;s daily activity.
             </p>
           </div>
         </div>
@@ -110,20 +110,20 @@ export default function CultureFeed() {
       {/* Main Feed Content */}
       {loading ? (
         <LoadingState
-          message="Retrieving sacred chronicles..."
-          subtext="Loading member reflections from MongoDB"
+          message="Loading community feed..."
+          subtext="Fetching member reflections"
         />
       ) : error ? (
         <ErrorState message={error} onRetry={loadFeed} />
       ) : logs.length === 0 ? (
         <EmptyState
-          icon="🕯️"
-          title="No reflections recorded yet"
-          description="Be the first to partake in today's rite and leave a reflection for the culture's evolving memory."
+          icon="📘"
+          title="No reflections yet"
+          description="Be the first to complete today's activity and share your reflection."
           action={
             <Link to={`/cultures/${id}/ritual`}>
               <GlowButton variant="glow" size="md">
-                Partake in Today&apos;s Rite
+                Do Today&apos;s Activity
               </GlowButton>
             </Link>
           }
@@ -154,7 +154,7 @@ export default function CultureFeed() {
 
                   {log.ritualId?.title && (
                     <span className="text-[11px] px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-300 max-w-[200px] truncate">
-                      Rite: {log.ritualId.title}
+                      Activity: {log.ritualId.title}
                     </span>
                   )}
                 </div>
@@ -177,7 +177,7 @@ export default function CultureFeed() {
                 {/* Memory Badge */}
                 <div className="pl-11 pt-2 border-t border-white/5 flex items-center gap-2 text-[10px] text-neutral-500">
                   <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-                  <span>Enshrined in cultural memory</span>
+                  <span>Saved in community memory</span>
                 </div>
               </GlassPanel>
             );

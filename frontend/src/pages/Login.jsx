@@ -37,7 +37,7 @@ export default function Login() {
           </Link>
           <h1 className="text-2xl font-bold text-white tracking-tight">Welcome Back</h1>
           <p className="text-xs text-neutral-400">
-            Enter your credentials to return to your cultural sanctuary.
+            Enter your email and password to log in.
           </p>
         </div>
 
@@ -80,14 +80,14 @@ export default function Login() {
             disabled={loading || !email || !password}
             className="w-full mt-2"
           >
-            {loading ? "Authenticating..." : "Enter Sanctuary"}
+            {loading ? "Logging in..." : "Log In"}
           </GlowButton>
         </form>
 
         <p className="text-center text-xs text-neutral-500 pt-2 border-t border-white/5">
           New to Micro Culture?{" "}
           <Link to="/signup" className="text-violet-400 hover:text-violet-300 underline font-medium">
-            Found an account
+            Create an account
           </Link>
         </p>
       </GlassPanel>

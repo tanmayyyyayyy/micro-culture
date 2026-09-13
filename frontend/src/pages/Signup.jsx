@@ -40,20 +40,20 @@ export default function Signup() {
           <Link to="/" className="inline-block mb-1 hover:opacity-90 transition-opacity">
             <MicroCultureLogo size="lg" showWordmark={false} />
           </Link>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Join the Microverse</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Create your account</h1>
           <p className="text-xs text-neutral-400">
-            Create your member persona to participate in living cultural rites.
+            Sign up to join or create communities on Micro Culture.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
-              Member Persona / Name
+              Your Name
             </label>
             <input
               type="text"
-              placeholder="e.g., Aveline, The Chronicler"
+              placeholder="e.g., Alex, Sam, Jordan"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -100,12 +100,12 @@ export default function Signup() {
             disabled={loading || !name || !email || !password}
             className="w-full mt-2"
           >
-            {loading ? "Creating Account..." : "Found Member Persona"}
+            {loading ? "Creating Account..." : "Sign Up"}
           </GlowButton>
         </form>
 
         <p className="text-center text-xs text-neutral-500 pt-2 border-t border-white/5">
-          Already part of a culture?{" "}
+          Already have an account?{" "}
           <Link to="/login" className="text-violet-400 hover:text-violet-300 underline font-medium">
             Log in
           </Link>

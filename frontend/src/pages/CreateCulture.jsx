@@ -115,18 +115,18 @@ export default function CreateCulture() {
       {/* Header & Stepper */}
       <div className="text-center space-y-3">
         <h1 className="text-3xl font-bold tracking-tight text-white">
-          Found a Micro-Culture
+          Create a Community
         </h1>
         <p className="text-sm text-neutral-400 max-w-md mx-auto">
-          Shape the identity, values, and sacred lexicon of an evolving community powered by daily AI rites.
+          Give your community a name and vibe, then AI will build out its values, traditions, and daily activities.
         </p>
 
         {/* Stepper Indicators */}
         <div className="flex items-center justify-center gap-2 pt-2">
           {[
-            { num: 1, label: "Idea & Spark" },
-            { num: 2, label: "Aesthetic" },
-            { num: 3, label: "AI Blueprint & Review" },
+            { num: 1, label: "About your community" },
+            { num: 2, label: "Look & feel" },
+            { num: 3, label: "Review & create" },
           ].map((s) => (
             <div key={s.num} className="flex items-center gap-2">
               <div
@@ -157,16 +157,16 @@ export default function CreateCulture() {
       {currentStep === 1 && (
         <GlassPanel className="p-6 sm:p-8 space-y-6">
           <div className="space-y-1">
-            <h2 className="text-lg font-bold text-white">1. The Spark</h2>
+            <h2 className="text-lg font-bold text-white">1. About your community</h2>
             <p className="text-xs text-neutral-400">
-              What is the core premise of this micro-culture?
+              Give your community a name and description.
             </p>
           </div>
 
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
-                Culture Name *
+                Name *
               </label>
               <input
                 placeholder="e.g., Midnight Cartographers, The Solitary Forge, Neon Hermits"
@@ -179,11 +179,11 @@ export default function CreateCulture() {
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
-                Cultural Purpose & Description *
+                Description *
               </label>
               <textarea
                 rows={4}
-                placeholder="What do members believe, practice, or seek? Give a vivid picture of this culture's ethos..."
+                placeholder="What do members enjoy, believe, or practice? Describe the vibe..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 maxLength={800}
@@ -193,7 +193,7 @@ export default function CreateCulture() {
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
-                Vibe Keywords
+                Vibe keywords
               </label>
               <input
                 placeholder="e.g., quiet, architectural, starlit, introspective (comma separated)"
@@ -215,7 +215,7 @@ export default function CreateCulture() {
                 setCurrentStep(2);
               }}
             >
-              Continue to Aesthetic →
+              Continue →
             </GlowButton>
           </div>
         </GlassPanel>
@@ -225,15 +225,15 @@ export default function CreateCulture() {
       {currentStep === 2 && (
         <GlassPanel className="p-6 sm:p-8 space-y-6">
           <div className="space-y-1">
-            <h2 className="text-lg font-bold text-white">2. Symbol & Visual Ethos</h2>
+            <h2 className="text-lg font-bold text-white">2. Look &amp; Feel</h2>
             <p className="text-xs text-neutral-400">
-              Select the sacred emblem and color motif representing your community.
+              Pick an emoji and color to represent your community.
             </p>
           </div>
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-2">
-              Sacred Symbol
+              Symbol
             </label>
             <div className="flex flex-wrap gap-2.5 mb-3">
               {SYMBOL_PRESETS.map((s) => (
@@ -261,7 +261,7 @@ export default function CreateCulture() {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-2">
-              Color Hue Accent
+              Color
             </label>
             <div className="flex items-center gap-3">
               <input
@@ -285,7 +285,7 @@ export default function CreateCulture() {
               loading={generating}
               onClick={handleGenerateBlueprint}
             >
-              {generating ? "Synthesizing AI Blueprint..." : "Generate AI Blueprint →"}
+              {generating ? "Generating..." : "Generate community →"}
             </GlowButton>
           </div>
         </GlassPanel>
@@ -299,10 +299,10 @@ export default function CreateCulture() {
               <span>✧</span> Blueprint Ready
             </div>
             <h2 className="text-xl font-bold text-white">
-              Review & Fine-Tune Your Charter
+              Review &amp; Edit
             </h2>
             <p className="text-xs text-neutral-400">
-              The AI formulated this cultural blueprint based on your seed. Edit any value, jargon term, or ritual before publication.
+              AI has built out your community. Edit any value, tradition, or word before creating it.
             </p>
           </div>
 
@@ -312,7 +312,7 @@ export default function CreateCulture() {
             <div className="pt-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-violet-300">
-                  Core Values ({blueprint.values?.length || 0})
+                  Values ({blueprint.values?.length || 0})
                 </h3>
                 <button
                   type="button"
@@ -347,14 +347,14 @@ export default function CreateCulture() {
             <div className="pt-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-cyan-300">
-                  Sacred Jargon & Lexicon ({blueprint.jargon?.length || 0})
+                  Community Words ({blueprint.jargon?.length || 0})
                 </h3>
                 <button
                   type="button"
                   onClick={() => addListItem("jargon", "Term: Meaning")}
                   className="text-xs text-cyan-400 hover:text-cyan-300"
                 >
-                  + Add Jargon
+                  + Add Word
                 </button>
               </div>
               <div className="space-y-2">
@@ -382,14 +382,14 @@ export default function CreateCulture() {
             <div className="pt-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-300">
-                  Starter Ritual Archetypes ({blueprint.rituals?.length || 0})
+                  Activity Archetypes ({blueprint.rituals?.length || 0})
                 </h3>
                 <button
                   type="button"
                   onClick={() => addListItem("rituals", "New ritual archetype")}
                   className="text-xs text-amber-400 hover:text-amber-300"
                 >
-                  + Add Ritual
+                  + Add Activity
                 </button>
               </div>
               <div className="space-y-2">
@@ -461,7 +461,7 @@ export default function CreateCulture() {
               loading={publishing}
               onClick={handlePublishCulture}
             >
-              {publishing ? "Consecrating Culture..." : "Consecrate & Publish Culture ✦"}
+              {publishing ? "Creating..." : "Create Community ✦"}
             </GlowButton>
           </div>
         </GlassPanel>

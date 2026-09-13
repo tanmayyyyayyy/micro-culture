@@ -98,7 +98,7 @@ export default function CultureDetail() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto py-16">
-        <LoadingState message="Unrolling the cultural charter..." />
+        <LoadingState message="Loading community..." />
       </div>
     );
   }
@@ -170,12 +170,12 @@ export default function CultureDetail() {
               <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
                 <Link to={`/cultures/${id}/ritual`} className="w-full sm:w-auto">
                   <GlowButton variant="glow" size="md" className="w-full sm:w-auto">
-                    Today&apos;s Ritual →
+                    Today&apos;s Activity →
                   </GlowButton>
                 </Link>
                 <Link to={`/cultures/${id}/feed`} className="w-full sm:w-auto">
                   <GlowButton variant="secondary" size="md" className="w-full sm:w-auto">
-                    Communal Feed
+                    Community Feed
                   </GlowButton>
                 </Link>
               </div>
@@ -222,7 +222,7 @@ export default function CultureDetail() {
                 onClick={() => setShowSummaryModal(true)}
                 className="inline-flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors"
               >
-                <span>📜</span> View Weekly Chronicle
+                <span>📜</span> Weekly Summary
               </button>
               {isCreator && (
                 <button
@@ -230,7 +230,7 @@ export default function CultureDetail() {
                   onClick={() => setShowEditModal(true)}
                   className="text-neutral-400 hover:text-white transition-colors"
                 >
-                  ✎ Edit Charter
+                  ✎ Edit Community
                 </button>
               )}
             </div>
@@ -255,10 +255,10 @@ export default function CultureDetail() {
         <GlassPanel className="p-6 bg-violet-950/20 border-violet-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-1 text-center sm:text-left">
             <h3 className="text-sm font-semibold text-violet-300">
-              What happens when you join this micro-culture?
+              What happens when you join?
             </h3>
             <p className="text-xs text-neutral-400 max-w-xl">
-              You participate in daily rituals, adopt the sacred jargon, log your reflections into the communal memory, and teach the AI engine how to evolve the culture.
+              You join the daily activity, share reflections, and help shape what the community does next. AI learns from everyone&apos;s contributions.
             </p>
           </div>
           {user ? (
@@ -268,7 +268,7 @@ export default function CultureDetail() {
           ) : (
             <Link to="/signup">
               <GlowButton size="sm" variant="glow">
-                Sign Up to Partake
+                Sign Up
               </GlowButton>
             </Link>
           )}
@@ -286,7 +286,7 @@ export default function CultureDetail() {
         <GlassPanel className="p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span>✦</span> Sacred Values
+              <span>✦</span> Values
             </div>
             <ul className="space-y-2.5 text-sm">
               {culture.values?.length > 0 ? (
@@ -307,7 +307,7 @@ export default function CultureDetail() {
         <GlassPanel className="p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-cyan-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span>✧</span> Aesthetic Codes
+              <span>✧</span> Vibe
             </div>
             <ul className="space-y-2.5 text-sm">
               {culture.aesthetic?.length > 0 ? (
@@ -328,14 +328,14 @@ export default function CultureDetail() {
         <GlassPanel className="p-6 flex flex-col justify-between bg-neutral-900/60 border-amber-500/20">
           <div>
             <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span>★</span> Culture Memory Engine
+              <span>★</span> Memory
             </div>
             <p className="text-xs text-neutral-300 leading-relaxed mb-4">
-              Every ritual log submitted by members is ingested into the AI prompt memory loop to tailor tomorrow&apos;s rite.
+              Your activity logs are used by AI to create better daily activities for your community.
             </p>
             <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 text-xs text-amber-200/90 flex items-center gap-2">
               <span className="animate-pulse">●</span>
-              <span>Memory Loop Active & Evolving</span>
+              <span>Memory Active &amp; Evolving</span>
             </div>
           </div>
         </GlassPanel>
@@ -346,10 +346,10 @@ export default function CultureDetail() {
         <GlassPanel className="p-6 sm:p-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-              <span>📖</span> Cultural Lexicon & Sacred Jargon
+              <span>📖</span> Community Words
             </h2>
             <span className="text-xs text-neutral-500">
-              {culture.jargon.length} terms cataloged
+              {culture.jargon.length} terms
             </span>
           </div>
           <div className="grid sm:grid-cols-2 gap-3.5">
@@ -379,7 +379,7 @@ export default function CultureDetail() {
       {culture.activeRituals?.length > 0 && (
         <GlassPanel className="p-6 sm:p-8">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 mb-4 flex items-center gap-2">
-            <span>🕯</span> Active Traditional Rites
+            <span>🕯</span> Traditions
           </h2>
           <div className="space-y-2.5">
             {culture.activeRituals.map((r) => (
@@ -415,7 +415,7 @@ export default function CultureDetail() {
             className="max-w-md w-full max-h-[85vh] overflow-y-auto p-6 bg-neutral-900 border-white/10"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-lg font-bold text-white mb-4">Edit Culture Charter</h2>
+            <h2 className="text-lg font-bold text-white mb-4">Edit Community</h2>
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-neutral-400 mb-1">

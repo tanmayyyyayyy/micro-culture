@@ -52,13 +52,13 @@ export default function Dashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-1">
-              <span>✦</span> Communal Sanctuary
+              <span>✦</span> Your Dashboard
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              Welcome back, {user?.name || "Seeker"}
+              Welcome back, {user?.name || "there"}
             </h1>
             <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-lg">
-              Here are the living cultures you partake in. Check in on today&apos;s sacred rites and leave reflections in the cultural memory.
+              Here are the communities you&apos;re part of. Do today&apos;s activity and add your reflection to the community memory.
             </p>
           </div>
 
@@ -110,7 +110,7 @@ export default function Dashboard() {
 
             <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 flex flex-col justify-between animate-slideUp stagger-4">
               <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
-                Culture Memory Loop
+                Community Memory
               </div>
               <div className="text-xs text-emerald-400 font-medium flex items-center gap-1.5 mt-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -133,24 +133,24 @@ export default function Dashboard() {
         </div>
 
         {loading ? (
-          <LoadingState message="Loading your cultural sanctuaries..." />
+          <LoadingState message="Loading your communities..." />
         ) : error ? (
           <ErrorState message={error} onRetry={loadDashboard} />
         ) : cultures.length === 0 ? (
           <EmptyState
             icon="🌌"
-            title="You haven't joined any cultures yet"
-            description="The world is full of small, evolving cultures. Discover one that speaks to your values or found your own."
+            title="You haven't joined any communities yet"
+            description="Browse communities to find one that interests you, or create your own."
             action={
               <div className="flex items-center gap-3">
                 <Link to="/explore">
                   <GlowButton variant="glow" size="md">
-                    Explore Existing Cultures
+                    Explore Communities
                   </GlowButton>
                 </Link>
                 <Link to="/create">
                   <GlowButton variant="secondary" size="md">
-                    Create Culture
+                    Create Community
                   </GlowButton>
                 </Link>
               </div>
@@ -163,7 +163,7 @@ export default function Dashboard() {
                 key={c._id}
                 culture={c}
                 isMember={true}
-                actionText="Today's Rite"
+                actionText="Today's Activity"
                 actionLink={`/cultures/${c._id}/ritual`}
               />
             ))}
