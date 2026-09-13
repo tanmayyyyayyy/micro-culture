@@ -31,6 +31,19 @@ export default function DailyRitualPage() {
       ]);
       setCulture(cultureRes.data);
       setRitual(ritualRes.data);
+
+      // Check if the user already completed today's ritual (prevents stale
+      // form showing after page refresh when the user already submitted)
+      if (ritualRes.data?._id && cultureRes.data?.participation?.lastCompletedAt) {
+        const lastDate = new Date(cultureRes.data.participation.lastCompletedAt)
+          .toISOString()
+          .slice(0, 10);
+        const today = new Date().toISOString().slice(0, 10);
+        if (lastDate === today) {
+          setCompleted(true);
+          setParticipation(cultureRes.data.participation);
+        }
+      }
     } catch (err) {
       setError(
         err.response?.status === 403
@@ -73,7 +86,16 @@ export default function DailyRitualPage() {
         if (data.participation) setParticipation(data.participation);
       } catch (_) { /* streak is bonus info — don't block completion UI */ }
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to consecrate your reflection.");
+      // 409 = already completed today — treat as success, not error
+      if (err.response?.status === 409) {
+        setCompleted(true);
+        try {
+          const { data } = await api.get(`/cultures/${id}`);
+          if (data.participation) setParticipation(data.participation);
+        } catch (_) { /* best effort */ }
+      } else {
+        setError(err.response?.data?.error || "Failed to consecrate your reflection.");
+      }
     } finally {
       setPosting(false);
     }

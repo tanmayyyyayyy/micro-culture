@@ -54,6 +54,27 @@ router.post("/", requireAuth, async (req, res, next) => {
       validatedRitualId = ritual._id;
     }
 
+    // --- Duplicate completion guard ---
+    // Prevent the same user from submitting multiple logs for the same ritual,
+    // or multiple logs for the same culture on the same calendar day.
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+    const todayEnd = new Date(todayStart);
+    todayEnd.setUTCDate(todayEnd.getUTCDate() + 1);
+
+    const dupQuery = {
+      userId: req.userId,
+      cultureId,
+      createdAt: { $gte: todayStart, $lt: todayEnd },
+    };
+    if (validatedRitualId) {
+      dupQuery.ritualId = validatedRitualId;
+    }
+    const existingLog = await RitualLog.findOne(dupQuery);
+    if (existingLog) {
+      return res.status(409).json({ error: "You have already completed this ritual today" });
+    }
+
     const log = await RitualLog.create({
       userId: req.userId,
       cultureId,
