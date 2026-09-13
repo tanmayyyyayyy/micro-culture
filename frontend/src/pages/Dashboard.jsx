@@ -114,7 +114,7 @@ export default function Dashboard() {
               </div>
               <div className="text-xs text-emerald-400 font-medium flex items-center gap-1.5 mt-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Active &amp; Listening
+                Active &amp; Adapting
               </div>
             </div>
           </div>

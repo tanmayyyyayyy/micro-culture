@@ -113,45 +113,55 @@ export default function Landing() {
         </GlassPanel>
       </div>
 
-      {/* AI Explanation / Simple Living Cycle */}
-      <div className="max-w-3xl mx-auto space-y-6 text-center">
+      {/* AI Community Memory Loop */}
+      <div className="max-w-4xl mx-auto space-y-6 text-center">
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-white tracking-tight">
-            Your community gets smarter over time
+            How your community grows
           </h2>
           <p className="text-xs sm:text-sm text-neutral-400 max-w-xl mx-auto leading-relaxed">
-            AI looks at your community&apos;s past activities and participation to create new activities that fit the group.
+            Every daily activity and member reflection shapes future activities, helping the community evolve naturally over time.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-4 text-left">
-          <GlassPanel className="p-5 space-y-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 text-left">
+          <GlassPanel className="p-4 sm:p-5 space-y-2">
             <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center font-bold text-sm">
               1
             </div>
-            <h3 className="font-semibold text-white text-sm">Create or join</h3>
+            <h3 className="font-semibold text-white text-sm">Do an activity</h3>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Start a community for your niche interest, or browse active groups.
+              Short, meaningful activities created specifically for your community&apos;s niche.
             </p>
           </GlassPanel>
 
-          <GlassPanel className="p-5 space-y-2">
+          <GlassPanel className="p-4 sm:p-5 space-y-2">
             <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm">
               2
             </div>
-            <h3 className="font-semibold text-white text-sm">Participate daily</h3>
+            <h3 className="font-semibold text-white text-sm">Share what you learned</h3>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Do short, meaningful activities and share a one-line reflection.
+              Post a brief reflection on what you noticed, felt, or discovered.
             </p>
           </GlassPanel>
 
-          <GlassPanel className="p-5 space-y-2">
+          <GlassPanel className="p-4 sm:p-5 space-y-2">
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">
               3
             </div>
-            <h3 className="font-semibold text-white text-sm">AI adapts</h3>
+            <h3 className="font-semibold text-white text-sm">Your community remembers</h3>
             <p className="text-xs text-neutral-400 leading-relaxed">
-              Every reflection teaches AI what your community loves, improving future activities.
+              Member reflections are saved to form your community&apos;s living memory.
+            </p>
+          </GlassPanel>
+
+          <GlassPanel className="p-4 sm:p-5 space-y-2">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
+              4
+            </div>
+            <h3 className="font-semibold text-white text-sm">AI uses that memory</h3>
+            <p className="text-xs text-neutral-400 leading-relaxed">
+              Future activities adapt over time based on what your community has experienced.
             </p>
           </GlassPanel>
         </div>

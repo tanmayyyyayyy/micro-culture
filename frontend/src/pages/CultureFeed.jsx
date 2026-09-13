@@ -91,20 +91,25 @@ export default function CultureFeed() {
       </div>
 
       {/* Memory Signal Callout */}
-      <GlassPanel className="p-4 bg-violet-950/20 border-violet-500/20 flex items-center justify-between gap-4">
+      <GlassPanel className="p-4 bg-violet-950/20 border-violet-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="text-violet-400 text-lg">✦</span>
+          <span className="text-violet-400 text-lg shrink-0">✦</span>
           <div>
-            <h4 className="text-xs font-semibold text-violet-300">
-              Community Memory
-            </h4>
-            <p className="text-[11px] text-neutral-400">
-              Every reflection logged here is used by AI when creating tomorrow&apos;s daily activity.
+            <div className="flex items-center gap-2">
+              <h4 className="text-xs font-semibold text-violet-300">
+                Community Memory
+              </h4>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+                Active
+              </span>
+            </div>
+            <p className="text-[11px] text-neutral-300 mt-0.5 leading-relaxed">
+              Every reflection shared here is saved to the community memory and used by AI when creating future activities.
             </p>
           </div>
         </div>
-        <span className="text-xs font-mono text-neutral-400 flex-shrink-0">
-          {logs.length} logs
+        <span className="text-xs font-mono text-neutral-400 shrink-0 self-start sm:self-auto px-2.5 py-1 rounded-md bg-neutral-900/80 border border-neutral-800">
+          {logs.length} {logs.length === 1 ? "reflection" : "reflections"} saved
         </span>
       </GlassPanel>
 

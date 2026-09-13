@@ -200,7 +200,11 @@ export default function DailyRitualPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-xs flex-wrap">
+            <span className="px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/25 text-violet-300 text-[11px] font-medium flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+              Community memory: Active
+            </span>
             <span className="text-xs font-mono text-neutral-500">
               {ritual.date}
             </span>
@@ -236,17 +240,20 @@ export default function DailyRitualPage() {
           </p>
         </div>
 
-        {/* Why this activity? (AI Memory) */}
-        {ritual.reason && (
-          <div className="mb-8 p-4 rounded-xl bg-violet-950/25 border border-violet-500/25 relative">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-300 uppercase tracking-wider mb-1">
-              <span>✦</span> Why this activity? (AI Memory)
+        {/* Why this activity? (AI Community Memory) */}
+        <div className="mb-8 p-4 rounded-xl bg-violet-950/25 border border-violet-500/25 relative">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-300 uppercase tracking-wider">
+              <span>✦</span> Why this activity?
             </div>
-            <p className="text-xs sm:text-sm text-violet-200/90 leading-relaxed">
-              {ritual.reason}
-            </p>
+            <span className="text-[10px] text-violet-300/80 font-medium px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20">
+              Building on recent activities
+            </span>
           </div>
-        )}
+          <p className="text-xs sm:text-sm text-violet-200/90 leading-relaxed">
+            {ritual.reason || `Created for ${culture?.name || "this community"} based on its core values and recent participation.`}
+          </p>
+        </div>
 
         {/* Instructions */}
         {ritual.instructions?.length > 0 && (
@@ -306,13 +313,18 @@ export default function DailyRitualPage() {
         <div className="pt-6 border-t border-white/10">
           {!completed ? (
             <form onSubmit={handlePostReflection} className="space-y-4">
-              <div className="flex items-start justify-between gap-2">
-                <label className="block text-xs sm:text-sm font-medium text-neutral-200 flex-1">
-                  Share your reflection to save it in the community memory
-                </label>
-                <span className="text-xs text-neutral-500 flex-shrink-0 pt-0.5 font-mono">
-                  {content.length}/2000
-                </span>
+              <div className="space-y-1">
+                <div className="flex items-start justify-between gap-2">
+                  <label className="block text-xs sm:text-sm font-medium text-neutral-200 flex-1">
+                    Your reflection helps your community grow
+                  </label>
+                  <span className="text-xs text-neutral-500 flex-shrink-0 pt-0.5 font-mono">
+                    {content.length}/2000
+                  </span>
+                </div>
+                <p className="text-[11px] text-neutral-400">
+                  Share what you noticed, how you did the activity, or what you learned. It will be saved in your community&apos;s shared memory.
+                </p>
               </div>
 
               <textarea
@@ -327,9 +339,9 @@ export default function DailyRitualPage() {
               {error && <p className="text-xs text-red-400">{error}</p>}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                <p className="text-[11px] text-neutral-500 flex items-center gap-1.5">
+                <p className="text-[11px] text-neutral-400 flex items-center gap-1.5">
                   <span className="text-violet-400">✦</span>
-                  Your reflection helps AI create better activities for your community.
+                  Your reflection will help shape future activities.
                 </p>
 
                 <GlowButton
@@ -339,7 +351,7 @@ export default function DailyRitualPage() {
                   disabled={posting || !content.trim()}
                   className="w-full sm:w-auto justify-center min-h-[44px]"
                 >
-                  {posting ? "Saving..." : "Complete Activity"}
+                  {posting ? "Saving to Memory..." : "Complete Activity"}
                 </GlowButton>
               </div>
             </form>
@@ -348,17 +360,25 @@ export default function DailyRitualPage() {
               <div className="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-400 text-2xl mx-auto shadow-lg shadow-emerald-500/10">
                 ✓
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <div className="text-[10px] uppercase font-bold tracking-widest text-emerald-400">
-                  Activity Complete
+                  Activity complete ✓
                 </div>
-                <h3 className="text-xl font-bold text-white tracking-tight">Done!</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  Saved to your community&apos;s memory.
+                </h3>
                 <p className="text-sm text-emerald-300">
-                  Your reflection has been saved to the community memory.
+                  Your reflection will help shape future activities.
                 </p>
-                <p className="text-xs text-neutral-400 max-w-md mx-auto">
-                  Your community&apos;s past activities help AI create better activities tomorrow.
-                </p>
+              </div>
+
+              {/* Reflection → Memory → Future Activities loop */}
+              <div className="py-2.5 px-4 rounded-xl bg-neutral-900/80 border border-emerald-500/20 max-w-md mx-auto flex items-center justify-center gap-2 text-xs text-neutral-300 flex-wrap">
+                <span className="font-semibold text-emerald-300">Reflection</span>
+                <span className="text-neutral-500">→</span>
+                <span className="font-semibold text-violet-300">Community Memory</span>
+                <span className="text-neutral-500">→</span>
+                <span className="font-semibold text-cyan-300">Future Activities</span>
               </div>
 
               {/* Streak + Recognition banner */}
@@ -370,9 +390,14 @@ export default function DailyRitualPage() {
                     View in Feed →
                   </GlowButton>
                 </Link>
+                <Link to={`/cultures/${id}`} className="w-full sm:w-auto">
+                  <GlowButton size="md" variant="secondary" className="w-full sm:w-auto justify-center min-h-[44px]">
+                    Back to Community
+                  </GlowButton>
+                </Link>
                 <Link to="/dashboard" className="w-full sm:w-auto">
                   <GlowButton size="md" variant="secondary" className="w-full sm:w-auto justify-center min-h-[44px]">
-                    Back to Dashboard
+                    Dashboard
                   </GlowButton>
                 </Link>
               </div>

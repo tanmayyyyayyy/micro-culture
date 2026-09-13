@@ -22,17 +22,28 @@ export default function CultureDetail() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editDesc, setEditDesc] = useState("");
   const [editSymbol, setEditSymbol] = useState("");
+  const [logs, setLogs] = useState([]);
 
   async function loadCulture() {
     setLoading(true);
     setError("");
     try {
-      const { data } = await api.get(`/cultures/${id}`);
-      setCulture(data);
-      setEditDesc(data.description || "");
-      setEditSymbol(data.symbol || "✨");
+      const [cultureRes, logsRes] = await Promise.allSettled([
+        api.get(`/cultures/${id}`),
+        api.get(`/logs/${id}`),
+      ]);
+      if (cultureRes.status === "fulfilled") {
+        setCulture(cultureRes.value.data);
+        setEditDesc(cultureRes.value.data.description || "");
+        setEditSymbol(cultureRes.value.data.symbol || "✨");
+      } else {
+        throw cultureRes.reason;
+      }
+      if (logsRes.status === "fulfilled" && Array.isArray(logsRes.value.data)) {
+        setLogs(logsRes.value.data);
+      }
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to load culture charter.");
+      setError(err.response?.data?.error || "Failed to load community details.");
     } finally {
       setLoading(false);
     }
@@ -124,6 +135,16 @@ export default function CultureDetail() {
         .replace(/(\d+)\s+rites\s+this\s+week/i, "$1 activities this week")
         .replace(/(\d+)\s+rite\s+this\s+week/i, "$1 activity this week")
     : null;
+
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const weekLogs = logs.filter((l) => l.createdAt && new Date(l.createdAt) >= sevenDaysAgo);
+  const participatingMembersCount = new Set(
+    logs
+      .map((l) => (typeof l.userId === "object" ? l.userId?._id : l.userId))
+      .filter(Boolean)
+  ).size;
+  const totalCompletedCount = culture.progression?.completedRituals ?? logs.length;
+  const latestLog = logs[0] || null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fadeIn">
@@ -286,6 +307,105 @@ export default function CultureDetail() {
         <ProgressionPanel progression={culture.progression} />
       )}
 
+      {/* Community Memory Section */}
+      <GlassPanel className="p-5 sm:p-8 space-y-5 bg-gradient-to-br from-neutral-900/90 via-neutral-900/60 to-violet-950/20 border-violet-500/20 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-amber-400 text-sm">✦</span>
+              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                Community Memory
+              </h2>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 uppercase font-bold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-neutral-300">
+              Activities and reflections from members help shape what this community does next.
+            </p>
+          </div>
+
+          <Link to={`/cultures/${id}/feed`} className="self-start sm:self-auto">
+            <span className="text-xs text-violet-400 hover:text-violet-300 font-medium underline py-1 inline-block">
+              View Community Feed →
+            </span>
+          </Link>
+        </div>
+
+        {/* Real Data Metrics */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="p-3.5 rounded-xl bg-neutral-900/70 border border-neutral-800">
+            <div className="text-lg sm:text-xl font-bold text-white">
+              {weekLogs.length > 0 ? `${weekLogs.length} this week` : `${totalCompletedCount} total`}
+            </div>
+            <div className="text-[11px] text-neutral-400 mt-0.5">
+              Activities completed
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-neutral-900/70 border border-neutral-800">
+            <div className="text-lg sm:text-xl font-bold text-violet-400">
+              {participatingMembersCount > 0 ? participatingMembersCount : (culture.members?.length || 0)}
+            </div>
+            <div className="text-[11px] text-neutral-400 mt-0.5">
+              {participatingMembersCount > 0 ? "Members participated" : "Members joined"}
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-neutral-900/70 border border-neutral-800 col-span-2 sm:col-span-1">
+            <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
+              <span>●</span> Memory Loop Active
+            </div>
+            <div className="text-[11px] text-neutral-400 mt-1 leading-snug">
+              Recent reflections are shaping future activities
+            </div>
+          </div>
+        </div>
+
+        {/* Real latest reflection snippet if available */}
+        {latestLog && (
+          <div className="p-3.5 rounded-xl bg-violet-950/25 border border-violet-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase font-bold tracking-wider text-violet-400 mb-0.5">
+                Recent Member Reflection
+              </div>
+              <p className="text-xs text-neutral-200 italic truncate">
+                &ldquo;{latestLog.content}&rdquo;
+              </p>
+            </div>
+            <span className="text-[11px] text-neutral-400 shrink-0 font-medium">
+              — {typeof latestLog.userId === "object" ? latestLog.userId?.name : "Member"}
+            </span>
+          </div>
+        )}
+
+        {/* How your community grows 4-step */}
+        <div className="pt-3 border-t border-white/5">
+          <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-2.5">
+            How your community grows
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+            <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-neutral-800/70">
+              <span className="text-violet-400 font-bold block mb-1">1. Do an activity</span>
+              <span className="text-neutral-400 text-[11px] leading-relaxed">Participate in daily community activities</span>
+            </div>
+            <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-neutral-800/70">
+              <span className="text-cyan-400 font-bold block mb-1">2. Share reflection</span>
+              <span className="text-neutral-400 text-[11px] leading-relaxed">Leave a brief thought on what you noticed</span>
+            </div>
+            <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-neutral-800/70">
+              <span className="text-amber-400 font-bold block mb-1">3. Community remembers</span>
+              <span className="text-neutral-400 text-[11px] leading-relaxed">Insights save to your community memory</span>
+            </div>
+            <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-neutral-800/70">
+              <span className="text-emerald-400 font-bold block mb-1">4. AI uses memory</span>
+              <span className="text-neutral-400 text-[11px] leading-relaxed">Future activities evolve with the group</span>
+            </div>
+          </div>
+        </div>
+      </GlassPanel>
+
       {/* Three Pillars Charter Grid */}
       <div className="grid md:grid-cols-3 gap-6">
         {/* Core Values */}
@@ -330,18 +450,18 @@ export default function CultureDetail() {
           </div>
         </GlassPanel>
 
-        {/* Culture Memory Status */}
+        {/* AI Adaptation Status */}
         <GlassPanel className="p-6 flex flex-col justify-between bg-neutral-900/60 border-amber-500/20">
           <div>
             <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span>★</span> AI Memory
+              <span>★</span> AI Adaptation
             </div>
             <p className="text-xs text-neutral-300 leading-relaxed mb-4">
-              Your community gets smarter over time. AI looks at past activities and reflections to create better activities for the group.
+              AI references your community&apos;s memory to create activities aligned with your group&apos;s values, pace, and recent discoveries.
             </p>
             <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 text-xs text-amber-200/90 flex items-center gap-2">
               <span className="animate-pulse">●</span>
-              <span>AI Memory Active</span>
+              <span>AI Uses Community History</span>
             </div>
           </div>
         </GlassPanel>
