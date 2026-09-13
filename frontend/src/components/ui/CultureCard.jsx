@@ -125,16 +125,16 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
       )}
 
       {/* Action Row */}
-      <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+      <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs gap-2">
         <Link
           to={`/cultures/${culture._id}`}
-          className="text-neutral-400 hover:text-white transition-colors"
+          className="text-neutral-400 hover:text-white transition-colors py-2 min-h-[38px] inline-flex items-center"
         >
           View Community
         </Link>
         <Link
           to={actionLink || `/cultures/${culture._id}`}
-          className="inline-flex items-center gap-1 font-medium text-violet-400 hover:text-violet-300 transition-colors"
+          className="inline-flex items-center gap-1 font-medium text-violet-400 hover:text-violet-300 transition-colors py-2 min-h-[38px]"
         >
           {actionText || (isMember ? "Today's Activity →" : "Join Community →")}
         </Link>

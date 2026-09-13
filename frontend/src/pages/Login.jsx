@@ -29,8 +29,8 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-md mx-auto py-8 sm:py-16 animate-fadeIn">
-      <GlassPanel className="p-8 sm:p-10 border-white/10 shadow-2xl space-y-6">
+    <div className="max-w-md mx-auto py-4 sm:py-16 animate-fadeIn">
+      <GlassPanel className="p-5 sm:p-10 border-white/10 shadow-2xl space-y-6">
         <div className="text-center space-y-2 flex flex-col items-center">
           <Link to="/" className="inline-block mb-1 hover:opacity-90 transition-opacity">
             <MicroCultureLogo size="lg" showWordmark={false} />
@@ -78,7 +78,7 @@ export default function Login() {
             size="lg"
             loading={loading}
             disabled={loading || !email || !password}
-            className="w-full mt-2"
+            className="w-full mt-2 justify-center min-h-[48px]"
           >
             {loading ? "Logging in..." : "Log In"}
           </GlowButton>

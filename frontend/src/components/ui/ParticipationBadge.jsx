@@ -102,12 +102,8 @@ export function StreakCard({ participation }) {
 
   return (
     <div
+      className="flex flex-wrap items-center gap-3 sm:gap-5 p-2.5 sm:p-4 rounded-xl"
       style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "1.2rem",
-        padding: "0.75rem 1rem",
-        borderRadius: "0.75rem",
         background: "rgba(245,158,11,0.07)",
         border: "1px solid rgba(245,158,11,0.2)",
       }}
@@ -134,7 +130,7 @@ export function StreakCard({ participation }) {
 
       {recognition && (
         <>
-          <div style={{ width: "1px", height: "28px", background: "rgba(255,255,255,0.1)" }} />
+          <div className="hidden sm:block" style={{ width: "1px", height: "28px", background: "rgba(255,255,255,0.1)" }} />
           <RecognitionBadge recognition={recognition} />
         </>
       )}
@@ -173,7 +169,7 @@ export function StreakCompletion({ participation }) {
           margin: 0,
         }}
       >
-        🔥 {currentStreak} Day Rite Streak
+        🔥 {currentStreak} Day Streak
       </p>
 
       {/* Milestone callout */}

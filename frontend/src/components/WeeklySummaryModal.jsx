@@ -58,12 +58,12 @@ export default function WeeklySummaryModal({ cultureId, cultureName, isOpen, onC
       onClick={onClose}
     >
       <GlassPanel
-        className="max-w-lg w-full max-h-[85vh] overflow-y-auto p-6 sm:p-8 bg-neutral-900/95 border-violet-500/20 shadow-2xl relative animate-scaleIn"
+        className="max-w-lg w-full max-h-[85vh] overflow-y-auto p-4 sm:p-8 bg-neutral-900/95 border-violet-500/20 shadow-2xl relative animate-scaleIn"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-neutral-500 hover:text-white transition-colors duration-150 p-1 rounded-lg hover:bg-white/5"
+          className="absolute top-3 right-3 sm:top-5 sm:right-5 text-neutral-400 hover:text-white transition-colors duration-150 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-white/5"
           aria-label="Close modal"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

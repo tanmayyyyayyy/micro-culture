@@ -86,23 +86,23 @@ export default function Explore() {
             </svg>
           </form>
 
-          <Link to="/create">
-            <GlowButton variant="glow" size="md" className="w-full sm:w-auto">
+          <Link to="/create" className="w-full sm:w-auto">
+            <GlowButton variant="glow" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
               + Create Community
             </GlowButton>
           </Link>
         </div>
       </div>
 
-      {/* Discovery Category Filters */}
-      <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className="text-neutral-500 mr-1 font-medium">Category:</span>
+      {/* Discovery Category Filters — Horizontally scrollable on mobile, wrapping on larger screens */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 text-xs sm:flex-wrap">
+        <span className="text-neutral-500 mr-1 font-medium whitespace-nowrap">Category:</span>
         {DISCOVERY_CATEGORIES.map((filter) => (
           <button
             key={filter}
             type="button"
             onClick={() => handleFilterClick(filter)}
-            className={`px-3 py-1 rounded-full uppercase text-[11px] tracking-wider font-semibold transition-all duration-200 ease-out cursor-pointer ${
+            className={`whitespace-nowrap px-3.5 py-1.5 min-h-[36px] rounded-full uppercase text-[11px] tracking-wider font-semibold transition-all duration-200 ease-out cursor-pointer ${
               activeFilter === filter
                 ? "bg-white text-neutral-950 shadow-sm"
                 : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 hover:bg-neutral-800/80"

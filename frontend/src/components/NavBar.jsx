@@ -88,7 +88,7 @@ export default function NavBar() {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 text-neutral-400 hover:text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded"
+          className="md:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-neutral-400 hover:text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded-lg"
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={mobileMenuOpen}
         >
@@ -108,7 +108,7 @@ export default function NavBar() {
           <Link
             to="/explore"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
+            className="block px-3.5 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
           >
             Explore Communities
           </Link>
@@ -117,21 +117,21 @@ export default function NavBar() {
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
+                className="block px-3.5 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
               >
                 Dashboard
               </Link>
               <Link
                 to="/create"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
+                className="block px-3.5 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
               >
                 Create Community
               </Link>
               <Link
                 to="/profile"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2.5 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
+                className="block px-3.5 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
               >
                 Profile ({user.name})
               </Link>
@@ -141,7 +141,7 @@ export default function NavBar() {
                   setMobileMenuOpen(false);
                   navigate("/");
                 }}
-                className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors duration-150"
+                className="w-full text-left px-3.5 py-3 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors duration-150"
               >
                 Log out
               </button>
@@ -151,14 +151,14 @@ export default function NavBar() {
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-center py-2.5 text-sm text-neutral-300 bg-neutral-900 border border-neutral-800 rounded-lg hover:bg-neutral-800 hover:text-white transition-all duration-150"
+                className="block w-full text-center py-3 min-h-[44px] flex items-center justify-center text-sm text-neutral-300 bg-neutral-900 border border-neutral-800 rounded-xl hover:bg-neutral-800 hover:text-white transition-all duration-150"
               >
                 Log in
               </Link>
               <Link
                 to="/signup"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-center py-2.5 text-sm font-medium text-neutral-950 bg-white rounded-lg hover:bg-neutral-100 active:scale-[0.98] transition-all duration-150"
+                className="block w-full text-center py-3 min-h-[44px] flex items-center justify-center text-sm font-medium text-neutral-950 bg-white rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all duration-150"
               >
                 Sign up
               </Link>

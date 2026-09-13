@@ -172,10 +172,10 @@ export default function DailyRitualPage() {
             </h2>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <Link
             to={`/cultures/${id}/feed`}
-            className="text-xs px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 transition-all flex items-center gap-1.5"
+            className="text-xs px-3.5 py-2 min-h-[38px] rounded-full bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 transition-all flex items-center justify-center gap-1.5 w-full sm:w-auto"
           >
             <span>📋</span> View Feed
           </Link>
@@ -183,7 +183,7 @@ export default function DailyRitualPage() {
       </div>
 
       {/* Main Ritual Card */}
-      <GlassPanel className="p-6 sm:p-8 relative overflow-hidden border-violet-500/20 shadow-2xl">
+      <GlassPanel className="p-4 sm:p-8 relative overflow-hidden border-violet-500/20 shadow-2xl">
         {/* Glow accent */}
         <div className="absolute top-0 right-0 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -306,11 +306,11 @@ export default function DailyRitualPage() {
         <div className="pt-6 border-t border-white/10">
           {!completed ? (
             <form onSubmit={handlePostReflection} className="space-y-4">
-              <div className="flex items-center justify-between">
-                <label className="block text-sm font-medium text-neutral-200">
+              <div className="flex items-start justify-between gap-2">
+                <label className="block text-xs sm:text-sm font-medium text-neutral-200 flex-1">
                   Share your reflection to save it in the community memory
                 </label>
-                <span className="text-xs text-neutral-500">
+                <span className="text-xs text-neutral-500 flex-shrink-0 pt-0.5 font-mono">
                   {content.length}/2000
                 </span>
               </div>
@@ -327,16 +327,17 @@ export default function DailyRitualPage() {
               {error && <p className="text-xs text-red-400">{error}</p>}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                  <p className="text-[11px] text-neutral-500 flex items-center gap-1.5">
-                    <span className="text-violet-400">✦</span>
-                    Your reflection helps AI create better activities for your community.
-                  </p>
+                <p className="text-[11px] text-neutral-500 flex items-center gap-1.5">
+                  <span className="text-violet-400">✦</span>
+                  Your reflection helps AI create better activities for your community.
+                </p>
 
                 <GlowButton
                   type="submit"
                   variant="glow"
                   loading={posting}
                   disabled={posting || !content.trim()}
+                  className="w-full sm:w-auto justify-center min-h-[44px]"
                 >
                   {posting ? "Saving..." : "Complete Activity"}
                 </GlowButton>
@@ -363,14 +364,14 @@ export default function DailyRitualPage() {
               {/* Streak + Recognition banner */}
               <StreakCompletion participation={participation} />
 
-              <div className="flex justify-center gap-3 pt-2">
-                <Link to={`/cultures/${id}/feed`}>
-                  <GlowButton size="sm" variant="glow">
+              <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2 w-full max-w-sm sm:max-w-none mx-auto">
+                <Link to={`/cultures/${id}/feed`} className="w-full sm:w-auto">
+                  <GlowButton size="md" variant="glow" className="w-full sm:w-auto justify-center min-h-[44px]">
                     View in Feed →
                   </GlowButton>
                 </Link>
-                <Link to="/dashboard">
-                  <GlowButton size="sm" variant="secondary">
+                <Link to="/dashboard" className="w-full sm:w-auto">
+                  <GlowButton size="md" variant="secondary" className="w-full sm:w-auto justify-center min-h-[44px]">
                     Back to Dashboard
                   </GlowButton>
                 </Link>

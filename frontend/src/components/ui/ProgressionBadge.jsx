@@ -124,8 +124,8 @@ export function ProgressionPanel({ progression }) {
 
   return (
     <section
+      className="p-4 sm:p-6"
       style={{
-        padding: "1.5rem",
         borderRadius: "1rem",
         border: `1px solid ${meta.color}33`,
         background: `radial-gradient(ellipse at top left, ${meta.color}12 0%, transparent 70%), rgba(255,255,255,0.04)`,
@@ -200,7 +200,7 @@ export function ProgressionPanel({ progression }) {
       </div>
 
       {/* Stats row */}
-      <div style={{ display: "flex", gap: "1.5rem", marginTop: "1rem" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginTop: "1rem" }}>
         <div>
           <p style={{ fontSize: "1rem", fontWeight: 800, color: "#fff", margin: 0 }}>{progression.completedRituals ?? 0}</p>
           <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.4)", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em" }}>Activities Completed</p>

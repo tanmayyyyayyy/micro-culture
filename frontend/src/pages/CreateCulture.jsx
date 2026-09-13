@@ -214,6 +214,7 @@ export default function CreateCulture() {
                 setError("");
                 setCurrentStep(2);
               }}
+              className="w-full sm:w-auto justify-center min-h-[44px]"
             >
               Continue →
             </GlowButton>
@@ -276,14 +277,15 @@ export default function CreateCulture() {
 
           {error && <p className="text-xs text-red-400">{error}</p>}
 
-          <div className="flex justify-between items-center pt-2">
-            <GlowButton variant="secondary" onClick={() => setCurrentStep(1)}>
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-2">
+            <GlowButton variant="secondary" onClick={() => setCurrentStep(1)} className="w-full sm:w-auto justify-center min-h-[44px]">
               ← Back
             </GlowButton>
             <GlowButton
               variant="glow"
               loading={generating}
               onClick={handleGenerateBlueprint}
+              className="w-full sm:w-auto justify-center min-h-[44px]"
             >
               {generating ? "Generating..." : "Generate community →"}
             </GlowButton>
@@ -451,8 +453,8 @@ export default function CreateCulture() {
 
           {error && <p className="text-xs text-red-400">{error}</p>}
 
-          <div className="flex justify-between items-center pt-4 border-t border-white/5">
-            <GlowButton variant="secondary" onClick={() => setCurrentStep(2)}>
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-4 border-t border-white/5">
+            <GlowButton variant="secondary" onClick={() => setCurrentStep(2)} className="w-full sm:w-auto justify-center min-h-[44px]">
               ← Back
             </GlowButton>
             <GlowButton
@@ -460,6 +462,7 @@ export default function CreateCulture() {
               size="lg"
               loading={publishing}
               onClick={handlePublishCulture}
+              className="w-full sm:w-auto justify-center min-h-[48px]"
             >
               {publishing ? "Creating..." : "Create Community ✦"}
             </GlowButton>

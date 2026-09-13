@@ -73,16 +73,17 @@ export default function CultureFeed() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <GlowButton
             size="sm"
             variant="secondary"
             onClick={() => setShowSummaryModal(true)}
+            className="w-full sm:w-auto justify-center min-h-[38px]"
           >
             Weekly Summary
           </GlowButton>
-          <Link to={`/cultures/${id}/ritual`}>
-            <GlowButton size="sm" variant="glow">
+          <Link to={`/cultures/${id}/ritual`} className="w-full sm:w-auto">
+            <GlowButton size="sm" variant="glow" className="w-full sm:w-auto justify-center min-h-[38px]">
               Today&apos;s Activity →
             </GlowButton>
           </Link>
@@ -137,9 +138,9 @@ export default function CultureFeed() {
             return (
               <GlassPanel key={log._id} className="p-5 sm:p-6 space-y-3">
                 {/* Author & Timestamp Header */}
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-600/30 to-indigo-600/30 border border-violet-500/30 text-violet-300 font-bold text-xs flex items-center justify-center shadow-inner">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-600/30 to-indigo-600/30 border border-violet-500/30 text-violet-300 font-bold text-xs flex items-center justify-center shadow-inner flex-shrink-0">
                       {initial}
                     </div>
                     <div>
@@ -160,12 +161,12 @@ export default function CultureFeed() {
                 </div>
 
                 {/* Reflection Content */}
-                <p className="text-sm text-neutral-200 leading-relaxed pl-11 whitespace-pre-wrap">
+                <p className="text-sm text-neutral-200 leading-relaxed sm:pl-11 whitespace-pre-wrap">
                   {log.content}
                 </p>
 
                 {log.imageUrl && (
-                  <div className="pl-11 pt-2">
+                  <div className="sm:pl-11 pt-2">
                     <img
                       src={log.imageUrl}
                       alt="Ritual artifact"
@@ -175,7 +176,7 @@ export default function CultureFeed() {
                 )}
 
                 {/* Memory Badge */}
-                <div className="pl-11 pt-2 border-t border-white/5 flex items-center gap-2 text-[10px] text-neutral-500">
+                <div className="sm:pl-11 pt-2 border-t border-white/5 flex items-center gap-2 text-[10px] text-neutral-500">
                   <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
                   <span>Saved in community memory</span>
                 </div>

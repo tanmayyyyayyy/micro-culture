@@ -84,13 +84,13 @@ export default function App() {
       </main>
 
       <footer className="border-t border-white/5 py-8 text-center text-xs text-neutral-500 relative z-10">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
             <span className="font-semibold text-neutral-400">Micro Culture</span>
-            <span>·</span>
+            <span className="hidden sm:inline">·</span>
             <span>Living communities powered by community memory & AI activities</span>
           </div>
-          <div className="text-neutral-500">
+          <div className="text-neutral-500 text-center sm:text-right">
             Every daily activity helps shape the community&apos;s future
           </div>
         </div>

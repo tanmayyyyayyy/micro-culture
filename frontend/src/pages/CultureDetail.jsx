@@ -161,33 +161,33 @@ export default function CultureDetail() {
           </div>
 
           {/* Primary Action Button */}
-          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             {user && !isMember ? (
               <GlowButton
                 variant="glow"
                 size="lg"
                 loading={actionLoading}
                 onClick={handleJoin}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto justify-center min-h-[44px]"
               >
                 Join Community
               </GlowButton>
             ) : isMember ? (
-              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
                 <Link to={`/cultures/${id}/ritual`} className="w-full sm:w-auto">
-                  <GlowButton variant="glow" size="md" className="w-full sm:w-auto">
+                  <GlowButton variant="glow" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
                     Today&apos;s Activity →
                   </GlowButton>
                 </Link>
                 <Link to={`/cultures/${id}/feed`} className="w-full sm:w-auto">
-                  <GlowButton variant="secondary" size="md" className="w-full sm:w-auto">
+                  <GlowButton variant="secondary" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
                     Community Feed
                   </GlowButton>
                 </Link>
               </div>
             ) : (
-              <Link to="/signup">
-                <GlowButton variant="glow" size="md">
+              <Link to="/signup" className="w-full sm:w-auto">
+                <GlowButton variant="glow" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
                   Sign up to Join
                 </GlowButton>
               </Link>
@@ -418,7 +418,7 @@ export default function CultureDetail() {
           onClick={() => setShowEditModal(false)}
         >
           <GlassPanel
-            className="max-w-md w-full max-h-[85vh] overflow-y-auto p-6 bg-neutral-900 border-white/10"
+            className="max-w-md w-full max-h-[85vh] overflow-y-auto p-4 sm:p-6 bg-neutral-900 border-white/10"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-bold text-white mb-4">Edit Community</h2>
@@ -446,11 +446,12 @@ export default function CultureDetail() {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-2">
                 <GlowButton
                   size="sm"
                   variant="ghost"
                   onClick={() => setShowEditModal(false)}
+                  className="w-full sm:w-auto justify-center min-h-[40px]"
                 >
                   Cancel
                 </GlowButton>
@@ -459,6 +460,7 @@ export default function CultureDetail() {
                   size="sm"
                   variant="glow"
                   loading={actionLoading}
+                  className="w-full sm:w-auto justify-center min-h-[40px]"
                 >
                   Save Changes
                 </GlowButton>

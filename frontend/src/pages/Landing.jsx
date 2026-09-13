@@ -26,14 +26,14 @@ export default function Landing() {
           Join a community, take part in daily activities, and let AI help your community grow.
         </p>
 
-        <div className="flex flex-wrap justify-center items-center gap-3 pt-1">
-          <Link to="/explore">
-            <GlowButton variant="glow" size="lg">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-3 pt-1 w-full max-w-sm sm:max-w-none mx-auto">
+          <Link to="/explore" className="w-full sm:w-auto">
+            <GlowButton variant="glow" size="lg" className="w-full sm:w-auto justify-center min-h-[48px]">
               Explore Communities →
             </GlowButton>
           </Link>
-          <Link to="/create">
-            <GlowButton variant="secondary" size="lg">
+          <Link to="/create" className="w-full sm:w-auto">
+            <GlowButton variant="secondary" size="lg" className="w-full sm:w-auto justify-center min-h-[48px]">
               Create a Community
             </GlowButton>
           </Link>
@@ -58,13 +58,13 @@ export default function Landing() {
 
       {/* Community Demo Card — Prioritizing Community Identity over Activity */}
       <div className="max-w-2xl mx-auto">
-        <GlassPanel className="p-6 sm:p-8 relative overflow-hidden border-violet-500/20 shadow-2xl">
+        <GlassPanel className="p-5 sm:p-8 relative overflow-hidden border-violet-500/20 shadow-2xl">
           {/* Community Identity Header */}
-          <div className="flex items-start justify-between gap-4 mb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-3">
               <CultureEmblem symbol="🪐" color="#a855f7" size="md" />
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-bold text-white text-base">
                     The Midnight Cartographers
                   </h3>
@@ -77,8 +77,8 @@ export default function Landing() {
                 </p>
               </div>
             </div>
-            <Link to="/explore">
-              <GlowButton size="xs" variant="secondary">
+            <Link to="/explore" className="self-start sm:self-auto">
+              <GlowButton size="sm" variant="secondary" className="min-h-[36px]">
                 View Community
               </GlowButton>
             </Link>
@@ -106,7 +106,7 @@ export default function Landing() {
               <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
               <span>AI Memory Active</span>
             </div>
-            <Link to="/explore" className="text-white hover:text-violet-300 font-medium">
+            <Link to="/explore" className="text-white hover:text-violet-300 font-medium py-2 min-h-[44px] inline-flex items-center">
               Join Community →
             </Link>
           </div>

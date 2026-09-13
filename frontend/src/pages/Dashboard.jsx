@@ -63,14 +63,14 @@ export default function Dashboard() {
           </div>
 
           {/* Quick CTAs */}
-          <div className="flex items-center gap-3">
-            <Link to="/create">
-              <GlowButton variant="glow" size="md">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+            <Link to="/create" className="w-full sm:w-auto">
+              <GlowButton variant="glow" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
                 + Create Community
               </GlowButton>
             </Link>
-            <Link to="/explore">
-              <GlowButton variant="secondary" size="md">
+            <Link to="/explore" className="w-full sm:w-auto">
+              <GlowButton variant="secondary" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
                 Explore More
               </GlowButton>
             </Link>
@@ -79,9 +79,9 @@ export default function Dashboard() {
 
         {/* Stats Ribbon */}
         {stats && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 mt-6 pt-6 border-t border-white/5">
-            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 animate-slideUp stagger-1">
-              <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-6 pt-6 border-t border-white/5">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 animate-slideUp stagger-1">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-neutral-400 uppercase tracking-wider truncate">
                 Communities Joined
               </div>
               <div className="text-2xl font-bold text-white mt-1">
@@ -89,8 +89,8 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 animate-slideUp stagger-2">
-              <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 animate-slideUp stagger-2">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-neutral-400 uppercase tracking-wider truncate">
                 Founded by You
               </div>
               <div className="text-2xl font-bold text-violet-400 mt-1">
@@ -98,8 +98,8 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className={`p-3.5 rounded-xl border hover:border-opacity-60 transition-colors duration-200 animate-slideUp stagger-3 ${bestStreak > 0 ? "bg-amber-950/20 border-amber-500/30" : "bg-neutral-900/60 border-neutral-800/80"}`}>
-              <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+            <div className={`p-3 sm:p-3.5 rounded-xl border hover:border-opacity-60 transition-colors duration-200 animate-slideUp stagger-3 ${bestStreak > 0 ? "bg-amber-950/20 border-amber-500/30" : "bg-neutral-900/60 border-neutral-800/80"}`}>
+              <div className="text-[10px] sm:text-[11px] font-semibold text-neutral-400 uppercase tracking-wider truncate">
                 Best Active Streak
               </div>
               <div className={`text-2xl font-bold mt-1 flex items-center gap-1.5 ${bestStreak > 0 ? "text-amber-400" : "text-neutral-400"}`}>
@@ -108,8 +108,8 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 flex flex-col justify-between animate-slideUp stagger-4">
-              <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 hover:border-neutral-700/80 transition-colors duration-200 flex flex-col justify-between animate-slideUp stagger-4">
+              <div className="text-[10px] sm:text-[11px] font-semibold text-neutral-400 uppercase tracking-wider truncate">
                 Community Memory
               </div>
               <div className="text-xs text-emerald-400 font-medium flex items-center gap-1.5 mt-2">
