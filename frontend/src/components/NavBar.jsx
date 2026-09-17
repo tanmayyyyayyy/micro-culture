@@ -40,16 +40,12 @@ export default function NavBar() {
           <NavLink to="/explore" className={navLinkStyle}>
             Explore
           </NavLink>
-          {user && (
-            <>
-              <NavLink to="/dashboard" className={navLinkStyle}>
-                Dashboard
-              </NavLink>
-              <NavLink to="/create" className={navLinkStyle}>
-                Create
-              </NavLink>
-            </>
-          )}
+          <NavLink to="/dashboard" className={navLinkStyle}>
+            Dashboard
+          </NavLink>
+          <NavLink to="/create" className={navLinkStyle}>
+            Create
+          </NavLink>
         </nav>
 
         {/* Desktop Auth */}
@@ -81,6 +77,17 @@ export default function NavBar() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
+              <Link
+                to="/explore"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[#687085] hover:text-[#17172B] hover:bg-[rgba(23,23,43,0.05)] transition-all duration-200"
+                style={{ border: "1.5px solid rgba(23,23,43,0.12)" }}
+                aria-label="Search communities"
+                title="Search communities"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </Link>
               <Link
                 to="/login"
                 className="px-4 py-1.5 text-sm font-semibold text-[#687085] hover:text-[#17172B] transition-colors duration-200 rounded-full"

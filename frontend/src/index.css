@@ -54,6 +54,38 @@
   50%       { transform: translateY(-12px) rotate(4deg); }
 }
 
+@keyframes floatSubtleA {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-7px) rotate(1deg); }
+}
+@keyframes floatSubtleB {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-9px) rotate(-1.2deg); }
+}
+@keyframes floatSubtleC {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-6px) rotate(0.8deg); }
+}
+
+.animate-float-a {
+  animation: floatSubtleA 8s ease-in-out infinite;
+}
+.animate-float-b {
+  animation: floatSubtleB 11s ease-in-out infinite 1s;
+}
+.animate-float-c {
+  animation: floatSubtleC 9.5s ease-in-out infinite 0.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-a,
+  .animate-float-b,
+  .animate-float-c,
+  .animate-blobFloat {
+    animation: none !important;
+  }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

@@ -37,6 +37,14 @@ const COMMUNITY_COLORS = {
   "career launchpad":  { primary: "#F97316", bg: "#FFF7ED" },
   "devops dock":       { primary: "#06B6D4", bg: "#ECFEFF" },
   "project playground":{ primary: "#EC4899", bg: "#FFF0F7" },
+  "boundary club":     { primary: "#10B981", bg: "#ECFDF5" },
+  "lo-fi lounge":      { primary: "#F472B6", bg: "#FDF2F8" },
+  "the reading room":  { primary: "#F59E0B", bg: "#FFFBEB" },
+  "frame by frame":    { primary: "#06B6D4", bg: "#ECFEFF" },
+  "game night":        { primary: "#8B5CF6", bg: "#F5F3FF" },
+  "wander notes":      { primary: "#14B8A6", bg: "#F0FDFA" },
+  "movie circle":      { primary: "#E11D48", bg: "#FFF1F2" },
+  "art corner":        { primary: "#FB923C", bg: "#FFF7ED" },
 };
 
 function getCommunityColors(name = "", fallback = "#7C3AED") {
@@ -297,7 +305,7 @@ export default function Dashboard() {
 
               <div className="grid sm:grid-cols-2 gap-3">
                 {recentDiscussions.map((d) => {
-                  const authorName = typeof d.userId === "object" ? d.userId?.name : "Student";
+                  const authorName = typeof d.userId === "object" ? d.userId?.name : "Member";
                   const clubName = typeof d.cultureId === "object" ? d.cultureId?.name : "Club";
                   const clubSymbol = typeof d.cultureId === "object" ? d.cultureId?.symbol : "✨";
                   const clubId = typeof d.cultureId === "object" ? d.cultureId?._id : d.cultureId;

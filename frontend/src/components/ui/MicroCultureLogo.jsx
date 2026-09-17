@@ -2,7 +2,6 @@ export default function MicroCultureLogo({
   size = "md",
   showWordmark = true,
   className = "",
-  glow = true,
   ariaLabel = "Micro Culture",
 }) {
   const sizeMap = {
@@ -21,58 +20,63 @@ export default function MicroCultureLogo({
       className={`inline-flex items-center ${currentSize.gap} group ${className}`}
       aria-label={ariaLabel}
     >
-      {/* Friendly Rounded Monogram Tile */}
+      {/* Friendly Community Emblem Tile */}
       <div
-        className={`relative ${currentSize.icon} flex-shrink-0 flex items-center justify-center transition-transform duration-250 ease-out group-hover:scale-105`}
+        className={`relative ${currentSize.icon} flex-shrink-0 flex items-center justify-center transition-transform duration-200 ease-out group-hover:scale-105`}
       >
-        {/* Soft shadow / pastel glow */}
-        {glow && (
-          <div
-            className="absolute inset-0 rounded-2xl blur-sm opacity-50 transition-opacity duration-300 group-hover:opacity-80"
-            style={{
-              background: "linear-gradient(135deg, #C9B6FF 0%, #FFB38A 100%)",
-            }}
-          />
-        )}
-
-        {/* Vector Emblem on Pastel Gradient Tile */}
         <div
-          className={`relative z-10 w-full h-full ${currentSize.badge} flex items-center justify-center p-1.5 shadow-sm`}
+          className={`w-full h-full ${currentSize.badge} bg-white flex items-center justify-center p-1.5 shadow-xs`}
           style={{
-            background: "linear-gradient(135deg, #C9B6FF 0%, #FF7F8A 50%, #FFD966 100%)",
-            boxShadow: "0 2px 8px rgba(23, 23, 43, 0.08)",
+            border: "1.5px solid rgba(23, 23, 43, 0.09)",
+            boxShadow: "0 2px 8px rgba(23, 23, 43, 0.05)",
           }}
         >
           <svg
             viewBox="0 0 36 36"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-full drop-shadow-xs"
+            className="w-full h-full"
             aria-hidden="true"
           >
-            {/* Playful rounded M monogram in clean white */}
+            <defs>
+              <linearGradient id="logoMGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#A855F7" />
+                <stop offset="50%" stopColor="#EC4899" />
+                <stop offset="100%" stopColor="#F59E0B" />
+              </linearGradient>
+            </defs>
+            {/* Connecting community orbit */}
             <path
-              d="M 9 26 V 12.5 C 9 10.5 11 9.5 12.5 11 L 18 17 L 23.5 11 C 25 9.5 27 10.5 27 12.5 V 26"
-              stroke="#FFFFFF"
+              d="M 10 11 C 14 6 22 6 26 11"
+              stroke="rgba(23,23,43,0.14)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+            {/* Rounded M arches symbolizing connection with vivid gradient */}
+            <path
+              d="M 9 26 V 15 C 9 12 11.5 10.5 13.5 12 L 18 16.5 L 22.5 12 C 24.5 10.5 27 12 27 15 V 26"
+              stroke="url(#logoMGrad)"
               strokeWidth="3.6"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            {/* Little playful sparkle/satellite dot */}
-            <circle cx="27" cy="8" r="2.2" fill="#FFFDF7" />
+            {/* Three diverse community interest nodes */}
+            <circle cx="9" cy="9" r="2.2" fill="#EC4899" />
+            <circle cx="18" cy="5.5" r="2.4" fill="#F59E0B" />
+            <circle cx="27" cy="9" r="2.2" fill="#8B5CF6" />
           </svg>
         </div>
       </div>
 
-      {/* Wordmark in dark #17172B */}
+      {/* Wordmark in clean bold #17172B */}
       {showWordmark && (
         <span
-          className={`font-extrabold tracking-tight ${currentSize.text} select-none transition-colors duration-200`}
-          style={{ color: "#17172B" }}
+          className={`font-black tracking-tight ${currentSize.text} select-none text-[#17172B]`}
         >
-          Micro<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-pink-500 to-amber-500">Culture</span>
+          Micro Culture
         </span>
       )}
     </div>
   );
 }
+

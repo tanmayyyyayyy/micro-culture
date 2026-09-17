@@ -1,151 +1,461 @@
-import { Link } from "react-router-dom";
-import GlowButton from "../components/ui/GlowButton.jsx";
-import MicroCultureLogo from "../components/ui/MicroCultureLogo.jsx";
+import { useEffect, useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api/client.js";
 
-// Mini community preview cards for hero
-const HERO_COMMUNITIES = [
-  { name: "GATEverse",        symbol: "📚", color: "#F5A623", bg: "#FFF8E7", tag: "Study · Prep" },
-  { name: "DSA Dojo",          symbol: "🥋", color: "#818CF8", bg: "#F0F0FF", tag: "Algorithms · Practice" },
-  { name: "Pixel Playground",  symbol: "🎨", color: "#C77DFF", bg: "#F8F0FF", tag: "Design · UI/UX" },
-  { name: "HackNights",        symbol: "🚀", color: "#FF6B9D", bg: "#FFF0F6", tag: "Build · Ship" },
-  { name: "Neural Nest",       symbol: "🧠", color: "#A855F7", bg: "#F9F0FF", tag: "AI · ML" },
-  { name: "Java Junction",     symbol: "☕", color: "#E8775A", bg: "#FFF1EC", tag: "Java · Backend" },
+// 8 floating community stickers matching the reference image layout
+const FLOATING_STICKERS = [
+  {
+    id: "game-night",
+    name: "Game Night",
+    symbol: "🎮",
+    subtext: "8.2K members",
+    bg: "#F3E8FF",
+    border: "#E9D5FF",
+    arrow: false,
+    rotation: -3,
+    floatAnim: "animate-float-a",
+    desktop: { left: 4, top: 6 },
+    mobile: { left: 3, top: 1.5 },
+  },
+  {
+    id: "gateverse",
+    name: "GATEverse",
+    symbol: "📚",
+    subtext: "12.4K members",
+    badge: "✦",
+    bg: "#FEF3C7",
+    border: "#FDE68A",
+    arrow: false,
+    rotation: 1.5,
+    floatAnim: "animate-float-b",
+    desktop: { left: 3, top: 28 },
+    mobile: null,
+  },
+  {
+    id: "lo-fi-lounge",
+    name: "Lo-Fi Lounge",
+    symbol: "🎧",
+    subtext: "4.8K members",
+    bg: "#FCE7F3",
+    border: "#FBCFE8",
+    arrow: true,
+    rotation: -2,
+    floatAnim: "animate-float-c",
+    desktop: { left: 4, top: 52 },
+    mobile: { left: 3, top: 51 },
+  },
+  {
+    id: "wander-notes",
+    name: "Wander Notes",
+    symbol: "✈️",
+    subtext: "6.1K members",
+    bg: "#CCFBF1",
+    border: "#99F6E4",
+    arrow: true,
+    rotation: 3,
+    floatAnim: "animate-float-a",
+    desktop: { left: 6, top: 76 },
+    mobile: { left: 3, top: 87 },
+  },
+  {
+    id: "boundary-club",
+    name: "Boundary Club",
+    symbol: "🏏",
+    subtext: "9.3K members",
+    bg: "#D1FAE5",
+    border: "#A7F3D0",
+    arrow: true,
+    rotation: -3,
+    floatAnim: "animate-float-c",
+    desktop: { left: 74, top: 7 },
+    mobile: { left: 52, top: 1.5 },
+  },
+  {
+    id: "pixel-playground",
+    name: "Pixel Playground",
+    symbol: "🎨",
+    subtext: "5.2K members",
+    bg: "#EDE9FE",
+    border: "#DDD6FE",
+    arrow: true,
+    rotation: 2.5,
+    floatAnim: "animate-float-b",
+    desktop: { left: 76, top: 28 },
+    mobile: null,
+  },
+  {
+    id: "frame-by-frame",
+    name: "Frame by Frame",
+    symbol: "📷",
+    subtext: "3.9K members",
+    bg: "#E0F2FE",
+    border: "#BAE6FD",
+    arrow: true,
+    rotation: -2,
+    floatAnim: "animate-float-a",
+    desktop: { left: 75, top: 52 },
+    mobile: { left: 52, top: 51 },
+  },
+  {
+    id: "movie-circle",
+    name: "Movie Circle",
+    symbol: "🍿",
+    subtext: "7.1K members",
+    bg: "#FFE4E6",
+    border: "#FECDD3",
+    arrow: false,
+    rotation: 2.5,
+    floatAnim: "animate-float-c",
+    desktop: { left: 71, top: 76 },
+    mobile: { left: 52, top: 87 },
+  },
 ];
 
-// How it works steps
-const HOW_IT_WORKS = [
-  {
-    emoji: "🔍",
-    color: "#F5A623",
-    bg: "#FFF8E7",
-    title: "Join a community",
-    desc: "Find students who share your goals — GATE prep, DSA, design, AI, hackathons.",
-  },
-  {
-    emoji: "💬",
-    color: "#818CF8",
-    bg: "#F0F0FF",
-    title: "Discuss & do activities",
-    desc: "Ask doubts, share resources, and complete 15-minute daily practice prompts.",
-  },
-  {
-    emoji: "🧠",
-    color: "#10B981",
-    bg: "#ECFDF5",
-    title: "AI adapts to your group",
-    desc: "Your community's reflections shape future activities — it gets smarter together.",
-  },
+// Popular communities row matching reference image
+const POPULAR_ROW = [
+  { name: "GATEverse",        symbol: "📚", count: "12.4K members", bg: "#FEF3C7" },
+  { name: "Pixel Playground",  symbol: "🎨", count: "5.2K members",  bg: "#EDE9FE" },
+  { name: "Boundary Club",     symbol: "🏏", count: "9.3K members",  bg: "#D1FAE5" },
+  { name: "Lo-Fi Lounge",       symbol: "🎧", count: "4.8K members",  bg: "#FCE7F3" },
+  { name: "Frame by Frame",    symbol: "📷", count: "3.9K members",  bg: "#E0F2FE" },
+  { name: "Movie Circle",      symbol: "🍿", count: "7.1K members",  bg: "#FFE4E6" },
+  { name: "Game Night",        symbol: "🎮", count: "8.2K members",  bg: "#F3E8FF" },
 ];
+
+/**
+ * Draggable floating community sticker.
+ * Uses CSS percentage positioning for instant layout, and pointer delta
+ * transforms for smooth dragging that stays where released.
+ */
+function DraggableSticker({ item, targetId, containerRef }) {
+  const navigate = useNavigate();
+  const stickerRef = useRef(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
+
+  const dragStart = useRef({
+    pointerX: 0,
+    pointerY: 0,
+    offsetX: 0,
+    offsetY: 0,
+    hasMoved: false,
+    pointerId: null,
+  });
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const handlePointerDown = (e) => {
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch (_) {}
+
+    dragStart.current = {
+      pointerX: e.clientX,
+      pointerY: e.clientY,
+      offsetX: offset.x,
+      offsetY: offset.y,
+      hasMoved: false,
+      pointerId: e.pointerId,
+    };
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging || dragStart.current.pointerId !== e.pointerId) return;
+
+    const dx = e.clientX - dragStart.current.pointerX;
+    const dy = e.clientY - dragStart.current.pointerY;
+
+    if (!dragStart.current.hasMoved && Math.hypot(dx, dy) >= 6) {
+      dragStart.current.hasMoved = true;
+    }
+
+    if (dragStart.current.hasMoved) {
+      // Clamping within container bounds
+      if (containerRef?.current && stickerRef?.current) {
+        const cRect = containerRef.current.getBoundingClientRect();
+        const sRect = stickerRef.current.getBoundingClientRect();
+
+        const currentLeft = sRect.left - cRect.left;
+        const currentTop = sRect.top - cRect.top;
+
+        const maxDx = cRect.width - sRect.width - (currentLeft - offset.x) - 4;
+        const minDx = -(currentLeft - offset.x) + 4;
+        const maxDy = cRect.height - sRect.height - (currentTop - offset.y) - 4;
+        const minDy = -(currentTop - offset.y) + 4;
+
+        const clampedX = Math.max(minDx, Math.min(maxDx, dragStart.current.offsetX + dx));
+        const clampedY = Math.max(minDy, Math.min(maxDy, dragStart.current.offsetY + dy));
+
+        setOffset({ x: clampedX, y: clampedY });
+      } else {
+        setOffset({
+          x: dragStart.current.offsetX + dx,
+          y: dragStart.current.offsetY + dy,
+        });
+      }
+    }
+  };
+
+  const handlePointerUp = (e) => {
+    if (dragStart.current.pointerId !== e.pointerId) return;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (_) {}
+
+    const wasDrag = dragStart.current.hasMoved;
+    setIsDragging(false);
+    dragStart.current.pointerId = null;
+
+    if (!wasDrag) {
+      // Intentional click/tap -> navigate
+      if (targetId) {
+        navigate(`/cultures/${targetId}`);
+      } else {
+        navigate(`/explore?q=${encodeURIComponent(item.name)}`);
+      }
+    }
+  };
+
+  const handlePointerCancel = () => {
+    setIsDragging(false);
+    dragStart.current.pointerId = null;
+  };
+
+  const config = isMobile ? item.mobile : item.desktop;
+  if (isMobile && !item.mobile) return null;
+
+  return (
+    <div
+      ref={stickerRef}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      className={`absolute select-none z-20 ${
+        isDragging ? "z-30 cursor-grabbing" : "cursor-grab"
+      }`}
+      style={{
+        left: `${config.left}%`,
+        top: `${config.top}%`,
+        transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
+        touchAction: "none",
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Community: ${item.name}`}
+      title={`${item.name} — Click to view, drag to move`}
+    >
+      <div
+        className={`px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-full flex items-center gap-2 sm:gap-2.5 shadow-sm transition-shadow duration-150 max-w-[145px] sm:max-w-none ${
+          isDragging
+            ? "scale-105 shadow-xl opacity-95"
+            : `hover:shadow-md hover:scale-105 ${item.floatAnim}`
+        }`}
+        style={{
+          backgroundColor: item.bg,
+          border: `1.5px solid ${item.border}`,
+          transform: isDragging ? "scale(1.05)" : `rotate(${item.rotation || 0}deg)`,
+        }}
+      >
+        <span className="text-base sm:text-xl leading-none pointer-events-none flex-shrink-0">
+          {item.symbol}
+        </span>
+        <div className="text-left pointer-events-none leading-tight min-w-0 flex-1">
+          <div className="text-xs sm:text-sm font-extrabold text-[#17172B] tracking-tight truncate">
+            {item.name}
+          </div>
+          <div className="text-[10px] text-[#687085] font-medium truncate">
+            {item.subtext}
+          </div>
+        </div>
+        {item.arrow && (
+          <span className="hidden sm:inline text-xs text-[#687085] ml-0.5 pointer-events-none font-bold">
+            →
+          </span>
+        )}
+        {item.badge && (
+          <span className="hidden sm:inline text-xs text-amber-500 ml-0.5 pointer-events-none">
+            {item.badge}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Landing() {
+  const heroCanvasRef = useRef(null);
+  const [cultures, setCultures] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    api
+      .get("/cultures")
+      .then(({ data }) => {
+        if (mounted && Array.isArray(data)) {
+          setCultures(data);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const findId = (name) => {
+    const key = name.toLowerCase().trim();
+    const found = cultures.find((c) => c.name.toLowerCase().trim() === key);
+    return found?._id || null;
+  };
+
   return (
-    <div className="space-y-16 py-6 sm:py-12 animate-fadeIn relative">
+    <div className="space-y-16 pb-16 animate-fadeIn relative">
 
       {/* ══════════════════════════════════════════
-          HERO SECTION — PLAYFUL & COMMUNITY-FIRST
+          HERO SECTION — OPEN CANVAS
       ══════════════════════════════════════════ */}
-      <div className="relative max-w-4xl mx-auto pt-4 pb-8 sm:py-12 text-center">
-        {/* Soft pastel ambient background glows */}
+      <div
+        ref={heroCanvasRef}
+        className="relative w-full min-h-[720px] sm:min-h-[660px] lg:min-h-[720px] flex flex-col items-center justify-center text-center overflow-hidden pt-6 pb-12"
+      >
+        {/* Soft pastel ambient background blobs */}
         <div
-          className="pointer-events-none absolute -top-10 -left-16 w-72 h-72 rounded-full opacity-40 hidden sm:block"
-          style={{ background: "#FFD966", filter: "blur(60px)" }}
+          className="pointer-events-none absolute -top-12 -left-20 w-80 h-80 rounded-full opacity-40"
+          style={{ background: "#FDE68A", filter: "blur(65px)" }}
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute top-4 -right-16 w-64 h-64 rounded-full opacity-35 hidden sm:block"
-          style={{ background: "#C9B6FF", filter: "blur(55px)" }}
+          className="pointer-events-none absolute top-10 -right-20 w-80 h-80 rounded-full opacity-35"
+          style={{ background: "#DDD6FE", filter: "blur(65px)" }}
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute bottom-0 left-1/3 w-60 h-60 rounded-full opacity-30 hidden sm:block"
-          style={{ background: "#FFB38A", filter: "blur(50px)" }}
+          className="pointer-events-none absolute bottom-6 left-10 w-72 h-72 rounded-full opacity-30"
+          style={{ background: "#BAE6FD", filter: "blur(60px)" }}
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute bottom-10 right-16 w-72 h-72 rounded-full opacity-30"
+          style={{ background: "#FECDD3", filter: "blur(60px)" }}
           aria-hidden="true"
         />
 
-        {/* Floating playful elements around hero (Desktop & Tablet) */}
-        <div className="hidden lg:block pointer-events-none select-none">
-          {/* Top Left: GATEverse card */}
-          <div
-            className="absolute -top-4 -left-12 warm-card px-4 py-2.5 flex items-center gap-2.5 shadow-sm transform -rotate-3 animate-blobFloat"
-            style={{ border: "1.5px solid #FFD966" }}
-          >
-            <span className="text-2xl">📚</span>
-            <div className="text-left">
-              <div className="text-xs font-extrabold text-[#17172B]">GATEverse</div>
-              <div className="text-[10px] text-[#687085]">12.4K students</div>
-            </div>
-            <span className="text-amber-500 text-xs ml-1">✦</span>
-          </div>
-
-          {/* Top Right: Pixel Playground card */}
-          <div
-            className="absolute top-2 -right-8 warm-card px-4 py-2.5 flex items-center gap-2.5 shadow-sm transform rotate-4"
-            style={{ border: "1.5px solid #F58AC6" }}
-          >
-            <span className="text-2xl">🎨</span>
-            <div className="text-left">
-              <div className="text-xs font-extrabold text-[#17172B]">Pixel Playground</div>
-              <div className="text-[10px] text-[#687085]">Daily UI design</div>
-            </div>
-            <span className="text-pink-400 text-xs ml-1">✦</span>
-          </div>
-
-          {/* Bottom Left: Java Junction card */}
-          <div
-            className="absolute -bottom-4 -left-8 warm-card px-4 py-2.5 flex items-center gap-2.5 shadow-sm transform rotate-2"
-            style={{ border: "1.5px solid #FFB38A" }}
-          >
-            <span className="text-2xl">☕</span>
-            <div className="text-left">
-              <div className="text-xs font-extrabold text-[#17172B]">Java Junction</div>
-              <div className="text-[10px] text-[#687085]">2.4K members</div>
-            </div>
-          </div>
-
-          {/* Bottom Right: DSA Dojo activity pill */}
-          <div
-            className="absolute -bottom-6 -right-6 warm-card px-4 py-2.5 flex items-center gap-2.5 shadow-sm transform -rotate-2"
-            style={{ border: "1.5px solid #C9B6FF" }}
-          >
-            <span className="text-xl">🥋</span>
-            <div className="text-left">
-              <div className="text-xs font-extrabold text-[#17172B]">DSA Dojo</div>
-              <div className="text-[10px] text-violet-600 font-semibold">⚡ Today: Graphs</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Small sparkling star */}
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold mb-4 shadow-xs"
-          style={{ background: "#FFF8ED", border: "1.5px solid #FFD966", color: "#B45309" }}
+        {/* Hand-drawn Playful SVG Doodles (Reference mockup accents) */}
+        {/* Top-left Sparkle */}
+        <span
+          className="hidden sm:block absolute left-[26%] top-[11%] text-amber-400 text-lg pointer-events-none select-none"
+          aria-hidden="true"
         >
-          <span>✦</span>
-          <span>Student social community app</span>
-          <span>✦</span>
+          ✦
+        </span>
+        {/* Top-right Green Squiggle above Boundary Club */}
+        <svg
+          className="hidden sm:block absolute right-[32%] top-[6%] w-7 h-4 text-emerald-400 pointer-events-none select-none"
+          viewBox="0 0 30 15"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path d="M2 12 Q 10 2 18 10 T 28 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+        {/* Yellow Crown Doodle above Pixel Playground */}
+        <svg
+          className="hidden sm:block absolute right-[4%] top-[10%] w-7 h-5 text-amber-400 pointer-events-none select-none"
+          viewBox="0 0 24 16"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path d="M2 14 L 5 4 L 12 10 L 19 4 L 22 14 Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        {/* Cyan Arcs under Wander Notes */}
+        <svg
+          className="hidden sm:block absolute left-[3%] top-[34%] w-6 h-6 text-teal-400 pointer-events-none select-none"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path d="M6 18 C 3 14 3 8 7 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M12 20 C 8 15 8 7 13 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        {/* Pink Arcs beside Lo-Fi Lounge */}
+        <svg
+          className="hidden sm:block absolute left-[19%] top-[25%] w-6 h-6 text-pink-400 pointer-events-none select-none"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path d="M4 8 C 8 11 8 17 4 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M10 5 C 15 9 15 19 10 23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+
+        {/* Floating Draggable Community Stickers */}
+        {FLOATING_STICKERS.map((sticker) => (
+          <DraggableSticker
+            key={sticker.id}
+            item={sticker}
+            targetId={findId(sticker.name)}
+            containerRef={heroCanvasRef}
+          />
+        ))}
+
+        {/* Top Playful Hand-Written Tagline */}
+        <div className="relative z-10 mb-3 flex items-center justify-center gap-2 select-none">
+          <span className="text-amber-400 text-sm">✦</span>
+          <span
+            className="text-xs sm:text-sm font-semibold tracking-wide italic"
+            style={{ color: "#4B5563" }}
+          >
+            Real people.{" "}
+            <span className="relative inline-block text-[#17172B]">
+              Real interests.
+              <svg
+                className="absolute -bottom-1 left-0 w-full h-2 text-rose-400 pointer-events-none"
+                viewBox="0 0 100 8"
+                fill="none"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M 2 5 Q 50 9 98 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </span>{" "}
+            Real communities.
+          </span>
+          <span className="text-pink-400 text-sm">✦</span>
         </div>
 
-        {/* Hero headline with large friendly typography */}
-        <div className="space-y-4 relative z-10 max-w-3xl mx-auto">
+        {/* Hero Headline */}
+        <div className="relative z-10 max-w-3xl px-4 mx-auto space-y-4">
           <h1
-            className="text-4xl sm:text-6xl lg:text-[62px] font-extrabold leading-[1.1] tracking-tight"
+            className="text-5xl sm:text-6xl lg:text-[76px] font-black tracking-tight leading-[1.08]"
             style={{ color: "#17172B" }}
           >
-            Create communities around the things you care about.
+            Find your{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500">
+              people.
+            </span>
           </h1>
+
           <p
-            className="text-base sm:text-xl max-w-2xl mx-auto leading-relaxed"
+            className="text-base sm:text-lg max-w-xl mx-auto leading-relaxed font-medium"
             style={{ color: "#687085" }}
           >
-            Learn, build, discuss and grow with people who are into the same things.
-            Powered by daily practice challenges and collective memory.
+            Join communities around anything you love.
+            <br className="hidden sm:inline" />
+            {" "}From tech and sports to music, books, art and beyond.
           </p>
         </div>
 
-        {/* Action CTAs */}
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-3 pt-6 relative z-10">
+        {/* Hero Action Buttons */}
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-7 w-full px-6 sm:w-auto">
           <Link to="/explore" className="w-full sm:w-auto">
             <button
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-white transition-all duration-200 hover:opacity-95 active:scale-98 shadow-md flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-white transition-all duration-200 hover:opacity-95 active:scale-98 shadow-md flex items-center justify-center gap-2 cursor-pointer"
               style={{ background: "#17172B" }}
             >
               <span>Explore communities</span>
@@ -154,208 +464,402 @@ export default function Landing() {
           </Link>
           <Link to="/create" className="w-full sm:w-auto">
             <button
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-[#17172B] bg-white transition-all duration-200 hover:bg-neutral-50 active:scale-98 shadow-xs flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-[#17172B] bg-white transition-all duration-200 hover:bg-neutral-50 active:scale-98 shadow-xs flex items-center justify-center gap-2 cursor-pointer"
               style={{ border: "1.5px solid rgba(23,23,43,0.12)" }}
             >
-              <span>+ Start a community</span>
+              <span>+ Create a community</span>
             </button>
           </Link>
         </div>
-      </div>
 
-      {/* ══════════════════════════════════════════
-          COMMUNITY CARD PREVIEW GRID
-      ══════════════════════════════════════════ */}
-      <div className="space-y-4">
-        <div className="text-center">
-          <h2 className="text-lg sm:text-xl font-extrabold" style={{ color: "#17172B" }}>
-            Popular student communities
-          </h2>
-          <p className="text-xs sm:text-sm font-medium mt-0.5" style={{ color: "#687085" }}>
-            Clubs for learners, builders, and curious minds
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto">
-          {HERO_COMMUNITIES.map((c) => (
-            <Link
-              key={c.name}
-              to="/explore"
-              className="group warm-card p-4 flex flex-col gap-2.5 hover:scale-[1.02] transition-transform duration-200"
-            >
-              {/* Icon zone */}
-              <div
-                className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-xs"
-                style={{ background: c.bg, border: `2px solid ${c.color}35` }}
-              >
-                {c.symbol}
-              </div>
-              <div>
-                <div className="text-sm font-extrabold" style={{ color: "#17172B" }}>
-                  {c.name}
-                </div>
-                <div className="text-[11px] font-medium mt-0.5" style={{ color: "#687085" }}>
-                  {c.tag}
-                </div>
-              </div>
-              <div
-                className="mt-auto text-xs font-bold flex items-center gap-1"
-                style={{ color: "#17172B" }}
-              >
-                <span>Join</span>
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* ══════════════════════════════════════════
-          HOW IT WORKS
-      ══════════════════════════════════════════ */}
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="text-center space-y-1">
-          <h2
-            className="text-2xl sm:text-3xl font-extrabold tracking-tight"
-            style={{ color: "#1A1A2E" }}
-          >
-            How your community grows
-          </h2>
-          <p className="text-sm" style={{ color: "#64748B" }}>
-            Three simple things, every day.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {HOW_IT_WORKS.map((step, i) => (
-            <div
-              key={step.title}
-              className="warm-card p-5 space-y-3"
-            >
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl"
-                style={{ background: step.bg, border: `2px solid ${step.color}30` }}
-              >
-                {step.emoji}
-              </div>
-              <div>
-                <div
-                  className="text-xs font-bold mb-1"
-                  style={{ color: step.color }}
-                >
-                  Step {i + 1}
-                </div>
-                <h3
-                  className="text-base font-extrabold mb-1"
-                  style={{ color: "#1A1A2E" }}
-                >
-                  {step.title}
-                </h3>
-                <p className="text-xs leading-relaxed" style={{ color: "#64748B" }}>
-                  {step.desc}
-                </p>
-              </div>
+        {/* Social Proof Strip */}
+        <div className="relative z-10 flex items-center justify-center gap-3 pt-6 select-none">
+          <div className="flex items-center -space-x-2 overflow-hidden">
+            <div className="w-7 h-7 rounded-full bg-amber-200 border-2 border-white flex items-center justify-center text-xs font-bold text-amber-900">
+              A
             </div>
-          ))}
+            <div className="w-7 h-7 rounded-full bg-purple-200 border-2 border-white flex items-center justify-center text-xs font-bold text-purple-900">
+              P
+            </div>
+            <div className="w-7 h-7 rounded-full bg-pink-200 border-2 border-white flex items-center justify-center text-xs font-bold text-pink-900">
+              D
+            </div>
+            <div className="w-7 h-7 rounded-full bg-emerald-200 border-2 border-white flex items-center justify-center text-xs font-bold text-emerald-900">
+              R
+            </div>
+          </div>
+          <span className="text-xs font-bold text-[#4B5563]">
+            10K+ people already building together ❤️
+          </span>
+        </div>
+
+        {/* Far Right Decorative Note */}
+        <div className="hidden xl:block absolute right-8 bottom-12 text-right pointer-events-none select-none">
+          <div className="text-xs font-bold text-purple-900/60 leading-tight">
+            All Interests.
+            <br />
+            All People.
+            <br />
+            One Place.
+          </div>
         </div>
       </div>
 
       {/* ══════════════════════════════════════════
-          DEMO COMMUNITY CARD
+          HOW IT WORKS (5 CIRCULAR CONNECTED STEPS)
       ══════════════════════════════════════════ */}
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-5xl mx-auto px-4">
         <div
-          className="warm-card p-6 sm:p-8 relative overflow-hidden"
-          style={{ border: "1.5px solid #F5A62340" }}
+          className="warm-card p-6 sm:p-10 rounded-3xl space-y-8"
+          style={{ border: "1.5px solid rgba(23,23,43,0.06)" }}
         >
-          {/* Decorative blob */}
-          <div
-            className="absolute -top-10 -right-10 w-48 h-48 rounded-full pointer-events-none"
-            style={{ background: "#FDE68A", filter: "blur(40px)", opacity: 0.5 }}
-            aria-hidden="true"
-          />
-
-          <div className="relative z-10 space-y-4">
-            {/* Header */}
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
-                  style={{ background: "#FFF8E7", border: "2px solid #F5A62340" }}
-                >
-                  📚
-                </div>
-                <div>
-                  <h3
-                    className="text-xl font-extrabold leading-tight"
-                    style={{ color: "#1A1A2E" }}
-                  >
-                    GATEverse
-                  </h3>
-                  <p className="text-xs font-medium" style={{ color: "#94A3B8" }}>
-                    14 members · 28 discussions this week
-                  </p>
-                </div>
-              </div>
-              <Link to="/explore">
-                <GlowButton size="sm" variant="secondary">
-                  Preview →
-                </GlowButton>
-              </Link>
-            </div>
-
-            <p className="text-sm leading-relaxed" style={{ color: "#4B5563" }}>
-              GATE prep, engineering maths discussions, formula reviews, and daily study consistency for aspirants.
-            </p>
-
-            {/* Today's activity */}
-            <div
-              className="p-4 rounded-2xl"
-              style={{ background: "#FFF8E7", border: "1.5px solid #F5A62335" }}
+          <div className="text-center space-y-1">
+            <h2
+              className="text-2xl sm:text-3xl font-black tracking-tight"
+              style={{ color: "#17172B" }}
             >
-              <div className="flex items-center justify-between text-xs mb-1">
-                <span className="font-bold" style={{ color: "#F5A623" }}>
-                  ⚡ Today's activity
-                </span>
-                <span style={{ color: "#94A3B8" }}>15 min</span>
+              How it works
+            </h2>
+            <p className="text-sm font-medium" style={{ color: "#687085" }}>
+              A simple loop. A more connected you.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-6 sm:gap-4 text-center relative">
+            {/* Desktop wavy connecting loop */}
+            <svg
+              className="hidden sm:block absolute top-7 left-[8%] right-[8%] w-[84%] h-6 pointer-events-none z-0"
+              viewBox="0 0 500 30"
+              fill="none"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="stepLoopGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#F472B6" />
+                  <stop offset="25%" stopColor="#FBBF24" />
+                  <stop offset="50%" stopColor="#A78BFA" />
+                  <stop offset="75%" stopColor="#2DD4BF" />
+                  <stop offset="100%" stopColor="#FB923C" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 10 15 Q 65 3 125 15 T 250 15 T 375 15 T 485 15"
+                stroke="url(#stepLoopGrad)"
+                strokeWidth="2"
+                strokeDasharray="4 4"
+                strokeLinecap="round"
+              />
+              <path
+                d="M 480 11 L 490 15 L 480 19"
+                stroke="#FB923C"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+
+            {/* Step 1: Join */}
+            <div className="flex flex-col items-center space-y-2.5 relative z-10">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-xs transition-transform hover:scale-105"
+                style={{ background: "#FCE7F3", color: "#EC4899" }}
+              >
+                👥
               </div>
-              <p className="text-xs leading-relaxed" style={{ color: "#374151" }}>
-                Solve 3 previous year questions on Linear Algebra matrices, verify your eigenvalues, and log your doubt or takeaway.
+              <h3 className="text-sm font-extrabold text-[#17172B]">Join</h3>
+              <p className="text-xs text-[#687085] leading-relaxed">
+                Find your community
               </p>
             </div>
 
-            {/* Live discussion snippet */}
-            <div
-              className="p-3.5 rounded-2xl flex items-center gap-2.5"
-              style={{ background: "rgba(26,26,46,0.03)", border: "1.5px solid rgba(26,26,46,0.07)" }}
-            >
-              <span className="text-lg">💬</span>
-              <span className="text-xs italic flex-1" style={{ color: "#4B5563" }}>
-                "How are you preparing Engineering Maths? Linear Algebra is taking longer than expected."
-              </span>
-              <span className="text-[11px] shrink-0 font-medium" style={{ color: "#94A3B8" }}>— Priya</span>
+            {/* Step 2: Discuss */}
+            <div className="flex flex-col items-center space-y-2.5 relative z-10">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-xs transition-transform hover:scale-105"
+                style={{ background: "#FEF3C7", color: "#D97706" }}
+              >
+                💬
+              </div>
+              <h3 className="text-sm font-extrabold text-[#17172B]">Discuss</h3>
+              <p className="text-xs text-[#687085] leading-relaxed">
+                Share ideas &amp; get help
+              </p>
             </div>
 
-            {/* Footer */}
-            <div
-              className="flex items-center justify-between pt-2"
-              style={{ borderTop: "1.5px solid rgba(26,26,46,0.07)" }}
-            >
-              <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: "#10B981" }}>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block" />
-                Community memory active
-              </div>
-              <Link
-                to="/explore"
-                className="text-sm font-bold transition-colors"
-                style={{ color: "#1A1A2E" }}
+            {/* Step 3: Do */}
+            <div className="flex flex-col items-center space-y-2.5 relative z-10">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-xs transition-transform hover:scale-105"
+                style={{ background: "#EDE9FE", color: "#7C3AED" }}
               >
-                Join now →
-              </Link>
+                ⚡
+              </div>
+              <h3 className="text-sm font-extrabold text-[#17172B]">Do</h3>
+              <p className="text-xs text-[#687085] leading-relaxed">
+                Take part in activities
+              </p>
+            </div>
+
+            {/* Step 4: Share */}
+            <div className="flex flex-col items-center space-y-2.5 relative z-10">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-xs transition-transform hover:scale-105"
+                style={{ background: "#CCFBF1", color: "#0D9488" }}
+              >
+                🔗
+              </div>
+              <h3 className="text-sm font-extrabold text-[#17172B]">Share</h3>
+              <p className="text-xs text-[#687085] leading-relaxed">
+                Show your progress
+              </p>
+            </div>
+
+            {/* Step 5: Grow */}
+            <div className="flex flex-col items-center space-y-2.5 col-span-2 sm:col-span-1 relative z-10">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl shadow-xs transition-transform hover:scale-105"
+                style={{ background: "#FFEDD5", color: "#EA580C" }}
+              >
+                ✨
+              </div>
+              <h3 className="text-sm font-extrabold text-[#17172B]">Grow</h3>
+              <p className="text-xs text-[#687085] leading-relaxed">
+                The community remembers &amp; adapts with AI
+              </p>
             </div>
           </div>
         </div>
       </div>
+
+      {/* ══════════════════════════════════════════
+          POPULAR COMMUNITIES (HORIZONTAL CIRCLES)
+      ══════════════════════════════════════════ */}
+      <div className="max-w-5xl mx-auto px-4">
+        <div
+          className="warm-card p-6 sm:p-8 rounded-3xl space-y-6"
+          style={{ border: "1.5px solid rgba(23,23,43,0.06)" }}
+        >
+          <div>
+            <h2
+              className="text-xl sm:text-2xl font-black text-[#17172B]"
+            >
+              Popular communities
+            </h2>
+            <p className="text-xs sm:text-sm text-[#687085] mt-0.5">
+              Find people who are into the same things.
+            </p>
+          </div>
+
+          {/* Horizontal row of circular community avatars */}
+          <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto pb-2 scrollbar-none">
+            {POPULAR_ROW.map((item) => {
+              const targetId = findId(item.name);
+              const link = targetId ? `/cultures/${targetId}` : `/explore?q=${encodeURIComponent(item.name)}`;
+              return (
+                <Link
+                  key={item.name}
+                  to={link}
+                  className="flex flex-col items-center text-center shrink-0 group hover:scale-105 transition-transform duration-200"
+                  style={{ width: "96px" }}
+                >
+                  <div
+                    className="w-16 h-16 sm:w-18 sm:h-18 rounded-full flex items-center justify-center text-2xl sm:text-3xl shadow-xs mb-2 transition-shadow group-hover:shadow-md"
+                    style={{ background: item.bg }}
+                  >
+                    {item.symbol}
+                  </div>
+                  <div className="text-xs font-extrabold text-[#17172B] truncate w-full group-hover:text-purple-600 transition-colors">
+                    {item.name}
+                  </div>
+                  <div className="text-[10px] text-[#687085] font-medium truncate w-full mt-0.5">
+                    {item.count}
+                  </div>
+                </Link>
+              );
+            })}
+
+            {/* View All Button */}
+            <Link
+              to="/explore"
+              className="flex flex-col items-center text-center shrink-0 group hover:scale-105 transition-transform duration-200"
+              style={{ width: "80px" }}
+            >
+              <div className="w-14 h-14 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-base font-bold text-[#17172B] shadow-xs mb-2 group-hover:bg-neutral-200">
+                →
+              </div>
+              <span className="text-xs font-bold text-[#687085]">
+                View all
+              </span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════
+          BOTTOM EDITORIAL SHOWCASE (4 CARDS)
+      ══════════════════════════════════════════ */}
+      <div className="max-w-5xl mx-auto px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+          {/* Card 1: A space for every passion */}
+          <div
+            className="warm-card p-6 rounded-3xl flex flex-col justify-between space-y-6 relative overflow-hidden"
+            style={{
+              background: "linear-gradient(145deg, #FFFFFF 0%, #FFF8FA 100%)",
+              border: "1.5px solid rgba(23,23,43,0.06)",
+            }}
+          >
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black leading-tight text-[#17172B]">
+                A space for every{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
+                  passion
+                </span>
+              </h3>
+              <p className="text-xs text-[#687085] leading-relaxed">
+                Build, learn, share and grow — together.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center -space-x-2">
+                <div className="w-7 h-7 rounded-full bg-amber-200 border-2 border-white flex items-center justify-center text-[10px] font-bold">
+                  A
+                </div>
+                <div className="w-7 h-7 rounded-full bg-purple-200 border-2 border-white flex items-center justify-center text-[10px] font-bold">
+                  P
+                </div>
+                <div className="w-7 h-7 rounded-full bg-pink-200 border-2 border-white flex items-center justify-center text-[10px] font-bold">
+                  D
+                </div>
+              </div>
+
+              <Link to="/explore">
+                <button
+                  className="w-full py-2.5 rounded-full text-xs font-extrabold text-white cursor-pointer shadow-xs hover:opacity-90 active:scale-98 transition-all"
+                  style={{ background: "#17172B" }}
+                >
+                  Get started →
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 2: Interactive Mobile Screen Mockup */}
+          <div
+            className="warm-card p-5 rounded-3xl border space-y-3 relative shadow-xs"
+            style={{
+              background: "#FFFDF9",
+              border: "1.5px solid rgba(23,23,43,0.08)",
+            }}
+          >
+            {/* Mobile frame header */}
+            <div className="flex items-center justify-between pb-1 border-b border-neutral-100">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-amber-100 text-sm flex items-center justify-center">
+                  🧑‍🎨
+                </div>
+                <div className="text-left">
+                  <div className="text-xs font-bold text-[#17172B]">Hey, Alex 👋</div>
+                  <div className="text-[9px] text-[#94A3B8]">Good to see you!</div>
+                </div>
+              </div>
+              <span className="text-xs text-[#94A3B8]">🔍</span>
+            </div>
+
+            {/* Inner items */}
+            <div className="space-y-2 text-xs">
+              <div className="p-2.5 rounded-2xl bg-purple-50/60 border border-purple-100 flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-[#17172B] text-[11px]">Your communities</div>
+                  <div className="text-[9px] text-purple-700">8 joined</div>
+                </div>
+                <span className="text-[10px] text-purple-700">→</span>
+              </div>
+
+              <div className="p-2.5 rounded-2xl bg-emerald-50/60 border border-emerald-100 flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-[#17172B] text-[11px]">Today's activity</div>
+                  <div className="text-[9px] text-emerald-700">2 pending</div>
+                </div>
+                <span className="text-[10px] text-emerald-700">→</span>
+              </div>
+
+              <div className="p-2.5 rounded-2xl bg-amber-50/60 border border-amber-100 flex items-center justify-between">
+                <div>
+                  <div className="font-bold text-[#17172B] text-[11px]">Your streak</div>
+                  <div className="text-[9px] text-amber-700">12 days 🔥</div>
+                </div>
+                <span className="text-[10px] text-amber-700">→</span>
+              </div>
+            </div>
+
+            {/* Mock bottom nav */}
+            <div className="flex items-center justify-around pt-2 text-xs text-[#94A3B8] border-t border-neutral-100">
+              <span>🏠</span>
+              <span>➕</span>
+              <span>👥</span>
+              <span>👤</span>
+            </div>
+          </div>
+
+          {/* Card 3: Not just another app */}
+          <div
+            className="warm-card p-6 rounded-3xl flex flex-col justify-between space-y-4 relative overflow-hidden"
+            style={{
+              background: "#FFFFFF",
+              border: "1.5px solid rgba(23,23,43,0.06)",
+            }}
+          >
+            <div className="space-y-1">
+              <h3 className="text-xl font-black leading-tight text-[#17172B]">
+                Not just another app.
+              </h3>
+              <p className="text-xs text-[#687085] leading-relaxed">
+                A living, breathing community space.
+              </p>
+            </div>
+
+            {/* Organic pastel note */}
+            <div
+              className="p-4 rounded-2xl relative space-y-1 text-xs font-extrabold"
+              style={{
+                background: "#FEF9C3",
+                border: "1.5px solid #FDE047",
+                color: "#854D0E",
+              }}
+            >
+              <div>Ideas</div>
+              <div>People</div>
+              <div>Progress</div>
+              <div>Together</div>
+              <div className="text-right text-base">😊</div>
+            </div>
+          </div>
+
+          {/* Card 4: Testimonial Quote */}
+          <div
+            className="warm-card p-6 rounded-3xl flex flex-col justify-between space-y-4 relative"
+            style={{
+              background: "#FFFFFF",
+              border: "1.5px solid rgba(23,23,43,0.06)",
+            }}
+          >
+            <span className="text-4xl font-serif text-pink-400 leading-none">
+              “
+            </span>
+            <p className="text-xs sm:text-sm font-medium text-[#17172B] leading-relaxed italic">
+              “Micro Culture helped me find people who actually get what I'm into. It feels alive.”
+            </p>
+            <div className="text-[11px] font-bold text-[#687085]">
+              — A happy member
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   );
 }

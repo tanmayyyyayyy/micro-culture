@@ -68,8 +68,8 @@ function getCommunityResources(culture) {
   return [
     { title: `${culture?.name || "Community"} Starter Roadmap`, desc: `Essential guides and beginner tips curated by ${culture?.name || "club"} members.`, link: "#", tag: "Roadmap" },
     { title: "Curated Free Learning Channels", desc: "High-yield YouTube channels, documentation, and practice platforms recommended by peers.", link: "#", tag: "Curated" },
-    { title: "Community Discussions & Solution Archive", desc: "Top solved questions, doubts, and student projects shared in this club.", link: "#", tag: "Archive" },
-    { title: "Daily Check-in & Habit Tracker", desc: "Template for tracking your study consistency and collaborating with peers.", link: "#", tag: "Template" },
+    { title: "Community Discussions & Solution Archive", desc: "Top solved questions, discussions, and member projects shared in this community.", link: "#", tag: "Archive" },
+    { title: "Daily Check-in & Habit Tracker", desc: "Template for tracking your consistency and collaborating with peers.", link: "#", tag: "Template" },
   ];
 }
 
@@ -198,7 +198,7 @@ export default function CultureDetail() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto py-16">
-        <LoadingState message="Entering student club..." subtext="Getting discussions and activities ready." />
+        <LoadingState message="Entering community..." subtext="Getting discussions and activities ready." />
       </div>
     );
   }
@@ -447,8 +447,8 @@ export default function CultureDetail() {
               </div>
             ) : (
               logs.map((log) => {
-                const authorName = typeof log.userId === "object" ? log.userId?.name : "Student Member";
-                const initial = authorName ? authorName[0].toUpperCase() : "S";
+                const authorName = typeof log.userId === "object" ? log.userId?.name : "Community Member";
+                const initial = authorName ? authorName[0].toUpperCase() : "M";
                 const isDoubt = log.content?.includes("?") || log.content?.toLowerCase().includes("doubt");
 
                 return (
@@ -568,8 +568,8 @@ export default function CultureDetail() {
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
               <div className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-200/70 space-y-1">
-                <span className="font-bold text-violet-700">1. Join Club</span>
-                <p className="text-[11px] text-neutral-500">Connect with fellow students</p>
+                <span className="font-bold text-violet-700">1. Join Community</span>
+                <p className="text-[11px] text-neutral-500">Connect with fellow members</p>
               </div>
               <div className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-200/70 space-y-1">
                 <span className="font-bold text-blue-700">2. Discuss</span>
@@ -609,7 +609,7 @@ export default function CultureDetail() {
                     <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200">
                       {res.tag}
                     </span>
-                    <span className="text-neutral-400 text-xs">⭐ Student Pick</span>
+                    <span className="text-neutral-400 text-xs">⭐ Member Pick</span>
                   </div>
                   <h4 className="text-base font-bold text-neutral-900">
                     {res.title}

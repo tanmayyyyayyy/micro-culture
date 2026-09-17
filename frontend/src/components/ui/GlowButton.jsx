@@ -15,7 +15,7 @@ export default function GlowButton({
     lg: "px-8 py-3.5 text-base font-semibold rounded-full",
   };
 
-  // Warm, playful button styles for the light student-social theme
+  // Warm, playful button styles for the light social theme
   const variantClasses = {
     // Primary: dark fill — confident, readable
     primary:

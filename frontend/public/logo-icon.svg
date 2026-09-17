@@ -1,44 +1,28 @@
-<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="mc-ambient-glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.4"/>
-      <stop offset="60%" stop-color="#6366f1" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="mc-emblem-gradient" x1="20%" y1="10%" x2="80%" y2="90%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="45%" stop-color="#ddd6fe"/>
-      <stop offset="100%" stop-color="#818cf8"/>
+    <linearGradient id="logoMGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A855F7" />
+      <stop offset="50%" stop-color="#EC4899" />
+      <stop offset="100%" stop-color="#F59E0B" />
     </linearGradient>
-    <filter id="mc-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="2" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
   </defs>
-
-  <!-- Ambient cosmic backlight -->
-  <circle cx="50" cy="50" r="46" fill="url(#mc-ambient-glow)" />
-
-  <!-- Orbital arc (clockwise curve around emblem) -->
+  <!-- Connecting community orbit -->
   <path
-    d="M 78 24 A 41 41 0 1 0 45 91"
-    stroke="url(#mc-emblem-gradient)"
-    stroke-width="4.2"
+    d="M 10 11 C 14 6 22 6 26 11"
+    stroke="rgba(23,23,43,0.18)"
+    stroke-width="1.5"
     stroke-linecap="round"
   />
-
-  <!-- Terminal node on orbital arc -->
-  <circle cx="45" cy="91" r="2.8" fill="url(#mc-emblem-gradient)" />
-
-  <!-- Satellite / Cultural Memory node -->
-  <circle cx="73" cy="74" r="3.4" fill="url(#mc-emblem-gradient)" filter="url(#mc-glow)" />
-
-  <!-- Central Architectural Monogram "M" -->
+  <!-- Rounded M arches symbolizing connection with vivid gradient -->
   <path
-    d="M 36 68 V 32 L 50 62 L 64 32 V 68"
-    stroke="url(#mc-emblem-gradient)"
-    stroke-width="4.6"
+    d="M 9 26 V 15 C 9 12 11.5 10.5 13.5 12 L 18 16.5 L 22.5 12 C 24.5 10.5 27 12 27 15 V 26"
+    stroke="url(#logoMGrad)"
+    stroke-width="3.6"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
+  <!-- Three diverse community interest nodes -->
+  <circle cx="9" cy="9" r="2.2" fill="#EC4899" />
+  <circle cx="18" cy="5.5" r="2.4" fill="#F59E0B" />
+  <circle cx="27" cy="9" r="2.2" fill="#8B5CF6" />
 </svg>

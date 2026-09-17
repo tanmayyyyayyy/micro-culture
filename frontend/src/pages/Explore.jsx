@@ -7,15 +7,17 @@ import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 
-const STUDENT_CATEGORIES = [
-  { id: "all",      label: "All",       emoji: "🌟" },
-  { id: "study",    label: "Study",     emoji: "📚" },
-  { id: "code",     label: "Code",      emoji: "💻" },
+const INTEREST_CATEGORIES = [
+  { id: "all",      label: "All",       emoji: "✨" },
+  { id: "tech",     label: "Tech",      emoji: "💻" },
+  { id: "sports",   label: "Sports",    emoji: "🏏" },
+  { id: "music",    label: "Music",     emoji: "🎧" },
+  { id: "books",    label: "Books",     emoji: "📚" },
+  { id: "gaming",   label: "Gaming",    emoji: "🎮" },
   { id: "design",   label: "Design",    emoji: "🎨" },
-  { id: "ai",       label: "AI",        emoji: "🧠" },
-  { id: "security", label: "Security",  emoji: "🛡️" },
-  { id: "build",    label: "Build",     emoji: "🚀" },
-  { id: "career",   label: "Career",    emoji: "🎯" },
+  { id: "creative", label: "Creative",  emoji: "📷" },
+  { id: "fitness",  label: "Fitness",   emoji: "🏃" },
+  { id: "travel",   label: "Travel",    emoji: "✈️" },
 ];
 
 export default function Explore() {
@@ -74,7 +76,7 @@ export default function Explore() {
           Find your people.
         </h1>
         <p className="text-base sm:text-lg leading-relaxed" style={{ color: "#64748B" }}>
-          Learn, build, discuss and grow with communities that match what you're into.
+          Find people who share your interests, discuss what you love, and grow communities together.
         </p>
       </div>
 
@@ -120,7 +122,7 @@ export default function Explore() {
         </form>
         <Link to="/create" className="w-full sm:w-auto">
           <GlowButton variant="glow" size="md" className="w-full sm:w-auto justify-center">
-            + Start a Club
+            + Start a Community
           </GlowButton>
         </Link>
       </div>
@@ -129,7 +131,7 @@ export default function Explore() {
           CATEGORY PILLS
       ══════════════════════════════════════════ */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-        {STUDENT_CATEGORIES.map((cat) => (
+        {INTEREST_CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             type="button"

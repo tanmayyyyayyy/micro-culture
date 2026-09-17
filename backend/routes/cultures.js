@@ -330,17 +330,35 @@ router.get("/", async (req, res, next) => {
 
     // Apply category filter
     const selectedFilter = (filter || "all").toLowerCase().trim();
-    const STUDENT_CATEGORIES = ["study", "code", "design", "ai", "security", "build", "career"];
+    const CATEGORY_MAP = {
+      tech:     /\b(tech|code|coding|software|developer|programming|web|java|dsa|blockchain|cloud|devops|docker|ai|ml|security)\b/i,
+      sports:   /\b(sports|cricket|football|matches|game|athlete|ipl|scorecard)\b/i,
+      music:    /\b(music|lofi|lo-fi|playlists|beats|audio|sound|track|songs|synth)\b/i,
+      books:    /\b(books|reading|literature|novels|fiction|non-fiction|author|library)\b/i,
+      gaming:   /\b(gaming|games|co-op|multiplayer|esports|speedrun|arcade)\b/i,
+      design:   /\b(design|ui|ux|figma|designer|layout|visual|typography|prototyping)\b/i,
+      creative: /\b(creative|art|photography|photos|cameras|drawing|illustration|sketching|movies|cinema|film)\b/i,
+      fitness:  /\b(fitness|workout|gym|running|health|sports|stamina|endurance)\b/i,
+      travel:   /\b(travel|wander|trips|backpacking|explore|adventure|itinerary)\b/i,
+      // Backward compatibility for existing filters
+      study:    /\b(study|prep|gate|exam|learning|maths)\b/i,
+      code:     /\b(code|coding|java|algorithms|dsa|developer|backend)\b/i,
+      ai:       /\b(ai|ml|llm|genai|neural|machine learning)\b/i,
+      security: /\b(security|cyber|hacking|ctf|infosec)\b/i,
+      build:    /\b(build|ship|hackathon|projects|mvp|devops)\b/i,
+      career:   /\b(career|placements|interview|resume|internship)\b/i,
+    };
 
-    if (STUDENT_CATEGORIES.includes(selectedFilter)) {
-      const boundaryRegex = new RegExp(`\\b${selectedFilter}\\b`, "i");
+    if (CATEGORY_MAP[selectedFilter]) {
+      const matcher = CATEGORY_MAP[selectedFilter];
+      const fallbackRegex = new RegExp(`\\b${selectedFilter}\\b`, "i");
       enriched = enriched.filter((c) => {
         const words = (c.vibeWords || []).map((w) => w.toLowerCase());
         const combinedText = `${c.name || ""} ${c.description || ""} ${words.join(" ")}`;
         return (
           words.includes(selectedFilter) ||
-          boundaryRegex.test(combinedText) ||
-          (selectedFilter === "ai" && /\b(ai|ml|llm|genai|neural|machine learning)\b/i.test(combinedText))
+          matcher.test(combinedText) ||
+          fallbackRegex.test(combinedText)
         );
       });
     } else if (selectedFilter === "trending") {

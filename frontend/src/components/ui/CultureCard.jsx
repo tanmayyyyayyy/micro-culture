@@ -15,6 +15,14 @@ const COMMUNITY_IDENTITY = {
   "career launchpad":   { primary: "#FFB38A", accent: "#A78BFA", bg: "#FFF6F2", emoji: "🎯" },
   "devops dock":        { primary: "#67D7C8", accent: "#8DBBFF", bg: "#EDFBFF", emoji: "🐳" },
   "project playground": { primary: "#F58AC6", accent: "#FFD966", bg: "#FFF4F7", emoji: "🛠️" },
+  "boundary club":      { primary: "#10B981", accent: "#34D399", bg: "#ECFDF5", emoji: "🏏" },
+  "lo-fi lounge":       { primary: "#F472B6", accent: "#C084FC", bg: "#FDF2F8", emoji: "🎧" },
+  "the reading room":   { primary: "#F59E0B", accent: "#FCD34D", bg: "#FFFBEB", emoji: "📚" },
+  "frame by frame":     { primary: "#06B6D4", accent: "#38BDF8", bg: "#ECFEFF", emoji: "📷" },
+  "game night":         { primary: "#8B5CF6", accent: "#EC4899", bg: "#F5F3FF", emoji: "🎮" },
+  "wander notes":       { primary: "#14B8A6", accent: "#F59E0B", bg: "#F0FDFA", emoji: "✈️" },
+  "movie circle":       { primary: "#E11D48", accent: "#FB7185", bg: "#FFF1F2", emoji: "🎬" },
+  "art corner":         { primary: "#FB923C", accent: "#F472B6", bg: "#FFF7ED", emoji: "🎨" },
 };
 
 function getIdentity(name = "", fallbackColor = "#A78BFA") {
