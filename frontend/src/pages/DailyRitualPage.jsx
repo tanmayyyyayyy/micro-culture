@@ -189,7 +189,7 @@ export default function DailyRitualPage() {
 
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-white/5">
           <div>
-            <div className="text-[11px] font-bold tracking-wider uppercase text-violet-400">
+            <div className="text-xs font-semibold text-violet-400">
               Today&apos;s Activity
             </div>
             <p className="text-xs text-neutral-400 mt-0.5">
@@ -240,11 +240,11 @@ export default function DailyRitualPage() {
           </p>
         </div>
 
-        {/* Why this activity? (AI Community Memory) */}
+        {/* Community Context & Reason */}
         <div className="mb-8 p-4 rounded-xl bg-violet-950/25 border border-violet-500/25 relative">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-violet-300 uppercase tracking-wider">
-              <span>✦</span> Why this activity?
+            <div className="text-xs font-semibold text-violet-300">
+              Community Context &amp; Reason
             </div>
             <span className="text-[10px] text-violet-300/80 font-medium px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20">
               Building on recent activities
@@ -258,12 +258,14 @@ export default function DailyRitualPage() {
         {/* Instructions */}
         {ritual.instructions?.length > 0 && (
           <div className="space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
-              <span>Steps</span>
-              <span className="text-[10px] text-neutral-500 font-normal">
-                (Click a step to mark it done)
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                Steps
+              </h3>
+              <span className="text-xs font-medium text-violet-400">
+                {ritual.instructions.filter((_, idx) => !!completedSteps[idx]).length} of {ritual.instructions.length} steps complete
               </span>
-            </h3>
+            </div>
             <div className="space-y-2">
               {ritual.instructions.map((step, idx) => {
                 const isDone = !!completedSteps[idx];
@@ -299,13 +301,13 @@ export default function DailyRitualPage() {
 
         {/* Reflection prompt */}
         {ritual.reflectionPrompt && (
-          <div className="p-4 rounded-xl bg-neutral-900/90 border border-neutral-800 mb-8">
-            <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-1">
-              Reflection
+          <div className="p-5 sm:p-6 rounded-2xl bg-neutral-900/80 border border-white/10 mb-8 relative overflow-hidden">
+            <div className="text-xs font-semibold text-violet-400 mb-2">
+              Today&apos;s Reflection Prompt
             </div>
-            <p className="text-sm italic text-neutral-200 leading-relaxed">
+            <blockquote className="text-sm sm:text-base italic text-neutral-100 leading-relaxed border-l-2 border-violet-500/50 pl-3">
               &ldquo;{ritual.reflectionPrompt}&rdquo;
-            </p>
+            </blockquote>
           </div>
         )}
 
@@ -333,14 +335,13 @@ export default function DailyRitualPage() {
                 onChange={(e) => setContent(e.target.value)}
                 maxLength={2000}
                 rows={4}
-                className="w-full px-4 py-3 bg-neutral-900/90 border border-neutral-700/60 rounded-xl text-neutral-100 placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/40 focus:bg-neutral-900 transition-all duration-200 resize-none leading-relaxed"
+                className="w-full px-4 py-3.5 bg-neutral-900/90 border border-white/10 rounded-xl text-neutral-100 placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500/70 focus:ring-1 focus:ring-violet-500/40 focus:bg-neutral-900 transition-all duration-200 resize-none leading-relaxed"
               />
 
               {error && <p className="text-xs text-red-400">{error}</p>}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                <p className="text-[11px] text-neutral-400 flex items-center gap-1.5">
-                  <span className="text-violet-400">✦</span>
+                <p className="text-[11px] text-neutral-400">
                   Your reflection will help shape future activities.
                 </p>
 

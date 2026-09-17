@@ -52,9 +52,6 @@ export default function Explore() {
       {/* Header & Search */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/5">
         <div>
-          <div className="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-1">
-            <span>✧</span> Discover
-          </div>
           <h1 className="text-3xl font-bold tracking-tight text-white">
             Find Your Community
           </h1>

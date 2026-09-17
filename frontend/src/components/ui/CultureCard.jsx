@@ -13,8 +13,19 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
     : null;
 
   return (
-    <GlassPanel interactive className="group p-5 flex flex-col justify-between h-full">
-      <Link to={`/cultures/${culture._id}`} className="block">
+    <GlassPanel interactive className="group p-5 flex flex-col justify-between h-full relative overflow-hidden">
+      {/* Community color accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px] opacity-70 pointer-events-none"
+        style={{ backgroundColor: culture.color || "#8b5cf6" }}
+      />
+      {/* Subtle ambient tint on hover */}
+      <div
+        className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl pointer-events-none opacity-0 group-hover:opacity-15 transition-opacity duration-300"
+        style={{ backgroundColor: culture.color || "#8b5cf6" }}
+      />
+
+      <Link to={`/cultures/${culture._id}`} className="block relative z-10">
         {/* 1. Community Identity Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-3">
@@ -89,8 +100,8 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
         {culture.rituals?.[0] && (
           <div className="p-3 rounded-xl bg-neutral-900/70 border border-neutral-800/80 mb-3 space-y-1">
             <div className="flex items-center justify-between text-[11px]">
-              <span className="text-violet-400 font-semibold uppercase tracking-wider text-[10px] flex items-center gap-1">
-                <span>⚡</span> Today&apos;s Activity
+              <span className="text-violet-400 font-medium text-[11px]">
+                Today&apos;s Activity
               </span>
               <span className="text-neutral-500 font-mono text-[10px]">Daily</span>
             </div>

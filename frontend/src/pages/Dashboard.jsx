@@ -45,15 +45,23 @@ export default function Dashboard() {
     loadDashboard();
   }, [user]);
 
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const isCompletedToday = (c) => {
+    if (!c.participation?.lastCompletedAt) return false;
+    const lastDay = new Date(c.participation.lastCompletedAt).toISOString().slice(0, 10);
+    return lastDay === todayStr;
+  };
+
+  const pendingCulture = cultures.find((c) => !isCompletedToday(c) && c.rituals?.[0]);
+  const spotlightCulture = pendingCulture || (cultures.length > 0 ? cultures[0] : null);
+  const isSpotlightCompleted = spotlightCulture ? isCompletedToday(spotlightCulture) : false;
+
   return (
     <div className="space-y-8 animate-fadeIn">
-      {/* Welcome Banner & Stats Ribbon */}
+      {/* Welcome Banner, Spotlight & Stats Ribbon */}
       <GlassPanel className="p-6 sm:p-8 relative overflow-hidden border-white/10 shadow-2xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-1">
-              <span>✦</span> Your Dashboard
-            </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
               Welcome back, {user?.name || "there"}
             </h1>
@@ -76,6 +84,55 @@ export default function Dashboard() {
             </Link>
           </div>
         </div>
+
+        {/* Today's Activity Spotlight */}
+        {spotlightCulture && (
+          <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-neutral-900/80 border border-violet-500/20 relative overflow-hidden">
+            <div
+              className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20"
+              style={{ backgroundColor: spotlightCulture.color || "#8b5cf6" }}
+            />
+
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-1.5 min-w-0">
+                <div className="flex items-center gap-2 text-xs flex-wrap">
+                  <span className="font-semibold text-violet-400 text-xs">
+                    Today&apos;s Activity
+                  </span>
+                  <span className="text-neutral-500">•</span>
+                  <span className="text-neutral-200 font-medium">
+                    {spotlightCulture.symbol} {spotlightCulture.name}
+                  </span>
+                  {isSpotlightCompleted && (
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                      ✓ Completed Today
+                    </span>
+                  )}
+                </div>
+
+                <h3 className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug">
+                  {spotlightCulture.rituals?.[0] || "Take part in today's activity and contribute your reflection"}
+                </h3>
+
+                <p className="text-xs text-neutral-400 max-w-xl line-clamp-1">
+                  {spotlightCulture.description}
+                </p>
+              </div>
+
+              <div className="shrink-0 w-full sm:w-auto">
+                <Link to={`/cultures/${spotlightCulture._id}/ritual`} className="block w-full sm:w-auto">
+                  <GlowButton
+                    variant={isSpotlightCompleted ? "secondary" : "glow"}
+                    size="md"
+                    className="w-full sm:w-auto justify-center min-h-[44px]"
+                  >
+                    {isSpotlightCompleted ? "Review Activity →" : "Start Today's Activity →"}
+                  </GlowButton>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Stats Ribbon */}
         {stats && (

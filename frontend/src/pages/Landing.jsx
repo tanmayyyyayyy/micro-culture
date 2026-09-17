@@ -14,7 +14,7 @@ export default function Landing() {
         </div>
 
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-xs font-medium">
-          <span>✦</span> Social Communities + Daily AI Activities
+          Social Communities + Daily AI Activities
         </div>
 
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
@@ -39,19 +39,24 @@ export default function Landing() {
           </Link>
         </div>
 
-        {/* 3-Step Instant Clarity Summary — Visible without scrolling */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 max-w-2xl mx-auto">
-          <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.07] text-left space-y-1">
-            <div className="text-xs font-bold text-violet-400">1. Join a Community</div>
-            <p className="text-xs text-neutral-300">Find people who share your interests.</p>
+        {/* 3-Step Overview: How it works */}
+        <div className="pt-3 max-w-2xl mx-auto space-y-2">
+          <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+            How it works
           </div>
-          <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.07] text-left space-y-1">
-            <div className="text-xs font-bold text-cyan-400">2. Do Daily Activities</div>
-            <p className="text-xs text-neutral-300">Take part in simple activities created for your community.</p>
-          </div>
-          <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.07] text-left space-y-1">
-            <div className="text-xs font-bold text-amber-400">3. AI Learns &amp; Adapts</div>
-            <p className="text-xs text-neutral-300">Your community&apos;s activity helps AI create better activities over time.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-left space-y-0.5">
+              <div className="text-xs font-semibold text-violet-300">1. Join a Community</div>
+              <p className="text-[11px] text-neutral-400 leading-snug">Find people who share your craft, interests, or practice.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-left space-y-0.5">
+              <div className="text-xs font-semibold text-cyan-300">2. Do Daily Activities</div>
+              <p className="text-[11px] text-neutral-400 leading-snug">Take part in bite-sized daily prompts created for your group.</p>
+            </div>
+            <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-left space-y-0.5">
+              <div className="text-xs font-semibold text-amber-300">3. AI Learns &amp; Adapts</div>
+              <p className="text-[11px] text-neutral-400 leading-snug">Community reflections guide what activities appear next.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -91,8 +96,8 @@ export default function Landing() {
           {/* Today's Activity (Feature of the community) */}
           <div className="p-4 rounded-xl bg-neutral-900/80 border border-neutral-800 space-y-2 mb-4">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-violet-400 font-semibold uppercase tracking-wider text-[10px] flex items-center gap-1">
-                <span>⚡</span> Today&apos;s Activity: The Horizon Ledger
+              <span className="text-violet-400 font-medium text-xs">
+                Today&apos;s Activity: The Horizon Ledger
               </span>
               <span className="text-neutral-500 font-mono text-[11px]">15 min · Easy</span>
             </div>
