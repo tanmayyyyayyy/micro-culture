@@ -157,7 +157,7 @@ export default function Dashboard() {
             }
           />
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-fadeIn">
             {cultures.map((c) => (
               <CultureCard
                 key={c._id}
