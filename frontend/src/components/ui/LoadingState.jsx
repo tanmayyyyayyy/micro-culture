@@ -53,11 +53,10 @@ export default function LoadingState({
         aria-live="polite"
       >
         <div className="relative mb-4">
-          <div className="w-10 h-10 rounded-full border-2 border-violet-500/20 border-t-violet-500 animate-spin" />
-          <div className="absolute inset-0 rounded-full blur-md bg-violet-500/20" />
+          <div className="w-10 h-10 rounded-full border-2 animate-spin" style={{ borderColor: "rgba(26,26,46,0.12)", borderTopColor: "#7C3AED" }} />
         </div>
-        <p className="text-sm font-medium text-neutral-300 tracking-wide">{message}</p>
-        {subtext && <p className="text-xs text-neutral-500 mt-1 max-w-xs mx-auto">{subtext}</p>}
+        <p className="text-sm font-semibold" style={{ color: "#1A1A2E" }}>{message}</p>
+        {subtext && <p className="text-xs mt-1 max-w-xs mx-auto" style={{ color: "#94A3B8" }}>{subtext}</p>}
       </div>
     );
   }
@@ -78,16 +77,16 @@ export default function LoadingState({
         </div>
 
         {/* Progressive cold-start messaging */}
-        <h3 className="text-sm font-semibold text-white tracking-tight transition-opacity duration-300">
+        <h3 className="text-sm font-semibold tracking-tight transition-opacity duration-300" style={{ color: "#1A1A2E" }}>
           {stage === 2 ? slowTitle : wakeTitle}
         </h3>
-        <p className="text-xs text-neutral-400 mt-1 max-w-xs mx-auto leading-relaxed transition-opacity duration-300">
+        <p className="text-xs mt-1 max-w-xs mx-auto leading-relaxed transition-opacity duration-300" style={{ color: "#94A3B8" }}>
           {stage === 2 ? slowSubtext : wakeSubtext}
         </p>
 
         {/* Subtle loading indicator bar */}
-        <div className="w-20 h-1 bg-white/10 rounded-full overflow-hidden mx-auto mt-4">
-          <div className="h-full w-full bg-gradient-to-r from-violet-500 via-indigo-400 to-violet-500 rounded-full animate-pulse" />
+        <div className="w-20 h-1 rounded-full overflow-hidden mx-auto mt-4" style={{ background: "rgba(26,26,46,0.08)" }}>
+          <div className="h-full w-full rounded-full animate-pulse" style={{ background: "linear-gradient(90deg, #7C3AED, #A855F7, #7C3AED)" }} />
         </div>
       </GlassPanel>
     </div>

@@ -9,19 +9,27 @@ export default function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinkStyle = ({ isActive }) =>
-    `px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ease-out ${
+    `px-3.5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 ease-out ${
       isActive
-        ? "text-white bg-white/10"
-        : "text-neutral-400 hover:text-neutral-100 hover:bg-white/5"
+        ? "bg-[#1A1A2E] text-white shadow-sm"
+        : "text-[#4B5563] hover:text-[#1A1A2E] hover:bg-[rgba(26,26,46,0.06)]"
     }`;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/[0.07] bg-neutral-950/85 backdrop-blur-xl">
+    <header
+      className="sticky top-0 z-40 w-full"
+      style={{
+        background: "rgba(255,253,247,0.92)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderBottom: "1.5px solid rgba(26,26,46,0.08)",
+      }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand */}
         <Link
           to="/"
-          className="flex items-center transition-opacity duration-200 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 rounded-lg"
+          className="flex items-center transition-opacity duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 rounded-lg"
           aria-label="Micro Culture — home"
         >
           <MicroCultureLogo size="md" />
@@ -38,31 +46,35 @@ export default function NavBar() {
                 Dashboard
               </NavLink>
               <NavLink to="/create" className={navLinkStyle}>
-                Create Community
+                Create
               </NavLink>
             </>
           )}
         </nav>
 
-        {/* User Auth Section */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Desktop Auth */}
+        <div className="hidden md:flex items-center gap-2.5">
           {user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <NavLink
                 to="/profile"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-xs text-neutral-300 hover:text-white hover:border-neutral-700 hover:bg-neutral-800/80 transition-all duration-200"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold text-[#17172B] hover:bg-[rgba(23,23,43,0.06)] transition-all duration-200"
+                style={{ border: "1.5px solid rgba(23,23,43,0.12)" }}
               >
-                <div className="w-5 h-5 rounded-full bg-violet-600/30 text-violet-300 font-semibold flex items-center justify-center text-[10px]">
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+                  style={{ background: "#7C3AED" }}
+                >
                   {user.name?.[0]?.toUpperCase() || "U"}
                 </div>
-                <span className="font-medium max-w-[120px] truncate">{user.name}</span>
+                <span className="max-w-[100px] truncate">{user.name?.split(" ")[0]}</span>
               </NavLink>
               <button
                 onClick={() => {
                   logout();
                   navigate("/");
                 }}
-                className="text-xs text-neutral-400 hover:text-white px-2 py-1.5 transition-colors duration-200 rounded"
+                className="text-sm text-[#687085] hover:text-[#17172B] px-2 py-1.5 transition-colors duration-200 rounded font-medium"
               >
                 Log out
               </button>
@@ -71,28 +83,30 @@ export default function NavBar() {
             <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="px-3.5 py-1.5 text-sm text-neutral-300 hover:text-white transition-colors duration-200 rounded"
+                className="px-4 py-1.5 text-sm font-semibold text-[#687085] hover:text-[#17172B] transition-colors duration-200 rounded-full"
               >
                 Log in
               </Link>
               <Link
                 to="/signup"
-                className="px-4 py-1.5 text-sm font-medium bg-white text-neutral-950 rounded-full hover:bg-neutral-100 active:scale-[0.97] transition-all duration-200 shadow-sm"
+                className="px-5 py-2 text-sm font-semibold text-white rounded-full hover:opacity-90 active:scale-[0.97] transition-all duration-200 shadow-sm"
+                style={{ background: "#17172B" }}
               >
-                Sign up
+                Create account
               </Link>
             </div>
           )}
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile hamburger */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-neutral-400 hover:text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded-lg"
-          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          className="md:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#4B5563] hover:text-[#1A1A2E] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded-xl"
+          style={{ background: mobileMenuOpen ? "rgba(26,26,46,0.06)" : "transparent" }}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileMenuOpen}
         >
-          <svg className="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {mobileMenuOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             ) : (
@@ -102,38 +116,44 @@ export default function NavBar() {
         </button>
       </div>
 
-      {/* Mobile Drawer — animated slide-down */}
+      {/* Mobile drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-white/[0.07] bg-neutral-950/95 px-4 py-4 space-y-1 animate-slideDown">
+        <div
+          className="md:hidden px-4 py-4 space-y-1 animate-slideDown"
+          style={{
+            borderTop: "1.5px solid rgba(26,26,46,0.08)",
+            background: "rgba(255,253,247,0.98)",
+          }}
+        >
           <Link
             to="/explore"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3.5 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
+            className="block px-4 py-3 rounded-2xl text-sm font-semibold text-[#4B5563] hover:text-[#1A1A2E] hover:bg-[rgba(26,26,46,0.05)] transition-colors duration-150"
           >
-            Explore Communities
+            🔭 Explore Communities
           </Link>
           {user ? (
             <>
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3.5 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
+                className="block px-4 py-3 rounded-2xl text-sm font-semibold text-[#4B5563] hover:text-[#1A1A2E] hover:bg-[rgba(26,26,46,0.05)] transition-colors duration-150"
               >
-                Dashboard
+                🏠 Home
               </Link>
               <Link
                 to="/create"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3.5 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
+                className="block px-4 py-3 rounded-2xl text-sm font-semibold text-[#4B5563] hover:text-[#1A1A2E] hover:bg-[rgba(26,26,46,0.05)] transition-colors duration-150"
               >
-                Create Community
+                ✨ Create Community
               </Link>
               <Link
                 to="/profile"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3.5 py-3 rounded-lg text-sm text-neutral-300 hover:text-white hover:bg-white/5 transition-colors duration-150"
+                className="block px-4 py-3 rounded-2xl text-sm font-semibold text-[#4B5563] hover:text-[#1A1A2E] hover:bg-[rgba(26,26,46,0.05)] transition-colors duration-150"
               >
-                Profile ({user.name})
+                👤 Profile — {user.name}
               </Link>
               <button
                 onClick={() => {
@@ -141,7 +161,7 @@ export default function NavBar() {
                   setMobileMenuOpen(false);
                   navigate("/");
                 }}
-                className="w-full text-left px-3.5 py-3 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors duration-150"
+                className="w-full text-left px-4 py-3 rounded-2xl text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors duration-150"
               >
                 Log out
               </button>
@@ -151,16 +171,18 @@ export default function NavBar() {
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-center py-3 min-h-[44px] flex items-center justify-center text-sm text-neutral-300 bg-neutral-900 border border-neutral-800 rounded-xl hover:bg-neutral-800 hover:text-white transition-all duration-150"
+                className="block w-full text-center py-3 min-h-[48px] flex items-center justify-center text-sm font-semibold text-[#1A1A2E] bg-white rounded-2xl hover:bg-neutral-50 transition-all duration-150"
+                style={{ border: "1.5px solid rgba(26,26,46,0.12)" }}
               >
                 Log in
               </Link>
               <Link
                 to="/signup"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-center py-3 min-h-[44px] flex items-center justify-center text-sm font-medium text-neutral-950 bg-white rounded-xl hover:bg-neutral-100 active:scale-[0.98] transition-all duration-150"
+                className="block w-full text-center py-3 min-h-[48px] flex items-center justify-center text-sm font-semibold text-white rounded-2xl hover:opacity-90 active:scale-[0.98] transition-all duration-150"
+                style={{ background: "#1A1A2E" }}
               >
-                Sign up
+                Sign up free
               </Link>
             </div>
           )}

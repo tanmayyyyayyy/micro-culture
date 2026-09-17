@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
+import MobileBottomNav from "./components/MobileBottomNav.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import Landing from "./pages/Landing.jsx";
@@ -15,24 +16,30 @@ import Profile from "./pages/Profile.jsx";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#090a0f] text-neutral-100 flex flex-col relative overflow-x-hidden selection:bg-violet-500/30 selection:text-violet-200">
-      {/* Ambient background glow orbs */}
+    <div
+      className="min-h-screen flex flex-col relative overflow-x-hidden"
+      style={{ background: "#FFFDF7", color: "#17172B" }}
+    >
+      {/* Soft ambient background blobs — warm pastels */}
       <div
-        className="ambient-glow-orb w-[600px] h-[600px] -top-40 -left-40 bg-violet-600/15"
+        className="ambient-glow-orb w-[700px] h-[700px] -top-60 -left-60"
+        style={{ background: "#FDE68A" }}
         aria-hidden="true"
       />
       <div
-        className="ambient-glow-orb w-[500px] h-[500px] top-1/3 -right-40 bg-indigo-600/10"
+        className="ambient-glow-orb w-[500px] h-[500px] top-1/3 -right-40"
+        style={{ background: "#DDD6FE" }}
         aria-hidden="true"
       />
       <div
-        className="ambient-glow-orb w-[700px] h-[700px] -bottom-40 left-1/4 bg-fuchsia-600/10"
+        className="ambient-glow-orb w-[600px] h-[600px] -bottom-40 left-1/4"
+        style={{ background: "#FCA5A5" }}
         aria-hidden="true"
       />
 
       <NavBar />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 relative z-10">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 pb-24 md:pb-8 relative z-10">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/explore" element={<Explore />} />
@@ -83,18 +90,27 @@ export default function App() {
         </Routes>
       </main>
 
-      <footer className="border-t border-white/5 py-8 text-center text-xs text-neutral-500 relative z-10">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
-            <span className="font-semibold text-neutral-400">Micro Culture</span>
-            <span className="hidden sm:inline">·</span>
-            <span>Living communities powered by community memory & AI activities</span>
+      <footer
+        className="py-7 text-center text-xs relative z-10 mb-14 md:mb-0"
+        style={{
+          borderTop: "1.5px solid rgba(23,23,43,0.08)",
+          color: "#687085",
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5">
+            <span style={{ fontWeight: 700, color: "#17172B" }}>Micro Culture</span>
+            <span style={{ color: "#CBD5E1" }}>·</span>
+            <span>Communities powered by shared interests &amp; AI activities</span>
           </div>
-          <div className="text-neutral-500 text-center sm:text-right">
-            Every daily activity helps shape the community&apos;s future
+          <div className="text-center sm:text-right">
+            Every activity shapes the community&apos;s memory
           </div>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 }

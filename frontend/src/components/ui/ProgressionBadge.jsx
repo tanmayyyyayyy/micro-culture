@@ -85,9 +85,9 @@ function ProgressBar({ progress, color, glow }) {
   return (
     <div
       style={{
-        height: "6px",
+        height: "8px",
         borderRadius: "999px",
-        background: "rgba(255,255,255,0.07)",
+        background: "rgba(26,26,46,0.07)",
         overflow: "hidden",
         position: "relative",
       }}
@@ -97,7 +97,7 @@ function ProgressBar({ progress, color, glow }) {
           height: "100%",
           width: `${progress}%`,
           borderRadius: "999px",
-          background: `linear-gradient(90deg, ${color}99, ${color})`,
+          background: `linear-gradient(90deg, ${color}cc, ${color})`,
           boxShadow: `0 0 8px ${glow}`,
           /* CSS animation — runs once on mount, ~600ms ease-out */
           animation: "progressFill 0.7s cubic-bezier(0.22,0.61,0.36,1) both",
@@ -124,12 +124,10 @@ export function ProgressionPanel({ progression }) {
 
   return (
     <section
-      className="p-4 sm:p-6"
+      className="p-5 sm:p-6 warm-card border"
       style={{
-        borderRadius: "1rem",
-        border: `1px solid ${meta.color}33`,
-        background: `radial-gradient(ellipse at top left, ${meta.color}12 0%, transparent 70%), rgba(255,255,255,0.04)`,
-        backdropFilter: "blur(12px)",
+        borderColor: "rgba(26,26,46,0.08)",
+        background: `radial-gradient(ellipse at top left, ${meta.color}0d 0%, #ffffff 70%)`,
         position: "relative",
         overflow: "hidden",
       }}
@@ -146,33 +144,33 @@ export function ProgressionPanel({ progression }) {
           background: meta.glow,
           filter: "blur(50px)",
           pointerEvents: "none",
-          opacity: 0.5,
+          opacity: 0.25,
         }}
       />
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", position: "relative" }}>
         <div>
-          <p style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", marginBottom: "0.3rem" }}>
+          <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#64748B", marginBottom: "0.25rem" }}>
             CULTURE EVOLUTION
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <span style={{ fontSize: "1.4rem" }}>{meta.icon}</span>
-            <span style={{ fontSize: "1.15rem", fontWeight: 800, color: meta.color, letterSpacing: "0.06em" }}>
+            <span style={{ fontSize: "1.15rem", fontWeight: 800, color: meta.color, letterSpacing: "0.02em" }}>
               {progression.stage}
             </span>
           </div>
         </div>
         {/* Level pips */}
-        <div style={{ display: "flex", gap: "0.3rem" }}>
+        <div style={{ display: "flex", gap: "0.35rem" }}>
           {[1, 2, 3, 4, 5].map((n) => (
             <div
               key={n}
               style={{
-                width: "8px",
-                height: "8px",
+                width: "9px",
+                height: "9px",
                 borderRadius: "50%",
-                background: n <= level ? meta.color : "rgba(255,255,255,0.12)",
+                background: n <= level ? meta.color : "rgba(26,26,46,0.12)",
                 boxShadow: n <= level ? `0 0 6px ${meta.glow}` : "none",
                 transition: "background 0.3s",
               }}
@@ -182,17 +180,17 @@ export function ProgressionPanel({ progression }) {
       </div>
 
       {/* Description */}
-      <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.65)", marginBottom: "1rem", lineHeight: 1.55 }}>
-        "{meta.description}"
+      <p style={{ fontSize: "0.875rem", color: "#4B5563", marginBottom: "1rem", lineHeight: 1.55 }}>
+        &ldquo;{meta.description}&rdquo;
       </p>
 
       {/* Progress bar */}
-      <div style={{ marginBottom: "0.6rem" }}>
+      <div style={{ marginBottom: "0.75rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.4rem" }}>
-          <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+          <span style={{ fontSize: "0.72rem", color: "#64748B", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600 }}>
             Stage Progress
           </span>
-          <span style={{ fontSize: "0.7rem", fontWeight: 700, color: meta.color }}>
+          <span style={{ fontSize: "0.75rem", fontWeight: 700, color: meta.color }}>
             {progression.progress}%
           </span>
         </div>
@@ -200,19 +198,19 @@ export function ProgressionPanel({ progression }) {
       </div>
 
       {/* Stats row */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginTop: "1rem" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", marginTop: "1rem", paddingTop: "0.75rem", borderTop: "1px solid rgba(26,26,46,0.06)" }}>
         <div>
-          <p style={{ fontSize: "1rem", fontWeight: 800, color: "#fff", margin: 0 }}>{progression.completedRituals ?? 0}</p>
-          <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.4)", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em" }}>Activities Completed</p>
+          <p style={{ fontSize: "1.1rem", fontWeight: 800, color: "#1A1A2E", margin: 0 }}>{progression.completedRituals ?? 0}</p>
+          <p style={{ fontSize: "0.7rem", color: "#64748B", margin: 0, textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 600 }}>Activities Completed</p>
         </div>
         <div>
-          <p style={{ fontSize: "1rem", fontWeight: 800, color: "#fff", margin: 0 }}>{progression.members ?? 0}</p>
-          <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.4)", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em" }}>Members</p>
+          <p style={{ fontSize: "1.1rem", fontWeight: 800, color: "#1A1A2E", margin: 0 }}>{progression.members ?? 0}</p>
+          <p style={{ fontSize: "0.7rem", color: "#64748B", margin: 0, textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 600 }}>Members</p>
         </div>
         {progression.level < 5 && (
           <div style={{ marginLeft: "auto", textAlign: "right" }}>
-            <p style={{ fontSize: "0.68rem", color: meta.color, margin: 0, letterSpacing: "0.06em" }}>Next level →</p>
-            <p style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.35)", margin: 0 }}>Level {level + 1}</p>
+            <p style={{ fontSize: "0.7rem", color: meta.color, margin: 0, fontWeight: 700 }}>Next level →</p>
+            <p style={{ fontSize: "0.7rem", color: "#94A3B8", margin: 0 }}>Level {level + 1}</p>
           </div>
         )}
       </div>

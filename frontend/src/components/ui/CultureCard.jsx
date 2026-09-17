@@ -1,128 +1,173 @@
 import { Link } from "react-router-dom";
 
+const COMMUNITY_IDENTITY = {
+  gateverse:            { primary: "#FFAD5A", accent: "#FFD966", bg: "#FFF8ED", emoji: "📚" },
+  "java junction":      { primary: "#FF7F8A", accent: "#FFB38A", bg: "#FFF2F0", emoji: "☕" },
+  "pixel playground":   { primary: "#F58AC6", accent: "#C9B6FF", bg: "#FFF0F7", emoji: "🎨" },
+  blockbuilders:        { primary: "#8DBBFF", accent: "#A78BFA", bg: "#F0F5FF", emoji: "⛓️" },
+  "cyber sentinels":    { primary: "#67D7C8", accent: "#9BE7C4", bg: "#EDFCFA", emoji: "🛡️" },
+  hacknights:           { primary: "#FF7F8A", accent: "#F58AC6", bg: "#FFF0F4", emoji: "🚀" },
+  "dsa dojo":           { primary: "#A78BFA", accent: "#C9B6FF", bg: "#F5F2FF", emoji: "🥋" },
+  codecanvas:           { primary: "#FFAD5A", accent: "#FFD966", bg: "#FFFBF0", emoji: "💻" },
+  "neural nest":        { primary: "#A78BFA", accent: "#C9B6FF", bg: "#FAF3FF", emoji: "🧠" },
+  "open source orbit":  { primary: "#8DBBFF", accent: "#9BE7C4", bg: "#EFFBF8", emoji: "🌐" },
+  codesprint:           { primary: "#FF6B6B", accent: "#FFAD5A", bg: "#FFF1F1", emoji: "⚡" },
+  "career launchpad":   { primary: "#FFB38A", accent: "#A78BFA", bg: "#FFF6F2", emoji: "🎯" },
+  "devops dock":        { primary: "#67D7C8", accent: "#8DBBFF", bg: "#EDFBFF", emoji: "🐳" },
+  "project playground": { primary: "#F58AC6", accent: "#FFD966", bg: "#FFF4F7", emoji: "🛠️" },
+};
+
+function getIdentity(name = "", fallbackColor = "#A78BFA") {
+  const key = name.toLowerCase().trim();
+  // Exact match
+  if (COMMUNITY_IDENTITY[key]) return COMMUNITY_IDENTITY[key];
+  // Partial match
+  for (const [k, v] of Object.entries(COMMUNITY_IDENTITY)) {
+    if (key.includes(k) || k.includes(key)) return v;
+  }
+  // Fallback: derive soft pastel from fallback
+  return { primary: fallbackColor, accent: "#FFD966", bg: "#F8F7FF", emoji: "✨" };
+}
+
 export default function CultureCard({ culture, actionText, actionLink, isMember = false }) {
   if (!culture) return null;
 
-  const accentColor = culture.color || "#8b5cf6";
+  const identity = getIdentity(culture.name, culture.color || "#A78BFA");
   const membersCount = culture.membersCount ?? (culture.members?.length || 1);
 
-  // Friendly status badge
-  let statusBadge = null;
-  if (culture.discovery?.badge === "TRENDING" || culture.discovery?.isTrending) {
-    statusBadge = { text: "🔥 Trending", style: "bg-amber-500/15 text-amber-300 border-amber-500/30" };
-  } else if (culture.discovery?.badge === "NEW" || culture.discovery?.isNew) {
-    statusBadge = { text: "✦ New", style: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" };
+  // Use community identity emoji if culture doesn't have a distinct symbol
+  const displaySymbol = culture.symbol && culture.symbol !== "✨"
+    ? culture.symbol
+    : identity.emoji;
+
+  // Friendly status text
+  let statusText = "Active";
+  let statusBg = "rgba(23,23,43,0.06)";
+  let statusColor = "#687085";
+  if (culture.discovery?.isTrending || culture.discovery?.badge === "TRENDING") {
+    statusText = "🔥 Trending";
+    statusBg = "#FEF3C7";
+    statusColor = "#92400E";
+  } else if (culture.discovery?.isNew || culture.discovery?.badge === "NEW") {
+    statusText = "✦ New";
+    statusBg = "#ECFDF5";
+    statusColor = "#065F46";
   } else if (culture.discovery?.isGrowing) {
-    statusBadge = { text: "🌱 Growing", style: "bg-teal-500/15 text-teal-300 border-teal-500/30" };
-  } else {
-    statusBadge = { text: "● Active now", style: "bg-violet-500/15 text-violet-300 border-violet-500/30" };
+    statusText = "🌱 Growing";
+    statusBg = "#F0FDF4";
+    statusColor = "#14532D";
   }
 
-  // Friendly category tag
-  const categoryTag = culture.vibeWords?.slice(0, 3).join(" • ") || "Community";
+  const categoryTag = culture.vibeWords?.slice(0, 2).join(" · ") || "";
 
   return (
     <div
-      className="playful-card group relative overflow-hidden p-5 sm:p-6 flex flex-col justify-between h-full cursor-pointer"
-      style={{
-        "--card-accent-glow": `${accentColor}35`,
-      }}
+      className="community-card group flex flex-col h-full"
+      style={{ "--community-primary": identity.primary }}
     >
-      {/* Top pastel accent border */}
+      {/* Colorful top zone with oversized icon */}
       <div
-        className="absolute top-0 left-0 right-0 h-1.5 opacity-85"
+        className="relative overflow-hidden flex items-end px-5 pt-5 pb-4"
         style={{
-          background: `linear-gradient(90deg, ${accentColor}, ${accentColor}40, transparent)`,
+          background: `linear-gradient(145deg, ${identity.bg} 0%, ${identity.primary}25 100%)`,
+          minHeight: "110px",
         }}
-      />
+      >
+        {/* Decorative organic blobs behind icon */}
+        <div
+          className="absolute -top-6 -right-6 w-28 h-28 rounded-full opacity-35 pointer-events-none"
+          style={{ background: identity.accent || identity.primary, filter: "blur(8px)" }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute top-2 right-12 w-10 h-10 rounded-full opacity-25 pointer-events-none"
+          style={{ background: identity.primary }}
+          aria-hidden="true"
+        />
 
-      {/* Ambient background blob */}
-      <div
-        className="absolute -top-10 -right-10 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-10 group-hover:opacity-25 transition-opacity duration-300"
-        style={{ backgroundColor: accentColor }}
-      />
+        {/* Oversized icon */}
+        <div
+          className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-sm group-hover:scale-105 group-hover:-rotate-3 transition-transform duration-300"
+          style={{
+            background: "rgba(255,255,255,0.92)",
+            border: `2px solid ${identity.primary}35`,
+          }}
+        >
+          {displaySymbol}
+        </div>
 
-      {/* Decorative tiny stars & dots */}
-      <div className="absolute top-3.5 right-4 flex items-center gap-1.5 text-[11px] text-white/20 select-none pointer-events-none">
-        <span>✦</span>
-        <span>•</span>
+        {/* Status badge */}
+        {isMember ? (
+          <span
+            className="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-xs"
+            style={{ background: "#17172B", color: "#fff" }}
+          >
+            Joined
+          </span>
+        ) : (
+          <span
+            className="absolute top-3 right-3 text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-xs"
+            style={{ background: statusBg, color: statusColor }}
+          >
+            {statusText}
+          </span>
+        )}
       </div>
 
-      <Link to={`/cultures/${culture._id}`} className="block relative z-10 flex-1">
-        {/* Card Header: Large playful icon + status tag */}
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div
-            className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/10 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-3deg]"
-            style={{
-              backgroundColor: `${accentColor}25`,
-              boxShadow: `0 4px 14px ${accentColor}25`,
-            }}
-          >
-            {culture.symbol || "✨"}
-          </div>
-
-          <div className="flex items-center gap-1.5 flex-wrap justify-end pt-0.5">
-            {isMember && (
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                Joined
-              </span>
-            )}
-            {statusBadge && (
-              <span className={`text-[10px] font-semibold tracking-wide px-2.5 py-0.5 rounded-full border ${statusBadge.style}`}>
-                {statusBadge.text}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Title & Tagline */}
-        <div className="space-y-1 mb-2.5">
-          <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-violet-200 transition-colors">
-            {culture.name}
-          </h3>
-          <p className="text-[11px] font-medium text-neutral-400 capitalize truncate">
+      {/* Card body */}
+      <Link
+        to={`/cultures/${culture._id}`}
+        className="block flex-1 px-5 pt-3 pb-2"
+      >
+        <h3
+          className="text-[17px] font-extrabold leading-tight tracking-tight mb-0.5"
+          style={{ color: "#17172B" }}
+        >
+          {culture.name}
+        </h3>
+        {categoryTag && (
+          <p className="text-[11px] font-medium capitalize mb-2" style={{ color: "#687085" }}>
             {categoryTag}
           </p>
-        </div>
-
-        {/* Short description */}
-        <p className="text-xs text-neutral-300/90 line-clamp-2 leading-relaxed mb-4">
+        )}
+        <p className="text-xs leading-relaxed line-clamp-2 mb-3" style={{ color: "#4B5563" }}>
           {culture.description}
         </p>
 
-        {/* Today's Activity Teaser */}
+        {/* Today's activity teaser */}
         {culture.rituals?.[0] && (
-          <div className="p-2.5 rounded-xl bg-neutral-900/60 border border-white/5 mb-4 group-hover:border-white/10 transition-colors">
-            <div className="flex items-center justify-between text-[10px] text-neutral-400 mb-0.5">
-              <span className="font-semibold text-violet-300 flex items-center gap-1">
-                <span>⚡</span> Today&apos;s activity
-              </span>
-              <span>Daily</span>
-            </div>
-            <p className="text-xs text-neutral-200 font-medium line-clamp-1">
+          <div
+            className="px-3 py-2 rounded-xl mb-3 text-[11px]"
+            style={{ background: `${identity.primary}15`, border: `1.5px solid ${identity.primary}35` }}
+          >
+            <span className="font-bold" style={{ color: "#17172B" }}>
+              ⚡ Today:{" "}
+            </span>
+            <span style={{ color: "#4B5563" }} className="line-clamp-1">
               {culture.rituals[0]}
-            </p>
+            </span>
           </div>
         )}
       </Link>
 
-      {/* Bottom Footer: Stats + Action Arrow */}
-      <div className="pt-3 border-t border-white/5 flex items-center justify-between relative z-10 text-xs">
-        <div className="text-neutral-400 font-medium flex items-center gap-2">
-          <span>{membersCount} {membersCount === 1 ? "member" : "members"}</span>
-        </div>
-
+      {/* Footer: members count + circular CTA */}
+      <div
+        className="mx-5 mb-4 pt-3 flex items-center justify-between"
+        style={{ borderTop: "1.5px solid rgba(23,23,43,0.06)" }}
+      >
+        <span className="text-xs font-medium" style={{ color: "#687085" }}>
+          {membersCount} {membersCount === 1 ? "member" : "members"}
+        </span>
         <Link
           to={actionLink || `/cultures/${culture._id}`}
-          className="inline-flex items-center gap-1.5 font-semibold text-white/90 group-hover:text-white group-hover:translate-x-0.5 transition-all"
+          className="inline-flex items-center gap-1.5 text-xs font-bold pl-3 pr-2 py-1 rounded-full transition-all duration-200 group-hover:scale-105"
+          style={{
+            background: "#17172B",
+            color: "#fff",
+          }}
         >
-          <span className="text-xs">{actionText || (isMember ? "Open Club" : "Join Club")}</span>
-          <div
-            className="w-7 h-7 rounded-full flex items-center justify-center border border-white/10 group-hover:border-white/25 transition-all shadow-sm"
-            style={{ backgroundColor: `${accentColor}20` }}
-          >
-            →
-          </div>
+          <span>{actionText || (isMember ? "Open" : "Join")}</span>
+          <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">→</span>
         </Link>
       </div>
     </div>

@@ -5,6 +5,35 @@ import GlassPanel from "../components/ui/GlassPanel.jsx";
 import GlowButton from "../components/ui/GlowButton.jsx";
 import MicroCultureLogo from "../components/ui/MicroCultureLogo.jsx";
 
+const inputStyle = {
+  background: "#fff",
+  border: "1.5px solid rgba(26,26,46,0.12)",
+  color: "#1A1A2E",
+  boxShadow: "0 1px 4px rgba(26,26,46,0.04)",
+};
+
+const inputFocusStyle = {
+  border: "1.5px solid rgba(124,58,237,0.4)",
+  boxShadow: "0 0 0 3px rgba(124,58,237,0.1)",
+};
+
+function WarmInput({ label, ...props }) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold mb-1.5" style={{ color: "#374151" }}>
+        {label}
+      </label>
+      <input
+        className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none transition-all"
+        style={inputStyle}
+        onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
+        onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+        {...props}
+      />
+    </div>
+  );
+}
+
 export default function Signup() {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -34,63 +63,59 @@ export default function Signup() {
   }
 
   return (
-    <div className="max-w-md mx-auto py-4 sm:py-16 animate-fadeIn">
-      <GlassPanel className="p-5 sm:p-10 border-white/10 shadow-2xl space-y-6">
+    <div className="max-w-md mx-auto py-4 sm:py-16 animate-fadeIn relative">
+      {/* Decorative blobs */}
+      <div
+        className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full"
+        style={{ background: "#DDD6FE", filter: "blur(60px)", opacity: 0.4 }}
+        aria-hidden="true"
+      />
+
+      <GlassPanel className="p-6 sm:p-10 space-y-6 relative z-10">
         <div className="text-center space-y-2 flex flex-col items-center">
-          <Link to="/" className="inline-block mb-1 hover:opacity-90 transition-opacity">
+          <Link to="/" className="inline-block mb-1 hover:opacity-80 transition-opacity">
             <MicroCultureLogo size="lg" showWordmark={false} />
           </Link>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Create your account</h1>
-          <p className="text-xs text-neutral-400">
-            Sign up to join or create communities on Micro Culture.
+          <h1 className="text-2xl font-extrabold" style={{ color: "#1A1A2E" }}>
+            Join Micro Culture 🎒
+          </h1>
+          <p className="text-sm" style={{ color: "#94A3B8" }}>
+            Create an account to join or start communities.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
-              Your Name
-            </label>
-            <input
-              type="text"
-              placeholder="e.g., Alex, Sam, Jordan"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 rounded-xl bg-neutral-900/90 border border-neutral-700/80 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
-            />
-          </div>
+          <WarmInput
+            label="Your name"
+            type="text"
+            placeholder="e.g., Alex, Sam, Jordan"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <WarmInput
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <WarmInput
+            label="Password (min. 8 characters)"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            minLength={8}
+            required
+          />
 
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
-              Email Address
-            </label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 rounded-xl bg-neutral-900/90 border border-neutral-700/80 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
-              Password (min. 8 characters)
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              minLength={8}
-              required
-              className="w-full px-4 py-2.5 rounded-xl bg-neutral-900/90 border border-neutral-700/80 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
-            />
-          </div>
-
-          {error && <p className="text-xs text-red-400 pt-1">{error}</p>}
+          {error && (
+            <p className="text-sm rounded-xl px-3 py-2" style={{ color: "#B91C1C", background: "#FEF2F2" }}>
+              {error}
+            </p>
+          )}
 
           <GlowButton
             type="submit"
@@ -98,15 +123,18 @@ export default function Signup() {
             size="lg"
             loading={loading}
             disabled={loading || !name || !email || !password}
-            className="w-full mt-2 justify-center min-h-[48px]"
+            className="w-full mt-2 justify-center"
           >
-            {loading ? "Creating Account..." : "Sign Up"}
+            {loading ? "Creating account..." : "Create account"}
           </GlowButton>
         </form>
 
-        <p className="text-center text-xs text-neutral-500 pt-2 border-t border-white/5">
+        <p
+          className="text-center text-sm"
+          style={{ borderTop: "1.5px solid rgba(26,26,46,0.08)", paddingTop: "16px", color: "#94A3B8" }}
+        >
           Already have an account?{" "}
-          <Link to="/login" className="text-violet-400 hover:text-violet-300 underline font-medium">
+          <Link to="/login" className="font-bold transition-colors hover:opacity-80" style={{ color: "#7C3AED" }}>
             Log in
           </Link>
         </p>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,24 +6,26 @@
 
 @layer base {
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #090a0f;
-    color: #f3f4f6;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #FFFDF7;
+    color: #1A1A2E;
     overflow-x: hidden;
-    selection-background-color: rgba(139, 92, 246, 0.3);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  code, pre, .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+  ::selection {
+    background: rgba(139, 92, 246, 0.18);
+    color: #4c1d95;
   }
 }
 
 /* ============================================================
-   PAGE & ELEMENT ENTRANCE ANIMATIONS
+   ENTRANCE ANIMATIONS
    ============================================================ */
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -33,22 +35,27 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
+  from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.96); }
+  from { opacity: 0; transform: scale(0.94); }
   to   { opacity: 1; transform: scale(1); }
 }
 
+@keyframes blobFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-12px) rotate(4deg); }
+}
+
 .animate-fadeIn {
-  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .animate-fadeInFast {
@@ -56,15 +63,15 @@
 }
 
 .animate-slideDown {
-  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: slideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .animate-slideUp {
-  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .animate-scaleIn {
-  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: scaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Stagger helpers */
@@ -73,101 +80,199 @@
 .stagger-3 { animation-delay: 0.15s; }
 .stagger-4 { animation-delay: 0.20s; }
 
+:root {
+  --bg-primary: #FFFDF7;
+  --bg-secondary: #FFF8F3;
+  --bg-pink: #FFF0F5;
+  --bg-lavender: #F5F0FF;
+  --text-primary: #17172B;
+  --text-secondary: #687085;
+
+  /* Pastel Accent Tokens */
+  --pastel-yellow: #FFD966;
+  --pastel-peach: #FFB38A;
+  --pastel-coral: #FF7F8A;
+  --pastel-pink: #F58AC6;
+  --pastel-lavender: #C9B6FF;
+  --pastel-purple: #A78BFA;
+  --pastel-blue: #8DBBFF;
+  --pastel-mint: #9BE7C4;
+  --pastel-teal: #67D7C8;
+  --pastel-orange: #FFAD5A;
+}
+
 /* ============================================================
-   GLASSMORPHIC PANELS
+   WARM CARD — primary card style (reference-driven)
    ============================================================ */
 
-.glass-panel {
-  background: rgba(18, 20, 29, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+.warm-card {
+  background: #ffffff;
+  border-radius: 1.75rem; /* 28px */
+  border: 1.5px solid rgba(23, 23, 43, 0.06);
+  box-shadow: 0 8px 30px rgba(23, 23, 43, 0.06);
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease-out;
 }
 
-.glass-panel-interactive {
-  background: rgba(18, 20, 29, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  /* Use specific properties (not `all`) for better compositing perf */
-  transition: background 0.22s ease-out,
-              border-color 0.22s ease-out,
-              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.22s ease-out;
+.warm-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(23, 23, 43, 0.09);
 }
 
-.glass-panel-interactive:hover {
-  background: rgba(26, 29, 43, 0.8);
-  border-color: rgba(255, 255, 255, 0.14);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5),
-              0 0 20px -8px rgba(139, 92, 246, 0.18);
+/* ============================================================
+   COMMUNITY CARD — colourful per-community identity
+   ============================================================ */
+
+.community-card {
+  background: #ffffff;
+  border-radius: 1.75rem; /* 28px */
+  overflow: hidden;
+  border: 1.5px solid rgba(23, 23, 43, 0.06);
+  box-shadow: 0 8px 30px rgba(23, 23, 43, 0.06);
+  transition:
+    transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.28s ease-out;
+  cursor: pointer;
+  position: relative;
 }
 
-.glass-panel-interactive:active {
+.community-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(23, 23, 43, 0.1);
+}
+
+/* ============================================================
+   DECORATIVE BLOB SHAPES
+   ============================================================ */
+
+.bg-blob {
+  position: absolute;
+  border-radius: 60% 40% 55% 45% / 50% 45% 55% 50%;
+  pointer-events: none;
+  opacity: 0.45;
+  filter: blur(0px);
+}
+
+.bg-blob-soft {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(60px);
+  opacity: 0.35;
+}
+
+/* ============================================================
+   PILL BUTTONS — category filters
+   ============================================================ */
+
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1.5px solid transparent;
+  background: #fff;
+  color: #4B5563;
+  border-color: rgba(26, 26, 46, 0.12);
+  box-shadow: 0 1px 4px rgba(26, 26, 46, 0.06);
+  transition: all 0.18s ease-out;
+  cursor: pointer;
+  line-height: 1;
+  min-height: 40px;
+}
+
+.pill-btn:hover {
+  color: #1A1A2E;
+  border-color: rgba(26, 26, 46, 0.22);
+  box-shadow: 0 2px 8px rgba(26, 26, 46, 0.08);
   transform: translateY(-1px);
 }
 
-/* ============================================================
-   SUBTLE GLOWING ACCENTS
-   ============================================================ */
-
-.glow-purple {
-  box-shadow: 0 0 25px -5px rgba(168, 85, 247, 0.3);
-}
-
-.glow-amber {
-  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.3);
-}
-
-.glow-cyan {
-  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.3);
+.pill-btn.active {
+  background: #1A1A2E;
+  color: #fff;
+  border-color: #1A1A2E;
+  box-shadow: 0 4px 12px rgba(26, 26, 46, 0.2);
 }
 
 /* ============================================================
-   GRADIENT TEXT UTILITIES
+   GLASS PANEL (kept for backward compatibility, lightened)
    ============================================================ */
 
-.text-gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #d1d5db 50%, #9ca3af 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(26, 26, 46, 0.08);
+  box-shadow: 0 4px 24px rgba(26, 26, 46, 0.08);
+  border-radius: 1.5rem;
 }
 
-.text-gradient-purple {
-  background: linear-gradient(135deg, #f3e8ff 0%, #c084fc 50%, #9333ea 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.glass-panel-interactive {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(26, 26, 46, 0.08);
+  transition:
+    background 0.22s ease-out,
+    border-color 0.22s ease-out,
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.22s ease-out;
+  border-radius: 1.5rem;
 }
 
-.text-gradient-amber {
-  background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 50%, #d97706 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.glass-panel-interactive:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(26, 26, 46, 0.14);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(26, 26, 46, 0.1);
 }
 
 /* ============================================================
-   CUSTOM SCROLLBARS
+   PLAYFUL CARD (backward compat alias → warm-card)
    ============================================================ */
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.playful-card {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  border: 1.5px solid rgba(26, 26, 46, 0.07);
+  box-shadow: 0 4px 16px rgba(26, 26, 46, 0.07), 0 1px 4px rgba(26, 26, 46, 0.04);
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease-out;
 }
-::-webkit-scrollbar-track {
-  background: #090a0f;
+
+.playful-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(26, 26, 46, 0.1), 0 4px 10px rgba(26, 26, 46, 0.06);
 }
-::-webkit-scrollbar-thumb {
-  background: #26293b;
+
+/* ============================================================
+   STICKER / TAG CHIPS
+   ============================================================ */
+
+.playful-sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  transition: transform 0.18s ease;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #3b4261;
+
+.playful-sticker:hover {
+  transform: scale(1.05);
 }
 
 /* ============================================================
-   LOADING / SHIMMER ANIMATIONS
+   SHIMMER / LOADING
    ============================================================ */
 
 @keyframes shimmer {
@@ -182,74 +287,82 @@
 
 .animate-shimmer {
   background: linear-gradient(90deg,
-    rgba(255,255,255,0.03) 25%,
-    rgba(255,255,255,0.08) 50%,
-    rgba(255,255,255,0.03) 75%
+    rgba(26, 26, 46, 0.04) 25%,
+    rgba(26, 26, 46, 0.09) 50%,
+    rgba(26, 26, 46, 0.04) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
 
 /* ============================================================
-   AMBIENT BACKGROUND ORBS
+   AMBIENT BLOBS (page-level decoration)
    ============================================================ */
 
 .ambient-glow-orb {
   position: fixed;
   border-radius: 50%;
-  filter: blur(120px);
+  filter: blur(100px);
   pointer-events: none;
   z-index: 0;
-  opacity: 0.18;
+  opacity: 0.22;
 }
 
 /* ============================================================
-   FOCUS RING — global polished focus treatment
+   FOCUS RING
    ============================================================ */
 
 .focus-ring {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.35);
 }
 
 /* ============================================================
-   PLAYFUL STUDENT DESIGN UTILITIES
+   CUSTOM SCROLLBARS — light theme
    ============================================================ */
 
-.playful-card {
-  border-radius: 1.5rem;
-  background: rgba(18, 20, 31, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.25s ease-out,
-              border-color 0.25s ease-out;
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }
-
-.playful-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.5),
-              0 0 24px -6px var(--card-accent-glow, rgba(139, 92, 246, 0.25));
+::-webkit-scrollbar-track {
+  background: #F3F4F6;
 }
-
-.playful-sticker {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.65rem;
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
   border-radius: 9999px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  transition: transform 0.2s ease;
 }
-.playful-sticker:hover {
-  transform: scale(1.05);
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
 }
 
 /* ============================================================
-   REDUCED MOTION — respect user preference
+   GRADIENT TEXT UTILITIES
+   ============================================================ */
+
+.text-gradient {
+  background: linear-gradient(135deg, #1A1A2E 0%, #4B5563 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, #7C3AED 0%, #C084FC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-amber {
+  background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================================
+   REDUCED MOTION
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {

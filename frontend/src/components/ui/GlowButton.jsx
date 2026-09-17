@@ -10,22 +10,28 @@ export default function GlowButton({
   ...props
 }) {
   const sizeClasses = {
-    sm: "px-3.5 py-1.5 text-xs font-medium rounded-full",
-    md: "px-5 py-2.5 text-sm font-medium rounded-full",
-    lg: "px-7 py-3 text-base font-semibold rounded-full",
+    sm: "px-4 py-2 text-xs font-semibold rounded-full",
+    md: "px-6 py-2.5 text-sm font-semibold rounded-full",
+    lg: "px-8 py-3.5 text-base font-semibold rounded-full",
   };
 
+  // Warm, playful button styles for the light student-social theme
   const variantClasses = {
+    // Primary: dark fill — confident, readable
     primary:
-      "bg-white text-neutral-950 hover:bg-neutral-100 active:scale-[0.97] active:brightness-95 shadow-sm hover:shadow transition-all duration-200 ease-out",
+      "bg-[#17172B] text-white hover:bg-[#2d2d4e] active:scale-[0.97] active:brightness-95 shadow-sm hover:shadow-md transition-all duration-200 ease-out",
+    // Glow: vibrant dark fill — energetic primary CTA
     glow:
-      "bg-gradient-to-r from-violet-500 to-indigo-600 text-white hover:from-violet-400 hover:to-indigo-500 active:scale-[0.97] active:brightness-95 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 transition-all duration-200 ease-out",
+      "bg-[#17172B] text-white hover:bg-[#2d2d4e] active:scale-[0.97] shadow-md hover:shadow-lg transition-all duration-200 ease-out",
+    // Secondary: white with border — light, secondary action
     secondary:
-      "bg-neutral-800/80 text-neutral-200 border border-neutral-700/80 hover:bg-neutral-700/70 hover:text-white hover:border-neutral-600 active:scale-[0.97] transition-all duration-200 ease-out",
+      "bg-white text-[#17172B] border-2 border-[rgba(23,23,43,0.15)] hover:border-[rgba(23,23,43,0.3)] hover:bg-neutral-50 active:scale-[0.97] shadow-sm hover:shadow transition-all duration-200 ease-out",
+    // Ghost: transparent, subtle
     ghost:
-      "bg-transparent text-neutral-400 hover:text-white hover:bg-neutral-800/50 active:scale-[0.97] transition-all duration-200 ease-out",
+      "bg-transparent text-[#687085] hover:text-[#17172B] hover:bg-[rgba(23,23,43,0.06)] active:scale-[0.97] transition-all duration-200 ease-out",
+    // Danger: soft red
     danger:
-      "bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 hover:text-red-300 active:scale-[0.97] transition-all duration-200 ease-out",
+      "bg-red-50 text-red-600 border-2 border-red-200 hover:bg-red-100 hover:text-red-700 active:scale-[0.97] transition-all duration-200 ease-out",
   };
 
   return (
@@ -36,7 +42,7 @@ export default function GlowButton({
       className={`
         inline-flex items-center justify-center gap-2 cursor-pointer
         outline-none
-        focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950
+        focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white
         disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:active:brightness-100
         ${sizeClasses[size] || sizeClasses.md}
         ${variantClasses[variant] || variantClasses.primary}

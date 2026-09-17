@@ -102,35 +102,35 @@ export function StreakCard({ participation }) {
 
   return (
     <div
-      className="flex flex-wrap items-center gap-3 sm:gap-5 p-2.5 sm:p-4 rounded-xl"
+      className="flex flex-wrap items-center gap-3 sm:gap-5 p-3 sm:p-4 rounded-2xl"
       style={{
-        background: "rgba(245,158,11,0.07)",
-        border: "1px solid rgba(245,158,11,0.2)",
+        background: "rgba(245,158,11,0.08)",
+        border: "1.5px solid rgba(245,158,11,0.22)",
       }}
     >
       <div style={{ textAlign: "center" }}>
-        <p style={{ fontSize: "1.3rem", fontWeight: 800, color: "#f59e0b", margin: 0, lineHeight: 1 }}>
+        <p style={{ fontSize: "1.3rem", fontWeight: 800, color: "#d97706", margin: 0, lineHeight: 1 }}>
           {currentStreak}
         </p>
-        <p style={{ fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)", margin: 0 }}>
+        <p style={{ fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#92400e", margin: 0, fontWeight: 700, marginTop: "0.25rem" }}>
           Day Streak
         </p>
       </div>
 
-      <div style={{ width: "1px", height: "28px", background: "rgba(255,255,255,0.1)" }} />
+      <div style={{ width: "1px", height: "28px", background: "rgba(26,26,46,0.1)" }} />
 
       <div style={{ textAlign: "center" }}>
-        <p style={{ fontSize: "1.3rem", fontWeight: 800, color: "rgba(255,255,255,0.7)", margin: 0, lineHeight: 1 }}>
+        <p style={{ fontSize: "1.3rem", fontWeight: 800, color: "#1A1A2E", margin: 0, lineHeight: 1 }}>
           {longestStreak}
         </p>
-        <p style={{ fontSize: "0.6rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "rgba(255,255,255,0.4)", margin: 0 }}>
+        <p style={{ fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "#64748B", margin: 0, fontWeight: 700, marginTop: "0.25rem" }}>
           Personal Best
         </p>
       </div>
 
       {recognition && (
         <>
-          <div className="hidden sm:block" style={{ width: "1px", height: "28px", background: "rgba(255,255,255,0.1)" }} />
+          <div className="hidden sm:block" style={{ width: "1px", height: "28px", background: "rgba(26,26,46,0.1)" }} />
           <RecognitionBadge recognition={recognition} />
         </>
       )}
@@ -152,9 +152,9 @@ export function StreakCompletion({ participation }) {
       style={{
         marginTop: "0.75rem",
         padding: "1rem 1.25rem",
-        borderRadius: "0.9rem",
+        borderRadius: "1rem",
         background: "rgba(245,158,11,0.08)",
-        border: "1px solid rgba(245,158,11,0.25)",
+        border: "1.5px solid rgba(245,158,11,0.25)",
         textAlign: "center",
       }}
     >
@@ -163,8 +163,8 @@ export function StreakCompletion({ participation }) {
         style={{
           fontSize: "1.05rem",
           fontWeight: 800,
-          color: "#f59e0b",
-          letterSpacing: "0.06em",
+          color: "#d97706",
+          letterSpacing: "0.04em",
           textTransform: "uppercase",
           margin: 0,
         }}
@@ -174,11 +174,11 @@ export function StreakCompletion({ participation }) {
 
       {/* Milestone callout */}
       {milestone ? (
-        <p style={{ fontSize: "0.8rem", color: "#fde68a", marginTop: "0.4rem", lineHeight: 1.5 }}>
+        <p style={{ fontSize: "0.85rem", color: "#92400e", marginTop: "0.4rem", lineHeight: 1.5, fontWeight: 500 }}>
           {MILESTONE_COPY[milestone]}
         </p>
       ) : (
-        <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.45)", marginTop: "0.4rem" }}>
+        <p style={{ fontSize: "0.8rem", color: "#78350f", marginTop: "0.4rem" }}>
           Your practice is becoming a tradition.
         </p>
       )}
@@ -195,7 +195,7 @@ export function StreakCompletion({ participation }) {
         }}
       >
         {longestStreak > currentStreak && (
-          <span style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.35)" }}>
+          <span style={{ fontSize: "0.72rem", color: "#64748B", fontWeight: 600 }}>
             Personal best: {longestStreak} days
           </span>
         )}

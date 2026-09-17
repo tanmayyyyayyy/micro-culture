@@ -12,22 +12,23 @@ check() {
   fi
 }
 
+RUN_ID=$(date +%s)_$RANDOM
 # 1. Obtain tokens for user 1 and user 2 (register if new, login if existing)
 REG=$(curl -s -X POST $BASE/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"name":"TestUser","email":"testauth_p0@test.com","password":"testpass123"}')
+  -d "{\"name\":\"TestUser\",\"email\":\"testauth_${RUN_ID}@test.com\",\"password\":\"testpass123\"}")
 TOKEN=$(echo "$REG" | node -e "const d=require('fs').readFileSync('/dev/stdin','utf8');console.log(JSON.parse(d).token||'')" 2>/dev/null)
 
 if [ -z "$TOKEN" ]; then
   LOGIN=$(curl -s -X POST $BASE/auth/login \
     -H "Content-Type: application/json" \
-    -d '{"email":"testauth_p0@test.com","password":"testpass123"}')
+    -d "{\"email\":\"testauth_${RUN_ID}@test.com\",\"password\":\"testpass123\"}")
   TOKEN=$(echo "$LOGIN" | node -e "const d=require('fs').readFileSync('/dev/stdin','utf8');console.log(JSON.parse(d).token||'')" 2>/dev/null)
 fi
 
 REG2=$(curl -s -X POST $BASE/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"name":"NonMember","email":"nonmember_p0@test.com","password":"testpass456"}')
+  -d "{\"name\":\"NonMember\",\"email\":\"nonmember_${RUN_ID}@test.com\",\"password\":\"testpass456\"}")
 TOKEN2=$(echo "$REG2" | node -e "const d=require('fs').readFileSync('/dev/stdin','utf8');console.log(JSON.parse(d).token||'')" 2>/dev/null)
 
 if [ -z "$TOKEN2" ]; then

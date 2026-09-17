@@ -333,15 +333,14 @@ router.get("/", async (req, res, next) => {
     const STUDENT_CATEGORIES = ["study", "code", "design", "ai", "security", "build", "career"];
 
     if (STUDENT_CATEGORIES.includes(selectedFilter)) {
+      const boundaryRegex = new RegExp(`\\b${selectedFilter}\\b`, "i");
       enriched = enriched.filter((c) => {
         const words = (c.vibeWords || []).map((w) => w.toLowerCase());
-        const name = (c.name || "").toLowerCase();
-        const desc = (c.description || "").toLowerCase();
+        const combinedText = `${c.name || ""} ${c.description || ""} ${words.join(" ")}`;
         return (
           words.includes(selectedFilter) ||
-          words.some((w) => w.includes(selectedFilter)) ||
-          name.includes(selectedFilter) ||
-          desc.includes(selectedFilter)
+          boundaryRegex.test(combinedText) ||
+          (selectedFilter === "ai" && /\b(ai|ml|llm|genai|neural|machine learning)\b/i.test(combinedText))
         );
       });
     } else if (selectedFilter === "trending") {

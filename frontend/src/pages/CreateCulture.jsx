@@ -114,10 +114,10 @@ export default function CreateCulture() {
     <div className="max-w-3xl mx-auto space-y-8 animate-fadeIn">
       {/* Header & Stepper */}
       <div className="text-center space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight text-white">
+        <h1 className="text-3xl font-extrabold tracking-tight text-neutral-900">
           Create a Community
         </h1>
-        <p className="text-sm text-neutral-400 max-w-md mx-auto">
+        <p className="text-sm text-neutral-600 max-w-md mx-auto">
           Give your community a name and vibe, then AI will build out its values, traditions, and daily activities.
         </p>
 
@@ -132,22 +132,22 @@ export default function CreateCulture() {
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                   currentStep === s.num
-                    ? "bg-violet-600 text-white shadow-lg shadow-violet-500/30 scale-105"
+                    ? "bg-neutral-900 text-white shadow-md scale-105"
                     : currentStep > s.num
-                    ? "bg-neutral-800 text-violet-400 border border-violet-500/30"
-                    : "bg-neutral-900 text-neutral-500 border border-neutral-800"
+                    ? "bg-violet-100 text-violet-800 border border-violet-200"
+                    : "bg-neutral-100 text-neutral-400 border border-neutral-200"
                 }`}
               >
                 {currentStep > s.num ? "✓" : s.num}
               </div>
               <span
                 className={`text-xs hidden sm:inline ${
-                  currentStep === s.num ? "text-neutral-200 font-medium" : "text-neutral-500"
+                  currentStep === s.num ? "text-neutral-900 font-bold" : "text-neutral-400"
                 }`}
               >
                 {s.label}
               </span>
-              {s.num < 3 && <div className="w-6 h-px bg-white/10 mx-1" />}
+              {s.num < 3 && <div className="w-6 h-px bg-neutral-200 mx-1" />}
             </div>
           ))}
         </div>
@@ -155,17 +155,17 @@ export default function CreateCulture() {
 
       {/* STEP 1: Idea & Spark */}
       {currentStep === 1 && (
-        <GlassPanel className="p-6 sm:p-8 space-y-6">
+        <GlassPanel className="warm-card p-6 sm:p-8 space-y-6 bg-white border border-neutral-200/80 shadow-sm rounded-3xl">
           <div className="space-y-1">
-            <h2 className="text-lg font-bold text-white">1. About your community</h2>
-            <p className="text-xs text-neutral-400">
+            <h2 className="text-lg font-bold text-neutral-900">1. About your community</h2>
+            <p className="text-xs text-neutral-500">
               Give your community a name and description.
             </p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
                 Name *
               </label>
               <input
@@ -173,12 +173,12 @@ export default function CreateCulture() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={100}
-                className="w-full px-4 py-2.5 rounded-xl bg-neutral-900/90 border border-neutral-700 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#F9FAFB] border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
                 Description *
               </label>
               <textarea
@@ -187,28 +187,28 @@ export default function CreateCulture() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 maxLength={800}
-                className="w-full px-4 py-2.5 rounded-xl bg-neutral-900/90 border border-neutral-700 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all resize-none"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#F9FAFB] border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1.5">
                 Vibe keywords
               </label>
               <input
                 placeholder="e.g., quiet, architectural, starlit, introspective (comma separated)"
                 value={vibeWords}
                 onChange={(e) => setVibeWords(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-neutral-900/90 border border-neutral-700 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#F9FAFB] border border-neutral-200 text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
               />
             </div>
           </div>
 
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
 
           <div className="flex justify-end pt-2">
             <GlowButton
-              variant="glow"
+              variant="primary"
               disabled={!name.trim() || !description.trim()}
               onClick={() => {
                 setError("");
@@ -224,16 +224,16 @@ export default function CreateCulture() {
 
       {/* STEP 2: Aesthetic & Visual Ethos */}
       {currentStep === 2 && (
-        <GlassPanel className="p-6 sm:p-8 space-y-6">
+        <GlassPanel className="warm-card p-6 sm:p-8 space-y-6 bg-white border border-neutral-200/80 shadow-sm rounded-3xl">
           <div className="space-y-1">
-            <h2 className="text-lg font-bold text-white">2. Look &amp; Feel</h2>
-            <p className="text-xs text-neutral-400">
+            <h2 className="text-lg font-bold text-neutral-900">2. Look &amp; Feel</h2>
+            <p className="text-xs text-neutral-500">
               Pick an emoji and color to represent your community.
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-2">
               Symbol
             </label>
             <div className="flex flex-wrap gap-2.5 mb-3">
@@ -242,10 +242,10 @@ export default function CreateCulture() {
                   key={s}
                   type="button"
                   onClick={() => setSymbol(s)}
-                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center border transition-all ${
+                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center border transition-all cursor-pointer ${
                     symbol === s
-                      ? "bg-violet-600/30 border-violet-500 scale-110 shadow-md shadow-violet-500/30"
-                      : "bg-neutral-900 border-neutral-800 text-neutral-300 hover:border-neutral-700"
+                      ? "bg-violet-100 border-violet-500 text-violet-900 scale-110 shadow-xs"
+                      : "bg-[#F9FAFB] border-neutral-200 text-neutral-700 hover:border-neutral-300"
                   }`}
                 >
                   {s}
@@ -256,12 +256,12 @@ export default function CreateCulture() {
               placeholder="Or enter custom emoji..."
               value={symbol}
               onChange={(e) => setSymbol(e.target.value.slice(0, 4))}
-              className="w-40 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-sm text-center text-white"
+              className="w-40 px-3 py-1.5 rounded-lg bg-[#F9FAFB] border border-neutral-200 text-sm text-center text-neutral-900 focus:bg-white focus:border-violet-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-2">
               Color
             </label>
             <div className="flex items-center gap-3">
@@ -269,20 +269,20 @@ export default function CreateCulture() {
                 type="color"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0"
+                className="w-10 h-10 rounded-xl cursor-pointer bg-transparent border-0"
               />
-              <span className="text-xs font-mono text-neutral-400">{color}</span>
+              <span className="text-xs font-mono font-semibold text-neutral-600">{color}</span>
             </div>
           </div>
 
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
 
           <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-2">
             <GlowButton variant="secondary" onClick={() => setCurrentStep(1)} className="w-full sm:w-auto justify-center min-h-[44px]">
               ← Back
             </GlowButton>
             <GlowButton
-              variant="glow"
+              variant="primary"
               loading={generating}
               onClick={handleGenerateBlueprint}
               className="w-full sm:w-auto justify-center min-h-[44px]"
@@ -295,31 +295,31 @@ export default function CreateCulture() {
 
       {/* STEP 3: Substantive Blueprint Review & Edit */}
       {currentStep === 3 && blueprint && (
-        <GlassPanel className="p-6 sm:p-8 space-y-6">
+        <GlassPanel className="warm-card p-6 sm:p-8 space-y-6 bg-white border border-neutral-200/80 shadow-sm rounded-3xl">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-violet-700 text-xs font-bold uppercase tracking-wider">
               <span>✧</span> Blueprint Ready
             </div>
-            <h2 className="text-xl font-bold text-white">
+            <h2 className="text-xl font-bold text-neutral-900">
               Review &amp; Edit
             </h2>
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-neutral-500">
               AI has built out your community. Edit any value, tradition, or word before creating it.
             </p>
           </div>
 
           {/* Editable Sections */}
-          <div className="space-y-6 divide-y divide-white/5">
+          <div className="space-y-6 divide-y divide-neutral-100">
             {/* Values */}
             <div className="pt-4 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-violet-300">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-violet-800">
                   Values ({blueprint.values?.length || 0})
                 </h3>
                 <button
                   type="button"
                   onClick={() => addListItem("values", "New value")}
-                  className="text-xs text-violet-400 hover:text-violet-300"
+                  className="text-xs font-bold text-violet-700 hover:text-violet-900 cursor-pointer"
                 >
                   + Add Value
                 </button>
@@ -330,12 +330,12 @@ export default function CreateCulture() {
                     <input
                       value={val}
                       onChange={(e) => updateListField("values", i, e.target.value)}
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-200 focus:outline-none focus:border-violet-500"
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-[#F9FAFB] border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:bg-white focus:border-violet-500"
                     />
                     <button
                       type="button"
                       onClick={() => removeListItem("values", i)}
-                      className="text-neutral-500 hover:text-red-400 text-xs p-1"
+                      className="text-neutral-400 hover:text-red-500 text-xs p-1 cursor-pointer"
                       aria-label="Remove value"
                     >
                       ✕
@@ -348,13 +348,13 @@ export default function CreateCulture() {
             {/* Jargon / Lexicon */}
             <div className="pt-4 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-cyan-300">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-teal-800">
                   Community Words ({blueprint.jargon?.length || 0})
                 </h3>
                 <button
                   type="button"
                   onClick={() => addListItem("jargon", "Term: Meaning")}
-                  className="text-xs text-cyan-400 hover:text-cyan-300"
+                  className="text-xs font-bold text-teal-700 hover:text-teal-900 cursor-pointer"
                 >
                   + Add Word
                 </button>
@@ -365,12 +365,12 @@ export default function CreateCulture() {
                     <input
                       value={term}
                       onChange={(e) => updateListField("jargon", i, e.target.value)}
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-200 focus:outline-none focus:border-cyan-500"
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-[#F9FAFB] border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:bg-white focus:border-teal-500"
                     />
                     <button
                       type="button"
                       onClick={() => removeListItem("jargon", i)}
-                      className="text-neutral-500 hover:text-red-400 text-xs p-1"
+                      className="text-neutral-400 hover:text-red-500 text-xs p-1 cursor-pointer"
                       aria-label="Remove jargon"
                     >
                       ✕
@@ -383,13 +383,13 @@ export default function CreateCulture() {
             {/* Starter Rituals */}
             <div className="pt-4 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-300">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-amber-800">
                   Activity Archetypes ({blueprint.rituals?.length || 0})
                 </h3>
                 <button
                   type="button"
                   onClick={() => addListItem("rituals", "New ritual archetype")}
-                  className="text-xs text-amber-400 hover:text-amber-300"
+                  className="text-xs font-bold text-amber-700 hover:text-amber-900 cursor-pointer"
                 >
                   + Add Activity
                 </button>
@@ -400,12 +400,12 @@ export default function CreateCulture() {
                     <input
                       value={rit}
                       onChange={(e) => updateListField("rituals", i, e.target.value)}
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-200 focus:outline-none focus:border-amber-500"
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-[#F9FAFB] border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:bg-white focus:border-amber-500"
                     />
                     <button
                       type="button"
                       onClick={() => removeListItem("rituals", i)}
-                      className="text-neutral-500 hover:text-red-400 text-xs p-1"
+                      className="text-neutral-400 hover:text-red-500 text-xs p-1 cursor-pointer"
                       aria-label="Remove ritual"
                     >
                       ✕
@@ -418,13 +418,13 @@ export default function CreateCulture() {
             {/* Aesthetic Codes */}
             <div className="pt-4 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800">
                   Aesthetic Codes ({blueprint.aesthetic?.length || 0})
                 </h3>
                 <button
                   type="button"
                   onClick={() => addListItem("aesthetic", "New aesthetic code")}
-                  className="text-xs text-emerald-400 hover:text-emerald-300"
+                  className="text-xs font-bold text-emerald-700 hover:text-emerald-900 cursor-pointer"
                 >
                   + Add Keyword
                 </button>
@@ -435,12 +435,12 @@ export default function CreateCulture() {
                     <input
                       value={aes}
                       onChange={(e) => updateListField("aesthetic", i, e.target.value)}
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-700 text-xs text-neutral-200 focus:outline-none focus:border-emerald-500"
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-[#F9FAFB] border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:bg-white focus:border-emerald-500"
                     />
                     <button
                       type="button"
                       onClick={() => removeListItem("aesthetic", i)}
-                      className="text-neutral-500 hover:text-red-400 text-xs p-1"
+                      className="text-neutral-400 hover:text-red-500 text-xs p-1 cursor-pointer"
                       aria-label="Remove aesthetic keyword"
                     >
                       ✕
@@ -451,14 +451,14 @@ export default function CreateCulture() {
             </div>
           </div>
 
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
 
-          <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-4 border-t border-white/5">
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-4 border-t border-neutral-100">
             <GlowButton variant="secondary" onClick={() => setCurrentStep(2)} className="w-full sm:w-auto justify-center min-h-[44px]">
               ← Back
             </GlowButton>
             <GlowButton
-              variant="glow"
+              variant="primary"
               size="lg"
               loading={publishing}
               onClick={handlePublishCulture}

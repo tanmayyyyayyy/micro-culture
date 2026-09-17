@@ -8,13 +8,11 @@ export default function ErrorState({
 }) {
   return (
     <div className={`flex flex-col items-center justify-center text-center px-4 animate-fadeIn ${className}`}>
-      <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-3">
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+      <div
+        className="w-13 h-13 rounded-2xl flex items-center justify-center mb-3 p-3"
+        style={{ background: "#FEF2F2", border: "1.5px solid #FECACA" }}
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "#EF4444" }}>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -23,8 +21,12 @@ export default function ErrorState({
           />
         </svg>
       </div>
-      <h3 className="text-sm font-semibold text-neutral-200 mb-1">{title}</h3>
-      <p className="text-xs text-neutral-400 max-w-sm mb-4">{message}</p>
+      <h3 className="text-sm font-bold mb-1" style={{ color: "#1A1A2E" }}>
+        {title}
+      </h3>
+      <p className="text-xs max-w-sm mb-4" style={{ color: "#94A3B8" }}>
+        {message}
+      </p>
       {onRetry && (
         <GlowButton size="sm" variant="secondary" onClick={onRetry}>
           Try again

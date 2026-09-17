@@ -227,21 +227,21 @@ export default function CultureDetail() {
     <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
       {/* 1. TOP SECTION: Community Club Identity */}
       <div
-        className="playful-card p-6 sm:p-8 relative overflow-hidden border border-white/10"
+        className="warm-card p-6 sm:p-8 relative overflow-hidden border border-neutral-200/80 bg-white"
         style={{ "--card-accent-glow": `${accentColor}30` }}
       >
         <div
-          className="absolute -top-16 -right-16 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-20"
+          className="absolute -top-16 -right-16 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-25"
           style={{ backgroundColor: accentColor }}
         />
 
         <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-start sm:items-center gap-4">
             <div
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center text-3xl sm:text-4xl shadow-lg border border-white/15 shrink-0"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center text-3xl sm:text-4xl shadow-md border border-neutral-200/70 shrink-0"
               style={{
-                backgroundColor: `${accentColor}25`,
-                boxShadow: `0 8px 24px ${accentColor}30`,
+                backgroundColor: `${accentColor}18`,
+                boxShadow: `0 8px 24px ${accentColor}25`,
               }}
             >
               {culture.symbol || "✨"}
@@ -249,21 +249,21 @@ export default function CultureDetail() {
 
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-neutral-900 tracking-tight">
                   {culture.name}
                 </h1>
                 {isMember && (
-                  <span className="text-[11px] font-bold px-3 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                  <span className="text-[11px] font-bold px-3 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200">
                     {isCreator ? "Founder" : "Member"}
                   </span>
                 )}
-                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                   ● Active Club
                 </span>
               </div>
 
-              <p className="text-xs sm:text-sm text-neutral-400 flex items-center gap-2">
-                <span className="text-neutral-200 font-semibold">{membersCount} members</span>
+              <p className="text-xs sm:text-sm text-neutral-500 flex items-center gap-2">
+                <span className="text-neutral-900 font-bold">{membersCount} members</span>
                 <span>•</span>
                 <span>{logs.length} discussions & activities</span>
               </p>
@@ -274,7 +274,7 @@ export default function CultureDetail() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto shrink-0">
             {user && !isMember ? (
               <GlowButton
-                variant="glow"
+                variant="primary"
                 size="lg"
                 loading={actionLoading}
                 onClick={handleJoin}
@@ -285,7 +285,7 @@ export default function CultureDetail() {
             ) : isMember ? (
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Link to={`/cultures/${id}/ritual`} className="flex-1 sm:flex-initial">
-                  <GlowButton variant="glow" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
+                  <GlowButton variant="primary" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
                     Today&apos;s Activity →
                   </GlowButton>
                 </Link>
@@ -293,7 +293,7 @@ export default function CultureDetail() {
                   <button
                     type="button"
                     onClick={() => setShowEditModal(true)}
-                    className="px-3 py-2 text-xs rounded-xl bg-neutral-800 text-neutral-300 hover:text-white transition-colors"
+                    className="px-3 py-2 text-xs font-semibold rounded-xl bg-neutral-100 text-neutral-700 hover:text-neutral-900 hover:bg-neutral-200/80 border border-neutral-200/80 transition-colors"
                   >
                     ✎ Edit
                   </button>
@@ -301,7 +301,7 @@ export default function CultureDetail() {
               </div>
             ) : (
               <Link to="/signup" className="w-full sm:w-auto">
-                <GlowButton variant="glow" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
+                <GlowButton variant="primary" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
                   Sign up to Join
                 </GlowButton>
               </Link>
@@ -310,7 +310,7 @@ export default function CultureDetail() {
         </div>
 
         {/* Short description */}
-        <p className="mt-4 text-sm sm:text-base text-neutral-200 leading-relaxed max-w-2xl relative z-10">
+        <p className="mt-4 text-sm sm:text-base text-neutral-600 leading-relaxed max-w-2xl relative z-10">
           {culture.description}
         </p>
 
@@ -320,7 +320,7 @@ export default function CultureDetail() {
             {culture.vibeWords.map((v, idx) => (
               <span
                 key={idx}
-                className="text-xs px-2.5 py-0.5 rounded-full bg-neutral-900/80 border border-neutral-700/50 text-neutral-300 font-medium"
+                className="text-xs px-2.5 py-0.5 rounded-full bg-white/90 border border-neutral-200/90 text-neutral-600 font-semibold shadow-xs"
               >
                 #{v}
               </span>
@@ -330,7 +330,7 @@ export default function CultureDetail() {
       </div>
 
       {/* 2. TABS BAR: Discussion | Activities | Resources | About */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-1 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-2 border-b border-neutral-200/80 pb-1 overflow-x-auto scrollbar-none">
         {[
           { id: "discussion", label: "💬 Discussion", count: logs.length },
           { id: "activities", label: "⚡ Activities", count: culture.rituals?.length || 1 },
@@ -343,17 +343,17 @@ export default function CultureDetail() {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 ${
+              className={`px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
                 isActive
-                  ? "bg-white text-neutral-950 shadow-md scale-102"
-                  : "text-neutral-400 hover:text-white hover:bg-neutral-900"
+                  ? "bg-neutral-900 text-white shadow-sm scale-102"
+                  : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
               }`}
             >
               <span>{tab.label}</span>
               {tab.count !== undefined && (
                 <span
                   className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                    isActive ? "bg-neutral-900 text-white" : "bg-neutral-800 text-neutral-400"
+                    isActive ? "bg-neutral-800 text-white" : "bg-neutral-200 text-neutral-700"
                   }`}
                 >
                   {tab.count}
@@ -369,9 +369,9 @@ export default function CultureDetail() {
         <div className="space-y-6 animate-fadeIn">
           {/* Post box for members */}
           {isMember ? (
-            <div className="playful-card p-4 sm:p-5 border border-white/10 space-y-3">
-              <div className="flex items-center justify-between text-xs text-neutral-400">
-                <span className="font-bold text-white flex items-center gap-1.5">
+            <div className="warm-card p-4 sm:p-5 border border-neutral-200/80 space-y-3 bg-white">
+              <div className="flex items-center justify-between text-xs text-neutral-500">
+                <span className="font-bold text-neutral-900 flex items-center gap-1.5">
                   <span>✍️</span> Ask a question or share a thought
                 </span>
                 <span>Shape community memory</span>
@@ -384,22 +384,22 @@ export default function CultureDetail() {
                   placeholder={`What are you working on or curious about in ${culture.name}? Ask a doubt, share an idea...`}
                   rows={3}
                   maxLength={2000}
-                  className="w-full px-4 py-3 bg-neutral-900/90 border border-white/10 rounded-2xl text-neutral-100 placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 transition-all resize-none leading-relaxed"
+                  className="w-full px-4 py-3 bg-[#F9FAFB] border border-neutral-200/90 rounded-2xl text-neutral-900 placeholder-neutral-400 text-sm focus:outline-none focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all resize-none leading-relaxed"
                 />
 
                 {postSuccess && (
-                  <p className="text-xs text-emerald-400 font-medium">
+                  <p className="text-xs text-emerald-700 font-bold">
                     ✓ Posted to {culture.name}! Your thought is part of the community memory.
                   </p>
                 )}
 
                 <div className="flex items-center justify-between gap-3 pt-1">
-                  <div className="text-[11px] text-neutral-500">
+                  <div className="text-[11px] text-neutral-400">
                     Press post to share with {membersCount} classmates
                   </div>
                   <GlowButton
                     type="submit"
-                    variant="glow"
+                    variant="primary"
                     size="sm"
                     loading={postLoading}
                     disabled={!newDiscussion.trim()}
@@ -411,18 +411,18 @@ export default function CultureDetail() {
               </form>
             </div>
           ) : (
-            <div className="p-4 rounded-2xl bg-neutral-900/60 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-xs text-neutral-300">
-                <span className="font-bold text-white block sm:inline mr-1">Want to join this discussion?</span>
+            <div className="p-4 rounded-2xl bg-white border border-neutral-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-xs text-neutral-600">
+                <span className="font-bold text-neutral-900 block sm:inline mr-1">Want to join this discussion?</span>
                 Join this club to ask questions, share projects, and collaborate with members.
               </div>
               {user ? (
-                <GlowButton size="sm" variant="glow" onClick={handleJoin} loading={actionLoading}>
+                <GlowButton size="sm" variant="primary" onClick={handleJoin} loading={actionLoading}>
                   Join Club
                 </GlowButton>
               ) : (
                 <Link to="/signup">
-                  <GlowButton size="sm" variant="glow">
+                  <GlowButton size="sm" variant="primary">
                     Sign up to Join
                   </GlowButton>
                 </Link>
@@ -432,18 +432,18 @@ export default function CultureDetail() {
 
           {/* Discussion feed */}
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between text-xs text-neutral-400 px-1">
-              <span className="font-bold uppercase tracking-wider text-neutral-300">
+            <div className="flex items-center justify-between text-xs text-neutral-500 px-1">
+              <span className="font-bold uppercase tracking-wider text-neutral-600">
                 Community Discussions &amp; Activity
               </span>
               <span>{logs.length} total</span>
             </div>
 
             {logs.length === 0 ? (
-              <div className="p-8 text-center rounded-2xl bg-neutral-900/40 border border-white/5 space-y-2">
+              <div className="p-8 text-center rounded-2xl bg-white border border-neutral-200/80 space-y-2">
                 <span className="text-3xl">💬</span>
-                <h4 className="text-sm font-bold text-white">No discussions yet</h4>
-                <p className="text-xs text-neutral-400">Be the first to ask a question or share an update!</p>
+                <h4 className="text-sm font-bold text-neutral-900">No discussions yet</h4>
+                <p className="text-xs text-neutral-500">Be the first to ask a question or share an update!</p>
               </div>
             ) : (
               logs.map((log) => {
@@ -454,25 +454,25 @@ export default function CultureDetail() {
                 return (
                   <div
                     key={log._id}
-                    className="p-4 sm:p-5 rounded-2xl bg-neutral-900/80 border border-white/10 hover:border-white/20 transition-all space-y-3"
+                    className="p-4 sm:p-5 rounded-2xl bg-white border border-neutral-200/80 hover:border-neutral-300 transition-all space-y-3 shadow-xs"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm text-white shadow-sm"
-                          style={{ backgroundColor: `${accentColor}40` }}
+                          className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm text-neutral-900 shadow-xs border border-neutral-200/60"
+                          style={{ backgroundColor: `${accentColor}20` }}
                         >
                           {initial}
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white flex items-center gap-2">
+                          <div className="text-xs font-bold text-neutral-900 flex items-center gap-2">
                             <span>{authorName}</span>
                             <span className="text-[10px] text-neutral-400 font-normal">
                               {formatTimeAgo(log.createdAt)}
                             </span>
                           </div>
                           {log.ritualId?.title && (
-                            <p className="text-[11px] text-violet-400 font-medium truncate max-w-sm">
+                            <p className="text-[11px] text-violet-700 font-medium truncate max-w-sm">
                               Responding to: {log.ritualId.title}
                             </p>
                           )}
@@ -480,30 +480,30 @@ export default function CultureDetail() {
                       </div>
 
                       <span
-                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                           isDoubt
-                            ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-                            : "bg-violet-500/15 text-violet-300 border-violet-500/30"
+                            ? "bg-amber-50 text-amber-800 border-amber-200"
+                            : "bg-violet-50 text-violet-800 border-violet-200"
                         }`}
                       >
                         {isDoubt ? "❓ Question / Doubt" : "💡 Discussion"}
                       </span>
                     </div>
 
-                    <p className="text-sm text-neutral-200 leading-relaxed pl-12">
+                    <p className="text-sm text-neutral-700 leading-relaxed pl-12">
                       {log.content}
                     </p>
 
-                    <div className="flex items-center gap-4 pl-12 text-xs text-neutral-400 pt-1">
+                    <div className="flex items-center gap-4 pl-12 text-xs text-neutral-500 pt-1">
                       <button
                         type="button"
-                        className="hover:text-white transition-colors flex items-center gap-1 text-[11px]"
+                        className="hover:text-neutral-900 transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
                       >
                         <span>👏</span> Helpful
                       </button>
                       <button
                         type="button"
-                        className="hover:text-white transition-colors flex items-center gap-1 text-[11px]"
+                        className="hover:text-neutral-900 transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
                       >
                         <span>💬</span> Reply
                       </button>
@@ -521,30 +521,30 @@ export default function CultureDetail() {
         <div className="space-y-6 animate-fadeIn">
           {/* Today's Activity Card */}
           <div
-            className="playful-card p-6 sm:p-7 relative overflow-hidden border border-white/10"
+            className="warm-card p-6 sm:p-7 relative overflow-hidden border border-neutral-200/80 bg-white"
             style={{ "--card-accent-glow": `${accentColor}30` }}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-2 text-xs font-bold text-violet-400">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-violet-700">
                   <span>⚡</span> Today&apos;s Community Activity
                 </div>
-                <h3 className="text-xl font-bold text-white tracking-tight">
+                <h3 className="text-xl font-extrabold text-neutral-900 tracking-tight">
                   {culture.rituals?.[0] || "Take part in today's activity"}
                 </h3>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-neutral-500">
                   Takes ~15 minutes • Builds your streak • Helps AI curate tomorrow&apos;s activity
                 </p>
               </div>
 
               {isMember ? (
                 <Link to={`/cultures/${id}/ritual`} className="shrink-0">
-                  <GlowButton variant="glow" size="md" className="min-h-[44px]">
+                  <GlowButton variant="primary" size="md" className="min-h-[44px]">
                     Start Today&apos;s Activity →
                   </GlowButton>
                 </Link>
               ) : (
-                <GlowButton variant="glow" size="md" onClick={handleJoin} loading={actionLoading}>
+                <GlowButton variant="primary" size="md" onClick={handleJoin} loading={actionLoading}>
                   Join to Participate →
                 </GlowButton>
               )}
@@ -562,26 +562,26 @@ export default function CultureDetail() {
           )}
 
           {/* Social Loop Explainer */}
-          <div className="p-5 rounded-2xl bg-neutral-900/60 border border-white/10 space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+          <div className="warm-card p-5 border border-neutral-200/80 space-y-3 bg-white">
+            <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider">
               How the Community Loop Works
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-              <div className="p-3 rounded-xl bg-neutral-900/80 border border-white/5 space-y-1">
-                <span className="font-bold text-violet-300">1. Join Club</span>
-                <p className="text-[11px] text-neutral-400">Connect with fellow students</p>
+              <div className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-200/70 space-y-1">
+                <span className="font-bold text-violet-700">1. Join Club</span>
+                <p className="text-[11px] text-neutral-500">Connect with fellow students</p>
               </div>
-              <div className="p-3 rounded-xl bg-neutral-900/80 border border-white/5 space-y-1">
-                <span className="font-bold text-cyan-300">2. Discuss</span>
-                <p className="text-[11px] text-neutral-400">Ask questions &amp; doubts</p>
+              <div className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-200/70 space-y-1">
+                <span className="font-bold text-blue-700">2. Discuss</span>
+                <p className="text-[11px] text-neutral-500">Ask questions &amp; doubts</p>
               </div>
-              <div className="p-3 rounded-xl bg-neutral-900/80 border border-white/5 space-y-1">
-                <span className="font-bold text-amber-300">3. Do Activity</span>
-                <p className="text-[11px] text-neutral-400">Daily practice task</p>
+              <div className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-200/70 space-y-1">
+                <span className="font-bold text-amber-700">3. Do Activity</span>
+                <p className="text-[11px] text-neutral-500">Daily practice task</p>
               </div>
-              <div className="p-3 rounded-xl bg-neutral-900/80 border border-white/5 space-y-1">
-                <span className="font-bold text-emerald-300">4. AI Remembers</span>
-                <p className="text-[11px] text-neutral-400">Next activities adapt</p>
+              <div className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-200/70 space-y-1">
+                <span className="font-bold text-emerald-700">4. AI Remembers</span>
+                <p className="text-[11px] text-neutral-500">Next activities adapt</p>
               </div>
             </div>
           </div>
@@ -591,8 +591,8 @@ export default function CultureDetail() {
       {/* 5. TAB 3: RESOURCES */}
       {activeTab === "resources" && (
         <div className="space-y-4 animate-fadeIn">
-          <div className="flex items-center justify-between text-xs text-neutral-400">
-            <span className="font-bold uppercase tracking-wider text-neutral-300">
+          <div className="flex items-center justify-between text-xs text-neutral-500">
+            <span className="font-bold uppercase tracking-wider text-neutral-600">
               Curated Community Learning Resources
             </span>
             <span>{resources.length} guides</span>
@@ -602,19 +602,19 @@ export default function CultureDetail() {
             {resources.map((res, i) => (
               <div
                 key={i}
-                className="p-5 rounded-2xl bg-neutral-900/80 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-3"
+                className="warm-card p-5 border border-neutral-200/80 hover:border-neutral-300 transition-all flex flex-col justify-between space-y-3 bg-white"
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-300 border border-violet-500/25">
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200">
                       {res.tag}
                     </span>
-                    <span className="text-neutral-500 text-xs">⭐ Student Pick</span>
+                    <span className="text-neutral-400 text-xs">⭐ Student Pick</span>
                   </div>
-                  <h4 className="text-base font-bold text-white">
+                  <h4 className="text-base font-bold text-neutral-900">
                     {res.title}
                   </h4>
-                  <p className="text-xs text-neutral-300 leading-relaxed">
+                  <p className="text-xs text-neutral-600 leading-relaxed">
                     {res.desc}
                   </p>
                 </div>
@@ -623,7 +623,7 @@ export default function CultureDetail() {
                   href={res.link}
                   target={res.link.startsWith("http") ? "_blank" : "_self"}
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-400 hover:text-violet-300 transition-colors pt-2 border-t border-white/5"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-700 hover:text-violet-900 transition-colors pt-2 border-t border-neutral-100"
                 >
                   <span>Open Resource</span>
                   <span>→</span>
@@ -639,39 +639,39 @@ export default function CultureDetail() {
         <div className="space-y-6 animate-fadeIn">
           <div className="grid md:grid-cols-2 gap-5">
             {/* Core Values */}
-            <div className="p-5 rounded-2xl bg-neutral-900/80 border border-white/10 space-y-3">
-              <h4 className="text-xs font-bold text-violet-400 uppercase tracking-wider">
+            <div className="warm-card p-5 border border-neutral-200/80 space-y-3 bg-white">
+              <h4 className="text-xs font-bold text-violet-700 uppercase tracking-wider">
                 🌟 Club Values
               </h4>
               <ul className="space-y-2 text-sm">
                 {culture.values?.length > 0 ? (
                   culture.values.map((v, i) => (
-                    <li key={i} className="flex items-center gap-2 text-neutral-200">
-                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />
+                    <li key={i} className="flex items-center gap-2 text-neutral-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
                       <span>{v}</span>
                     </li>
                   ))
                 ) : (
-                  <li className="text-neutral-500 text-xs">No explicit values cataloged.</li>
+                  <li className="text-neutral-400 text-xs">No explicit values cataloged.</li>
                 )}
               </ul>
             </div>
 
             {/* Vibe & Aesthetic */}
-            <div className="p-5 rounded-2xl bg-neutral-900/80 border border-white/10 space-y-3">
-              <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
+            <div className="warm-card p-5 border border-neutral-200/80 space-y-3 bg-white">
+              <h4 className="text-xs font-bold text-teal-700 uppercase tracking-wider">
                 🎨 Club Vibe &amp; Aesthetic
               </h4>
               <ul className="space-y-2 text-sm">
                 {culture.aesthetic?.length > 0 ? (
                   culture.aesthetic.map((a, i) => (
-                    <li key={i} className="flex items-center gap-2 text-neutral-200">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                    <li key={i} className="flex items-center gap-2 text-neutral-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-teal-500 shrink-0" />
                       <span>{a}</span>
                     </li>
                   ))
                 ) : (
-                  <li className="text-neutral-500 text-xs">Aesthetic is emerging naturally.</li>
+                  <li className="text-neutral-400 text-xs">Aesthetic is emerging naturally.</li>
                 )}
               </ul>
             </div>
@@ -679,17 +679,17 @@ export default function CultureDetail() {
 
           {/* Jargon Dictionary */}
           {culture.jargon?.length > 0 && (
-            <div className="p-5 rounded-2xl bg-neutral-900/80 border border-white/10 space-y-3">
-              <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+            <div className="warm-card p-5 border border-neutral-200/80 space-y-3 bg-white">
+              <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider">
                 📖 Community Slang &amp; Terms
               </h4>
               <div className="grid sm:grid-cols-2 gap-3">
                 {culture.jargon.map((j, i) => {
                   const [term, def] = j.includes(":") ? j.split(":") : [j, ""];
                   return (
-                    <div key={i} className="p-3 rounded-xl bg-neutral-950/60 border border-white/5 text-xs">
-                      <span className="font-bold text-white block">{term.trim()}</span>
-                      {def && <span className="text-neutral-400 text-[11px] mt-0.5 block">{def.trim()}</span>}
+                    <div key={i} className="p-3 rounded-xl bg-[#F9FAFB] border border-neutral-200/70 text-xs">
+                      <span className="font-bold text-neutral-900 block">{term.trim()}</span>
+                      {def && <span className="text-neutral-500 text-[11px] mt-0.5 block">{def.trim()}</span>}
                     </div>
                   );
                 })}
@@ -699,11 +699,11 @@ export default function CultureDetail() {
 
           {/* Member Controls & Weekly summary */}
           {isMember && (
-            <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs text-neutral-400">
+            <div className="pt-4 border-t border-neutral-200/80 flex items-center justify-between text-xs text-neutral-500">
               <button
                 type="button"
                 onClick={() => setShowSummaryModal(true)}
-                className="text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1.5 font-semibold"
+                className="text-violet-700 hover:text-violet-900 transition-colors flex items-center gap-1.5 font-bold cursor-pointer"
               >
                 <span>📜</span> View Weekly Summary
               </button>
@@ -713,7 +713,7 @@ export default function CultureDetail() {
                   type="button"
                   onClick={handleLeave}
                   disabled={actionLoading}
-                  className="text-red-400/80 hover:text-red-300 transition-colors"
+                  className="text-red-600 hover:text-red-800 transition-colors cursor-pointer font-medium"
                 >
                   Leave community
                 </button>
@@ -730,26 +730,26 @@ export default function CultureDetail() {
 
       {/* Edit Modal */}
       {showEditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
-          <div className="playful-card p-6 w-full max-w-md border border-white/15 space-y-4">
-            <h3 className="text-lg font-bold text-white">Edit Community</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+          <div className="warm-card p-6 w-full max-w-md border border-neutral-200 shadow-2xl space-y-4 bg-white rounded-3xl">
+            <h3 className="text-lg font-bold text-neutral-900">Edit Community</h3>
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
-                <label className="text-xs text-neutral-400 block mb-1">Club Symbol</label>
+                <label className="text-xs text-neutral-600 font-semibold block mb-1">Club Symbol</label>
                 <input
                   type="text"
                   value={editSymbol}
                   onChange={(e) => setEditSymbol(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-white text-sm"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F9FAFB] border border-neutral-200 text-neutral-900 text-sm focus:bg-white focus:outline-none focus:border-violet-500"
                 />
               </div>
               <div>
-                <label className="text-xs text-neutral-400 block mb-1">Description</label>
+                <label className="text-xs text-neutral-600 font-semibold block mb-1">Description</label>
                 <textarea
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
                   rows={4}
-                  className="w-full px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-white text-sm"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F9FAFB] border border-neutral-200 text-neutral-900 text-sm focus:bg-white focus:outline-none focus:border-violet-500"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-2">
@@ -761,7 +761,7 @@ export default function CultureDetail() {
                 >
                   Cancel
                 </GlowButton>
-                <GlowButton type="submit" variant="glow" size="sm" loading={actionLoading}>
+                <GlowButton type="submit" variant="primary" size="sm" loading={actionLoading}>
                   Save Changes
                 </GlowButton>
               </div>

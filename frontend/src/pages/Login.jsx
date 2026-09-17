@@ -30,21 +30,33 @@ export default function Login() {
 
   return (
     <div className="max-w-md mx-auto py-4 sm:py-16 animate-fadeIn">
-      <GlassPanel className="p-5 sm:p-10 border-white/10 shadow-2xl space-y-6">
+      {/* Decorative blobs */}
+      <div
+        className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full"
+        style={{ background: "#FDE68A", filter: "blur(60px)", opacity: 0.4 }}
+        aria-hidden="true"
+      />
+
+      <GlassPanel className="p-6 sm:p-10 space-y-6 relative z-10">
         <div className="text-center space-y-2 flex flex-col items-center">
-          <Link to="/" className="inline-block mb-1 hover:opacity-90 transition-opacity">
+          <Link to="/" className="inline-block mb-1 hover:opacity-80 transition-opacity">
             <MicroCultureLogo size="lg" showWordmark={false} />
           </Link>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Welcome Back</h1>
-          <p className="text-xs text-neutral-400">
-            Enter your email and password to log in.
+          <h1 className="text-2xl font-extrabold" style={{ color: "#1A1A2E" }}>
+            Welcome back 👋
+          </h1>
+          <p className="text-sm" style={{ color: "#94A3B8" }}>
+            Log in to your communities.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
-              Email Address
+            <label
+              className="block text-sm font-semibold mb-1.5"
+              style={{ color: "#374151" }}
+            >
+              Email
             </label>
             <input
               type="email"
@@ -52,12 +64,29 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-neutral-900/90 border border-neutral-700/80 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none transition-all"
+              style={{
+                background: "#fff",
+                border: "1.5px solid rgba(26,26,46,0.12)",
+                color: "#1A1A2E",
+                boxShadow: "0 1px 4px rgba(26,26,46,0.04)",
+              }}
+              onFocus={(e) => {
+                e.target.style.border = "1.5px solid rgba(124,58,237,0.4)";
+                e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1.5px solid rgba(26,26,46,0.12)";
+                e.target.style.boxShadow = "0 1px 4px rgba(26,26,46,0.04)";
+              }}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-300 mb-1.5">
+            <label
+              className="block text-sm font-semibold mb-1.5"
+              style={{ color: "#374151" }}
+            >
               Password
             </label>
             <input
@@ -66,11 +95,29 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2.5 rounded-xl bg-neutral-900/90 border border-neutral-700/80 text-white placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none transition-all"
+              style={{
+                background: "#fff",
+                border: "1.5px solid rgba(26,26,46,0.12)",
+                color: "#1A1A2E",
+                boxShadow: "0 1px 4px rgba(26,26,46,0.04)",
+              }}
+              onFocus={(e) => {
+                e.target.style.border = "1.5px solid rgba(124,58,237,0.4)";
+                e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1.5px solid rgba(26,26,46,0.12)";
+                e.target.style.boxShadow = "0 1px 4px rgba(26,26,46,0.04)";
+              }}
             />
           </div>
 
-          {error && <p className="text-xs text-red-400 pt-1">{error}</p>}
+          {error && (
+            <p className="text-sm rounded-xl px-3 py-2" style={{ color: "#B91C1C", background: "#FEF2F2" }}>
+              {error}
+            </p>
+          )}
 
           <GlowButton
             type="submit"
@@ -78,15 +125,18 @@ export default function Login() {
             size="lg"
             loading={loading}
             disabled={loading || !email || !password}
-            className="w-full mt-2 justify-center min-h-[48px]"
+            className="w-full mt-2 justify-center"
           >
-            {loading ? "Logging in..." : "Log In"}
+            {loading ? "Logging in..." : "Log in"}
           </GlowButton>
         </form>
 
-        <p className="text-center text-xs text-neutral-500 pt-2 border-t border-white/5">
+        <p
+          className="text-center text-sm pt-1"
+          style={{ borderTop: "1.5px solid rgba(26,26,46,0.08)", paddingTop: "16px", color: "#94A3B8" }}
+        >
           New to Micro Culture?{" "}
-          <Link to="/signup" className="text-violet-400 hover:text-violet-300 underline font-medium">
+          <Link to="/signup" className="font-bold transition-colors hover:opacity-80" style={{ color: "#7C3AED" }}>
             Create an account
           </Link>
         </p>

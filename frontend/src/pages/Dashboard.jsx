@@ -21,6 +21,33 @@ function formatTimeAgo(dateStr) {
   return new Date(dateStr).toLocaleDateString();
 }
 
+// Community color identity (same palette as CultureCard)
+const COMMUNITY_COLORS = {
+  gateverse:           { primary: "#F5A623", bg: "#FFF8E7" },
+  "java junction":     { primary: "#E8775A", bg: "#FFF1EC" },
+  "pixel playground":  { primary: "#C77DFF", bg: "#F8F0FF" },
+  blockbuilders:       { primary: "#5B8DEF", bg: "#EEF3FF" },
+  "cyber sentinels":   { primary: "#2EC4B6", bg: "#E8FAFA" },
+  hacknights:          { primary: "#FF6B9D", bg: "#FFF0F6" },
+  "dsa dojo":          { primary: "#818CF8", bg: "#F0F0FF" },
+  codecanvas:          { primary: "#F59E0B", bg: "#FFFBEB" },
+  "neural nest":       { primary: "#A855F7", bg: "#F9F0FF" },
+  "open source orbit": { primary: "#10B981", bg: "#ECFDF5" },
+  codesprint:          { primary: "#EF4444", bg: "#FFF1F1" },
+  "career launchpad":  { primary: "#F97316", bg: "#FFF7ED" },
+  "devops dock":       { primary: "#06B6D4", bg: "#ECFEFF" },
+  "project playground":{ primary: "#EC4899", bg: "#FFF0F7" },
+};
+
+function getCommunityColors(name = "", fallback = "#7C3AED") {
+  const key = name.toLowerCase().trim();
+  if (COMMUNITY_COLORS[key]) return COMMUNITY_COLORS[key];
+  for (const [k, v] of Object.entries(COMMUNITY_COLORS)) {
+    if (key.includes(k) || k.includes(key)) return v;
+  }
+  return { primary: fallback, bg: "#F8F7FF" };
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [cultures, setCultures] = useState([]);
@@ -47,7 +74,7 @@ export default function Dashboard() {
       }, 0);
       setBestStreak(best);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to load your student dashboard.");
+      setError(err.response?.data?.error || "Failed to load your dashboard.");
     } finally {
       setLoading(false);
     }
@@ -68,29 +95,45 @@ export default function Dashboard() {
   const spotlightCulture = pendingCulture || (cultures.length > 0 ? cultures[0] : null);
   const isSpotlightCompleted = spotlightCulture ? isCompletedToday(spotlightCulture) : false;
 
+  const spotlightColors = spotlightCulture
+    ? getCommunityColors(spotlightCulture.name, spotlightCulture.color)
+    : { primary: "#7C3AED", bg: "#F8F7FF" };
+
   return (
-    <div className="space-y-8 animate-fadeIn">
-      {/* 1. Header: Friendly Student Greeting */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/5">
+    <div className="space-y-10 animate-fadeIn">
+
+      {/* ══════════════════════════════════════════
+          GREETING HEADER
+      ══════════════════════════════════════════ */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight flex items-center gap-2">
-            <span>Hey {user?.name?.split(" ")[0] || "there"} 👋</span>
+          <h1
+            className="text-3xl sm:text-4xl font-extrabold leading-tight"
+            style={{ color: "#17172B" }}
+          >
+            Hey {user?.name?.split(" ")[0] || "there"} 👋
           </h1>
-          <p className="text-sm sm:text-base text-neutral-300">
-            Here&apos;s what&apos;s happening across your communities today.
+          <p className="text-base" style={{ color: "#687085" }}>
+            Here's what's happening today.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="hidden sm:flex items-center gap-2.5">
           <Link to="/create">
-            <GlowButton variant="glow" size="sm" className="min-h-[40px]">
-              + Start Club
-            </GlowButton>
+            <button
+              className="px-4 py-2 rounded-full text-xs font-extrabold text-white min-h-[40px] flex items-center gap-1.5 transition-all duration-200 hover:opacity-90"
+              style={{ background: "#17172B" }}
+            >
+              + Start club
+            </button>
           </Link>
           <Link to="/explore">
-            <GlowButton variant="secondary" size="sm" className="min-h-[40px]">
-              Find More Clubs
-            </GlowButton>
+            <button
+              className="px-4 py-2 rounded-full text-xs font-extrabold text-[#17172B] min-h-[40px] flex items-center gap-1.5 transition-all duration-200 hover:bg-neutral-50"
+              style={{ border: "1.5px solid rgba(23,23,43,0.12)", background: "#fff" }}
+            >
+              Explore →
+            </button>
           </Link>
         </div>
       </div>
@@ -106,72 +149,101 @@ export default function Dashboard() {
           description="Find clubs focused on GATE prep, Java, UI/UX, DSA, or hackathons to start your daily streak!"
           action={
             <Link to="/explore">
-              <GlowButton variant="glow" size="md">
-                Explore Student Clubs →
-              </GlowButton>
+              <button
+                className="px-6 py-3 rounded-full text-sm font-extrabold text-white transition-all hover:opacity-90"
+                style={{ background: "#17172B" }}
+              >
+                Explore communities →
+              </button>
             </Link>
           }
         />
       ) : (
-        <div className="space-y-8">
-          {/* 2. SECTION 1: TODAY'S ACTIVITY (FOCAL POINT) */}
+        <div className="space-y-10">
+
+          {/* ══════════════════════════════════════════
+              1. TODAY'S ACTIVITY — HERO CARD (STRONG PASTEL BG)
+          ══════════════════════════════════════════ */}
           {spotlightCulture && (
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-xs text-neutral-400">
-                <span className="font-bold text-violet-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>⚡</span> Today&apos;s Activity
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold" style={{ color: "#17172B" }}>
+                  Today's activity
                 </span>
                 {isSpotlightCompleted && (
-                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                    <span>✓</span> All done for today
+                  <span
+                    className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                    style={{ background: "#ECFDF5", color: "#065F46" }}
+                  >
+                    ✓ Done
                   </span>
                 )}
               </div>
 
               <div
-                className="playful-card p-6 sm:p-7 relative overflow-hidden border border-white/10"
+                className="warm-card p-6 sm:p-8 relative overflow-hidden"
                 style={{
-                  "--card-accent-glow": `${spotlightCulture.color || "#8b5cf6"}35`,
+                  background: `linear-gradient(135deg, ${spotlightColors.bg} 0%, #FFF3EB 60%, ${spotlightColors.primary}30 100%)`,
+                  border: `1.5px solid ${spotlightColors.primary}40`,
                 }}
               >
+                {/* Large decorative organic blobs */}
                 <div
-                  className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-20"
-                  style={{ backgroundColor: spotlightCulture.color || "#8b5cf6" }}
+                  className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none"
+                  style={{ background: spotlightColors.primary, filter: "blur(50px)", opacity: 0.3 }}
+                  aria-hidden="true"
+                />
+                <div
+                  className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full pointer-events-none"
+                  style={{ background: "#FFD966", filter: "blur(40px)", opacity: 0.25 }}
+                  aria-hidden="true"
                 />
 
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-                  <div className="space-y-2 min-w-0">
-                    <div className="flex items-center gap-2 text-xs flex-wrap">
-                      <span className="font-bold text-violet-300">
-                        {spotlightCulture.symbol} {spotlightCulture.name}
-                      </span>
-                      <span className="text-neutral-500">•</span>
-                      <span className="text-neutral-400">15 min daily practice</span>
-                      {isSpotlightCompleted && (
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                          ✓ Completed
-                        </span>
-                      )}
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-3 flex-1 min-w-0">
+                    {/* Community identity */}
+                    <div className="flex items-center gap-2.5">
+                      <div
+                        className="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shadow-xs"
+                        style={{
+                          background: "#FFFFFF",
+                          border: `2px solid ${spotlightColors.primary}40`,
+                        }}
+                      >
+                        {spotlightCulture.symbol || "✨"}
+                      </div>
+                      <div>
+                        <div className="text-xs font-extrabold" style={{ color: "#17172B" }}>
+                          {spotlightCulture.name}
+                        </div>
+                        <div className="text-[11px] font-medium" style={{ color: "#687085" }}>
+                          15 min daily practice challenge
+                        </div>
+                      </div>
                     </div>
 
-                    <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight leading-snug">
-                      {spotlightCulture.rituals?.[0] || "Take part in today's activity and contribute your reflection"}
-                    </h3>
+                    {/* Activity title */}
+                    <h2
+                      className="text-xl sm:text-2xl font-extrabold leading-snug"
+                      style={{ color: "#17172B" }}
+                    >
+                      {spotlightCulture.rituals?.[0] || "Take part in today's activity"}
+                    </h2>
 
-                    <p className="text-xs text-neutral-300 max-w-2xl line-clamp-2">
+                    <p className="text-xs sm:text-sm leading-relaxed line-clamp-2" style={{ color: "#4B5563" }}>
                       {spotlightCulture.description}
                     </p>
                   </div>
 
                   <div className="shrink-0 w-full sm:w-auto">
                     <Link to={`/cultures/${spotlightCulture._id}/ritual`} className="block w-full sm:w-auto">
-                      <GlowButton
-                        variant={isSpotlightCompleted ? "secondary" : "glow"}
-                        size="md"
-                        className="w-full sm:w-auto justify-center min-h-[46px]"
+                      <button
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-white transition-all duration-200 hover:opacity-95 active:scale-98 shadow-md flex items-center justify-center gap-2"
+                        style={{ background: "#17172B" }}
                       >
-                        {isSpotlightCompleted ? "Review Activity →" : "Start Today's Activity →"}
-                      </GlowButton>
+                        <span>{isSpotlightCompleted ? "Review activity" : "Start activity"}</span>
+                        <span>→</span>
+                      </button>
                     </Link>
                   </div>
                 </div>
@@ -179,14 +251,20 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* 3. SECTION 2: YOUR COMMUNITIES */}
-          <div className="space-y-3.5">
-            <div className="flex items-center justify-between text-xs text-neutral-400">
-              <span className="font-bold text-white uppercase tracking-wider">
-                Your Communities ({cultures.length})
-              </span>
-              <Link to="/explore" className="text-violet-400 hover:text-violet-300 font-semibold">
-                Explore More →
+          {/* ══════════════════════════════════════════
+              2. YOUR COMMUNITIES (MINI-CARDS)
+          ══════════════════════════════════════════ */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold" style={{ color: "#17172B" }}>
+                Your communities ({cultures.length})
+              </h2>
+              <Link
+                to="/explore"
+                className="text-xs font-bold transition-colors hover:opacity-80"
+                style={{ color: "#17172B" }}
+              >
+                Find more →
               </Link>
             </div>
 
@@ -196,21 +274,25 @@ export default function Dashboard() {
                   key={c._id}
                   culture={c}
                   isMember={true}
-                  actionText="Open Club"
+                  actionText="Open"
                   actionLink={`/cultures/${c._id}`}
                 />
               ))}
             </div>
           </div>
 
-          {/* 4. SECTION 3: RECENT DISCUSSIONS */}
+          {/* ══════════════════════════════════════════
+              3. RECENT DISCUSSIONS (SOCIAL CARDS)
+          ══════════════════════════════════════════ */}
           {recentDiscussions.length > 0 && (
-            <div className="space-y-3.5">
-              <div className="flex items-center justify-between text-xs text-neutral-400">
-                <span className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <span>💬</span> Recent Discussions in Your Clubs
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-bold" style={{ color: "#17172B" }}>
+                  Recent discussions
+                </h2>
+                <span className="text-xs" style={{ color: "#687085" }}>
+                  What members are talking about
                 </span>
-                <span className="text-neutral-500">Live replies &amp; doubts</span>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-3">
@@ -219,29 +301,45 @@ export default function Dashboard() {
                   const clubName = typeof d.cultureId === "object" ? d.cultureId?.name : "Club";
                   const clubSymbol = typeof d.cultureId === "object" ? d.cultureId?.symbol : "✨";
                   const clubId = typeof d.cultureId === "object" ? d.cultureId?._id : d.cultureId;
+                  const colors = getCommunityColors(clubName);
 
                   return (
                     <Link
                       key={d._id}
                       to={`/cultures/${clubId}`}
-                      className="p-4 rounded-2xl bg-neutral-900/80 border border-white/10 hover:border-violet-500/40 transition-all space-y-2 group block"
+                      className="warm-card p-4 space-y-2.5 block hover:scale-[1.01] transition-transform"
                     >
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-violet-300 flex items-center gap-1">
-                          <span>{clubSymbol}</span> {clubName}
-                        </span>
-                        <span className="text-neutral-500 text-[11px]">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="text-base w-7 h-7 rounded-lg flex items-center justify-center"
+                            style={{ background: colors.bg }}
+                          >
+                            {clubSymbol}
+                          </span>
+                          <span className="text-xs font-bold" style={{ color: "#17172B" }}>
+                            {clubName}
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-medium" style={{ color: "#94A3B8" }}>
                           {formatTimeAgo(d.createdAt)}
                         </span>
                       </div>
 
-                      <p className="text-xs text-neutral-200 line-clamp-2 leading-relaxed group-hover:text-white">
-                        &ldquo;{d.content}&rdquo;
+                      <p
+                        className="text-xs leading-relaxed line-clamp-2"
+                        style={{ color: "#374151" }}
+                      >
+                        "{d.content}"
                       </p>
 
-                      <div className="text-[11px] text-neutral-400 font-medium flex items-center justify-between pt-1">
-                        <span>— {authorName}</span>
-                        <span className="text-violet-400 group-hover:translate-x-0.5 transition-all">Reply →</span>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[11px] font-semibold" style={{ color: "#687085" }}>
+                          — {authorName}
+                        </span>
+                        <span className="text-xs font-bold flex items-center gap-1" style={{ color: "#17172B" }}>
+                          Reply →
+                        </span>
                       </div>
                     </Link>
                   );
@@ -250,51 +348,55 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* 5. SECTION 4: YOUR PROGRESS */}
+          {/* ══════════════════════════════════════════
+              4. YOUR PROGRESS (FRIENDLY CARDS)
+          ══════════════════════════════════════════ */}
           <div className="space-y-3">
-            <div className="text-xs font-bold text-white uppercase tracking-wider">
-              Your Progress
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              <div className="p-4 rounded-2xl bg-neutral-900/70 border border-white/10 hover:border-amber-500/30 transition-all">
-                <div className="text-xs font-semibold text-neutral-400">
-                  Active Streak
+            <h2 className="text-sm font-bold" style={{ color: "#17172B" }}>
+              Your progress
+            </h2>
+            <div className="grid grid-cols-3 gap-3">
+              {/* Streak */}
+              <div
+                className="warm-card p-4 text-center space-y-1"
+                style={{ background: "#FFFBF0", border: "1.5px solid #FFD966" }}
+              >
+                <div className="text-2xl sm:text-3xl font-extrabold" style={{ color: "#17172B" }}>
+                  🔥 {bestStreak}
                 </div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-amber-400 mt-1 flex items-center gap-1">
-                  <span>🔥</span> {bestStreak} <span className="text-xs font-normal text-neutral-400">{bestStreak === 1 ? "day" : "days"}</span>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-neutral-900/70 border border-white/10 hover:border-violet-500/30 transition-all">
-                <div className="text-xs font-semibold text-neutral-400">
-                  Clubs Joined
-                </div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-violet-300 mt-1">
-                  {stats?.totalJoined ?? cultures.length}
+                <div className="text-xs font-semibold" style={{ color: "#687085" }}>
+                  Day streak
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-neutral-900/70 border border-white/10 hover:border-cyan-500/30 transition-all">
-                <div className="text-xs font-semibold text-neutral-400">
-                  Clubs Founded
+              {/* Discussions */}
+              <div
+                className="warm-card p-4 text-center space-y-1"
+                style={{ background: "#F5F0FF", border: "1.5px solid #C9B6FF" }}
+              >
+                <div className="text-2xl sm:text-3xl font-extrabold" style={{ color: "#17172B" }}>
+                  💬 {recentDiscussions.length}
                 </div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-cyan-300 mt-1">
-                  {stats?.totalCreated ?? 0}
+                <div className="text-xs font-semibold" style={{ color: "#687085" }}>
+                  Discussions
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-neutral-900/70 border border-white/10 hover:border-emerald-500/30 transition-all">
-                <div className="text-xs font-semibold text-neutral-400">
-                  Community Memory
+              {/* Activities */}
+              <div
+                className="warm-card p-4 text-center space-y-1"
+                style={{ background: "#EDFCFA", border: "1.5px solid #9BE7C4" }}
+              >
+                <div className="text-2xl sm:text-3xl font-extrabold" style={{ color: "#17172B" }}>
+                  ✓ {cultures.reduce((sum, c) => sum + (c.participation?.totalPersonalRituals || 0), 0)}
                 </div>
-                <div className="text-sm font-bold text-emerald-400 mt-2 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Active &amp; Adapting</span>
+                <div className="text-xs font-semibold" style={{ color: "#687085" }}>
+                  Activities
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       )}
     </div>

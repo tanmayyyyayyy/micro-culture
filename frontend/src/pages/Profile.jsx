@@ -54,19 +54,19 @@ export default function Profile() {
   return (
     <div className="max-w-3xl mx-auto space-y-8 animate-fadeIn">
       {/* Profile Header Card */}
-      <GlassPanel className="p-4 sm:p-8 relative overflow-hidden border-white/10 shadow-2xl">
+      <GlassPanel className="warm-card p-5 sm:p-8 relative overflow-hidden border border-neutral-200/80 shadow-sm bg-white rounded-3xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-4 sm:gap-5">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white text-xl sm:text-2xl font-bold flex items-center justify-center shadow-lg shadow-violet-500/25 shrink-0">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-neutral-900 text-white text-xl sm:text-2xl font-extrabold flex items-center justify-center shadow-md shrink-0">
               {initial}
             </div>
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight truncate">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-neutral-900 tracking-tight truncate">
                 {profileData?.name}
               </h1>
-              <p className="text-xs text-neutral-400 mt-0.5 truncate">{profileData?.email}</p>
+              <p className="text-xs text-neutral-500 mt-0.5 truncate">{profileData?.email}</p>
               <div className="mt-2 flex items-center gap-2">
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                   Verified Member
                 </span>
               </div>
@@ -84,30 +84,30 @@ export default function Profile() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-6 pt-6 border-t border-white/5">
-          <div className="p-2.5 sm:p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-white">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-6 pt-6 border-t border-neutral-100">
+          <div className="p-3 sm:p-4 rounded-2xl bg-[#F9FAFB] border border-neutral-200/80 text-center">
+            <div className="text-xl sm:text-2xl font-extrabold text-neutral-900">
               {joinedList.length}
             </div>
-            <div className="text-[10px] sm:text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mt-1 break-words">
+            <div className="text-[10px] sm:text-[11px] font-bold text-neutral-500 uppercase tracking-wider mt-1 break-words">
               Communities Joined
             </div>
           </div>
 
-          <div className="p-2.5 sm:p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-violet-400">
+          <div className="p-3 sm:p-4 rounded-2xl bg-[#F9FAFB] border border-neutral-200/80 text-center">
+            <div className="text-xl sm:text-2xl font-extrabold text-violet-700">
               {createdList.length}
             </div>
-            <div className="text-[10px] sm:text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mt-1">
+            <div className="text-[10px] sm:text-[11px] font-bold text-neutral-500 uppercase tracking-wider mt-1">
               Founded
             </div>
           </div>
 
-          <div className="p-2.5 sm:p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 text-center">
-            <div className="text-xl sm:text-2xl font-bold text-amber-400">
+          <div className="p-3 sm:p-4 rounded-2xl bg-[#F9FAFB] border border-neutral-200/80 text-center">
+            <div className="text-xl sm:text-2xl font-extrabold text-amber-700">
               {profileData?.logsCount ?? 0}
             </div>
-            <div className="text-[10px] sm:text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mt-1 break-words">
+            <div className="text-[10px] sm:text-[11px] font-bold text-neutral-500 uppercase tracking-wider mt-1 break-words">
               Activities Completed
             </div>
           </div>
@@ -115,14 +115,14 @@ export default function Profile() {
       </GlassPanel>
 
       {/* Communities Founded */}
-      <GlassPanel className="p-4 sm:p-6 space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+      <GlassPanel className="warm-card p-5 sm:p-6 space-y-4 bg-white border border-neutral-200/80 shadow-sm rounded-3xl">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-700 flex items-center gap-2">
           <span>🏛️</span> Communities Founded by You ({createdList.length})
         </h2>
         {createdList.length === 0 ? (
           <p className="text-xs text-neutral-500 py-3">
             You have not founded any communities yet.{" "}
-            <Link to="/create" className="text-violet-400 hover:underline">
+            <Link to="/create" className="text-violet-700 font-bold hover:underline">
               Start one now
             </Link>.
           </p>
@@ -136,12 +136,12 @@ export default function Profile() {
                 <Link
                   key={cultureId}
                   to={`/cultures/${cultureId}`}
-                  className="p-3 rounded-xl bg-neutral-900/60 border border-neutral-800 hover:border-neutral-700 transition-all flex items-center gap-3 min-h-[44px]"
+                  className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-200/80 hover:border-neutral-300 hover:bg-white transition-all flex items-center gap-3 min-h-[44px]"
                 >
                   <CultureEmblem symbol={symbol} size="sm" />
                   <div className="truncate">
-                    <p className="text-sm font-medium text-white truncate">{cultureName}</p>
-                    <p className="text-[10px] text-neutral-500">Founder</p>
+                    <p className="text-sm font-bold text-neutral-900 truncate">{cultureName}</p>
+                    <p className="text-[10px] text-neutral-500 font-semibold">Founder</p>
                   </div>
                 </Link>
               );
@@ -151,14 +151,14 @@ export default function Profile() {
       </GlassPanel>
 
       {/* Communities Joined */}
-      <GlassPanel className="p-4 sm:p-6 space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+      <GlassPanel className="warm-card p-5 sm:p-6 space-y-4 bg-white border border-neutral-200/80 shadow-sm rounded-3xl">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-700 flex items-center gap-2">
           <span>✨</span> All Joined Communities ({joinedList.length})
         </h2>
         {joinedList.length === 0 ? (
           <p className="text-xs text-neutral-500 py-3">
             You haven&apos;t joined any communities yet.{" "}
-            <Link to="/explore" className="text-violet-400 hover:underline">
+            <Link to="/explore" className="text-violet-700 font-bold hover:underline">
               Explore communities
             </Link>.
           </p>
@@ -172,12 +172,12 @@ export default function Profile() {
                 <Link
                   key={cultureId}
                   to={`/cultures/${cultureId}`}
-                  className="p-3 rounded-xl bg-neutral-900/60 border border-neutral-800 hover:border-neutral-700 transition-all flex items-center gap-3 min-h-[44px]"
+                  className="p-3.5 rounded-2xl bg-[#F9FAFB] border border-neutral-200/80 hover:border-neutral-300 hover:bg-white transition-all flex items-center gap-3 min-h-[44px]"
                 >
                   <CultureEmblem symbol={symbol} size="sm" />
                   <div className="truncate">
-                    <p className="text-sm font-medium text-white truncate">{cultureName}</p>
-                    <p className="text-[10px] text-violet-400">View Community →</p>
+                    <p className="text-sm font-bold text-neutral-900 truncate">{cultureName}</p>
+                    <p className="text-[10px] text-violet-700 font-bold">View Community →</p>
                   </div>
                 </Link>
               );
