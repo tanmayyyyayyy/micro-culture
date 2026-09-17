@@ -330,8 +330,21 @@ router.get("/", async (req, res, next) => {
 
     // Apply category filter
     const selectedFilter = (filter || "all").toLowerCase().trim();
+    const STUDENT_CATEGORIES = ["study", "code", "design", "ai", "security", "build", "career"];
 
-    if (selectedFilter === "trending") {
+    if (STUDENT_CATEGORIES.includes(selectedFilter)) {
+      enriched = enriched.filter((c) => {
+        const words = (c.vibeWords || []).map((w) => w.toLowerCase());
+        const name = (c.name || "").toLowerCase();
+        const desc = (c.description || "").toLowerCase();
+        return (
+          words.includes(selectedFilter) ||
+          words.some((w) => w.includes(selectedFilter)) ||
+          name.includes(selectedFilter) ||
+          desc.includes(selectedFilter)
+        );
+      });
+    } else if (selectedFilter === "trending") {
       enriched = enriched
         .filter((c) => c.discovery.isTrending || c.discovery.recent7dLogs > 0)
         .sort((a, b) => b.discovery.score - a.discovery.score);
@@ -435,8 +448,17 @@ router.get("/dashboard", requireAuth, async (req, res, next) => {
       };
     });
 
+    // Fetch recent discussions across joined cultures
+    const recentDiscussions = await RitualLog.find({ cultureId: { $in: cultureIds } })
+      .sort({ createdAt: -1 })
+      .limit(6)
+      .populate("userId", "name")
+      .populate("cultureId", "name symbol color")
+      .lean();
+
     res.json({
       cultures: culturesWithProgression,
+      recentDiscussions,
       stats: {
         totalJoined: joinedIds.length,
         totalCreated: createdIds.length,

@@ -5,6 +5,25 @@ import Culture from "../models/Culture.js";
 import DailyRitual from "../models/DailyRitual.js";
 import RitualLog from "../models/RitualLog.js";
 
+export const OLD_SHOWCASE_NAMES = [
+  "Nocturne Lens",
+  "Sub Rosa Codex",
+  "Concrete Frequency",
+  "Circuit & Solder",
+  "Cricket Club",
+  "Lo-fi Corner",
+  "DSA & Coding",
+  "Gaming Lounge",
+  "Book Club",
+  "Movie Nights",
+  "Photography Walks",
+  "Fitness Together",
+  "Music Discovery",
+  "Travel Stories",
+  "Aetheria Collective",
+  "P0 Test Culture",
+];
+
 export async function runDemoClean() {
   if (process.env.NODE_ENV === "production") {
     console.error("❌ Demo clean is disabled in production.");
@@ -18,12 +37,17 @@ export async function runDemoClean() {
 
   console.log("🧹 Cleaning demo seed data...");
 
-  // Find demo users
+  // Find demo users (only @microculture.local users)
   const demoUsers = await User.find({ email: { $regex: /@microculture\.local$/i } });
   const demoUserIds = demoUsers.map((u) => u._id);
 
-  // Find demo cultures created by demo users
-  const demoCultures = await Culture.find({ creatorId: { $in: demoUserIds } });
+  // Find demo cultures created by demo users OR matching old showcase names
+  const demoCultures = await Culture.find({
+    $or: [
+      { creatorId: { $in: demoUserIds } },
+      { name: { $in: OLD_SHOWCASE_NAMES } },
+    ],
+  });
   const demoCultureIds = demoCultures.map((c) => c._id);
 
   // Delete demo ritual logs, daily rituals, cultures, and users

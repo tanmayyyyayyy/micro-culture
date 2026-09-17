@@ -4,12 +4,74 @@ import api from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import GlassPanel from "../components/ui/GlassPanel.jsx";
 import GlowButton from "../components/ui/GlowButton.jsx";
-import CultureEmblem from "../components/ui/CultureEmblem.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
 import WeeklySummaryModal from "../components/WeeklySummaryModal.jsx";
 import { ProgressionPanel } from "../components/ui/ProgressionBadge.jsx";
 import { StreakCard } from "../components/ui/ParticipationBadge.jsx";
+
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return "recently";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function getCommunityResources(culture) {
+  const name = (culture?.name || "").toLowerCase();
+  if (name.includes("gate")) {
+    return [
+      { title: "GATE Official PYQ Repository", desc: "Past 15 years chapter-wise solved questions with detailed answer keys.", link: "https://gate2026.iitr.ac.in", tag: "PYQs" },
+      { title: "Engineering Mathematics Formula Sheet", desc: "Hand-compiled 12-page formula cheat sheet covering Linear Algebra, Calculus, and Probability.", link: "#", tag: "Cheat Sheet" },
+      { title: "Virtual Calculator Simulator", desc: "Browser-based practice simulator for the exact official GATE scientific calculator interface.", link: "#", tag: "Tool" },
+      { title: "Standard Textbooks Roadmap", desc: "Recommended textbooks for Computer Science, Mechanical, and Electrical engineering papers.", link: "#", tag: "Guide" },
+    ];
+  }
+  if (name.includes("java")) {
+    return [
+      { title: "OpenJDK 21+ Language Specification", desc: "Official specification of records, pattern matching, virtual threads, and JVM internals.", link: "https://dev.java", tag: "Docs" },
+      { title: "Effective Java (3rd Edition) Key Notes", desc: "Concise summary of Joshua Bloch's 90 best practices for robust Java architecture.", link: "#", tag: "Best Practices" },
+      { title: "Visualizing Java Memory & Garbage Collection", desc: "Interactive visualization of Eden, Survivor, Tenured spaces and G1GC behavior.", link: "#", tag: "Interactive" },
+      { title: "Spring Boot 3.x Production Blueprint", desc: "Starter repo featuring clean layered architecture, validation, JPA, and testcontainers.", link: "#", tag: "Starter Repo" },
+    ];
+  }
+  if (name.includes("pixel") || name.includes("design")) {
+    return [
+      { title: "Figma Community Component Kit", desc: "Production-ready auto-layout buttons, inputs, modals, and responsive navigation bars.", link: "https://figma.com/@community", tag: "UI Kit" },
+      { title: "Refactoring UI Cheatsheet", desc: "Visual tactics for developers creating beautiful interfaces without a formal design background.", link: "#", tag: "Guide" },
+      { title: "Mobbin Mobile & Web Pattern Archive", desc: "Real-world iOS, Android, and web screenshots from top product apps.", link: "https://mobbin.com", tag: "Inspiration" },
+      { title: "WebAIM Contrast Checker", desc: "WCAG AAA accessible color palette tester for dark and light modes.", link: "https://webaim.org/resources/contrastchecker/", tag: "Tool" },
+    ];
+  }
+  if (name.includes("cyber") || name.includes("sentinel")) {
+    return [
+      { title: "PicoCTF Learning Platform", desc: "Gamified beginner challenges in cryptography, binary exploitation, and forensics.", link: "https://picoctf.org", tag: "CTF" },
+      { title: "OWASP Top 10 Web Vulnerabilities", desc: "Comprehensive guides and testing payloads for common web security vulnerabilities.", link: "https://owasp.org", tag: "Security" },
+      { title: "TryHackMe Pre-Security Path", desc: "Structured foundational rooms covering Linux, networking, and security concepts.", link: "https://tryhackme.com", tag: "Labs" },
+      { title: "Wireshark Packet Analysis Guide", desc: "Pocket reference for pcap capture filters, TCP streams, and handshake diagnosis.", link: "#", tag: "Cheat Sheet" },
+    ];
+  }
+  if (name.includes("dsa") || name.includes("code")) {
+    return [
+      { title: "NeetCode 150 Problem Map", desc: "Curated algorithmic problem set covering arrays, trees, graphs, and dynamic programming.", link: "#", tag: "DSA Sheet" },
+      { title: "Time & Space Complexity Reference", desc: "Big-O cheatsheet for common data structures, sorting algorithms, and recursion trees.", link: "#", tag: "Cheat Sheet" },
+      { title: "Visualgo Algorithm Animations", desc: "Interactive step-by-step visualizer for graph traversals, heap operations, and BST rotations.", link: "#", tag: "Interactive" },
+      { title: "FAANG Mock Interview Questions", desc: "Real question bank with interviewer scoring rubrics and optimal solution patterns.", link: "#", tag: "Interviews" },
+    ];
+  }
+  return [
+    { title: `${culture?.name || "Community"} Starter Roadmap`, desc: `Essential guides and beginner tips curated by ${culture?.name || "club"} members.`, link: "#", tag: "Roadmap" },
+    { title: "Curated Free Learning Channels", desc: "High-yield YouTube channels, documentation, and practice platforms recommended by peers.", link: "#", tag: "Curated" },
+    { title: "Community Discussions & Solution Archive", desc: "Top solved questions, doubts, and student projects shared in this club.", link: "#", tag: "Archive" },
+    { title: "Daily Check-in & Habit Tracker", desc: "Template for tracking your study consistency and collaborating with peers.", link: "#", tag: "Template" },
+  ];
+}
 
 export default function CultureDetail() {
   const { id } = useParams();
@@ -23,6 +85,13 @@ export default function CultureDetail() {
   const [editDesc, setEditDesc] = useState("");
   const [editSymbol, setEditSymbol] = useState("");
   const [logs, setLogs] = useState([]);
+
+  // Tab state: "discussion" | "activities" | "resources" | "about"
+  const [activeTab, setActiveTab] = useState("discussion");
+  const [discussionFilter, setDiscussionFilter] = useState("all");
+  const [newDiscussion, setNewDiscussion] = useState("");
+  const [postLoading, setPostLoading] = useState(false);
+  const [postSuccess, setPostSuccess] = useState(false);
 
   async function loadCulture() {
     setLoading(true);
@@ -69,21 +138,21 @@ export default function CultureDetail() {
       await api.post(`/cultures/${id}/join`);
       await Promise.all([loadCulture(), refreshUser()]);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to join culture.");
+      setError(err.response?.data?.error || "Failed to join community.");
     } finally {
       setActionLoading(false);
     }
   }
 
   async function handleLeave() {
-    if (!window.confirm("Are you certain you wish to depart from this culture?")) return;
+    if (!window.confirm("Are you sure you want to leave this community?")) return;
     setActionLoading(true);
     setError("");
     try {
       await api.post(`/cultures/${id}/leave`);
       await Promise.all([loadCulture(), refreshUser()]);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to leave culture.");
+      setError(err.response?.data?.error || "Failed to leave community.");
     } finally {
       setActionLoading(false);
     }
@@ -100,16 +169,36 @@ export default function CultureDetail() {
       setCulture((prev) => ({ ...prev, ...res.data }));
       setShowEditModal(false);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to update culture.");
+      setError(err.response?.data?.error || "Failed to update community.");
     } finally {
       setActionLoading(false);
+    }
+  }
+
+  async function handlePostDiscussion(e) {
+    e.preventDefault();
+    if (!newDiscussion.trim() || postLoading) return;
+    setPostLoading(true);
+    try {
+      const { data } = await api.post("/logs", {
+        cultureId: id,
+        content: newDiscussion.trim(),
+      });
+      setLogs((prev) => [data, ...prev]);
+      setNewDiscussion("");
+      setPostSuccess(true);
+      setTimeout(() => setPostSuccess(false), 3000);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to post message.");
+    } finally {
+      setPostLoading(false);
     }
   }
 
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto py-16">
-        <LoadingState message="Loading community..." />
+        <LoadingState message="Entering student club..." subtext="Getting discussions and activities ready." />
       </div>
     );
   }
@@ -130,81 +219,85 @@ export default function CultureDetail() {
     user &&
     (culture.members?.some((m) => (m?._id || m)?.toString() === currentUserId) || isCreator);
 
-  const formattedRecentActivity = culture.discovery?.recentActivityText
-    ? culture.discovery.recentActivityText
-        .replace(/(\d+)\s+rites\s+this\s+week/i, "$1 activities this week")
-        .replace(/(\d+)\s+rite\s+this\s+week/i, "$1 activity this week")
-    : null;
-
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  const weekLogs = logs.filter((l) => l.createdAt && new Date(l.createdAt) >= sevenDaysAgo);
-  const participatingMembersCount = new Set(
-    logs
-      .map((l) => (typeof l.userId === "object" ? l.userId?._id : l.userId))
-      .filter(Boolean)
-  ).size;
-  const totalCompletedCount = culture.progression?.completedRituals ?? logs.length;
-  const latestLog = logs[0] || null;
+  const accentColor = culture.color || "#8b5cf6";
+  const membersCount = culture.membersCount ?? (culture.members?.length || 1);
+  const resources = getCommunityResources(culture);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fadeIn">
-      {/* Hero Banner — Community Identity First */}
-      <GlassPanel className="p-6 sm:p-10 relative overflow-hidden border-white/10 shadow-2xl">
+    <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+      {/* 1. TOP SECTION: Community Club Identity */}
+      <div
+        className="playful-card p-6 sm:p-8 relative overflow-hidden border border-white/10"
+        style={{ "--card-accent-glow": `${accentColor}30` }}
+      >
         <div
-          className="absolute -top-24 -right-24 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-20"
-          style={{ backgroundColor: culture.color || "#8b5cf6" }}
+          className="absolute -top-16 -right-16 w-64 h-64 rounded-full blur-3xl pointer-events-none opacity-20"
+          style={{ backgroundColor: accentColor }}
         />
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-start sm:items-center gap-5">
-            <CultureEmblem
-              symbol={culture.symbol}
-              color={culture.color}
-              size="xl"
-            />
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="flex items-start sm:items-center gap-4">
+            <div
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center text-3xl sm:text-4xl shadow-lg border border-white/15 shrink-0"
+              style={{
+                backgroundColor: `${accentColor}25`,
+                boxShadow: `0 8px 24px ${accentColor}30`,
+              }}
+            >
+              {culture.symbol || "✨"}
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                   {culture.name}
                 </h1>
                 {isMember && (
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                  <span className="text-[11px] font-bold px-3 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
                     {isCreator ? "Founder" : "Member"}
                   </span>
                 )}
+                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  ● Active Club
+                </span>
               </div>
-              <p className="text-xs text-neutral-400 flex items-center gap-2">
-                <span>{culture.membersCount ?? (culture.members?.length || 1)} members</span>
-                <span>·</span>
-                <span>{formattedRecentActivity || "Active Community"}</span>
+
+              <p className="text-xs sm:text-sm text-neutral-400 flex items-center gap-2">
+                <span className="text-neutral-200 font-semibold">{membersCount} members</span>
+                <span>•</span>
+                <span>{logs.length} discussions & activities</span>
               </p>
             </div>
           </div>
 
           {/* Primary Action Button */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto shrink-0">
             {user && !isMember ? (
               <GlowButton
                 variant="glow"
                 size="lg"
                 loading={actionLoading}
                 onClick={handleJoin}
-                className="w-full sm:w-auto justify-center min-h-[44px]"
+                className="w-full sm:w-auto justify-center min-h-[46px]"
               >
-                Join Community
+                Join Community 👋
               </GlowButton>
             ) : isMember ? (
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
-                <Link to={`/cultures/${id}/ritual`} className="w-full sm:w-auto">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Link to={`/cultures/${id}/ritual`} className="flex-1 sm:flex-initial">
                   <GlowButton variant="glow" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
                     Today&apos;s Activity →
                   </GlowButton>
                 </Link>
-                <Link to={`/cultures/${id}/feed`} className="w-full sm:w-auto">
-                  <GlowButton variant="secondary" size="md" className="w-full sm:w-auto justify-center min-h-[44px]">
-                    Community Feed
-                  </GlowButton>
-                </Link>
+                {isCreator && (
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(true)}
+                    className="px-3 py-2 text-xs rounded-xl bg-neutral-800 text-neutral-300 hover:text-white transition-colors"
+                  >
+                    ✎ Edit
+                  </button>
+                )}
               </div>
             ) : (
               <Link to="/signup" className="w-full sm:w-auto">
@@ -216,51 +309,404 @@ export default function CultureDetail() {
           </div>
         </div>
 
-        {/* Community Description — Placed directly below identity */}
-        <p className="mt-5 text-sm sm:text-base text-neutral-300 leading-relaxed max-w-2xl">
+        {/* Short description */}
+        <p className="mt-4 text-sm sm:text-base text-neutral-200 leading-relaxed max-w-2xl relative z-10">
           {culture.description}
         </p>
 
         {/* Vibe Tags */}
         {culture.vibeWords?.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-3.5 flex flex-wrap gap-1.5 relative z-10">
             {culture.vibeWords.map((v, idx) => (
               <span
                 key={idx}
-                className="text-xs px-2.5 py-1 rounded-full bg-neutral-900/80 border border-neutral-700/60 text-neutral-300"
+                className="text-xs px-2.5 py-0.5 rounded-full bg-neutral-900/80 border border-neutral-700/50 text-neutral-300 font-medium"
               >
                 #{v}
               </span>
             ))}
           </div>
         )}
+      </div>
 
-        {/* Secondary Member Bar */}
-        {isMember && (
-          <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
-            {/* Personal participation: streak + recognition */}
-            {culture.participation && (
-              <StreakCard participation={culture.participation} />
-            )}
-            <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-neutral-400">
-              <div className="flex items-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setShowSummaryModal(true)}
-                  className="inline-flex items-center gap-1.5 text-violet-400 hover:text-violet-300 transition-colors"
+      {/* 2. TABS BAR: Discussion | Activities | Resources | About */}
+      <div className="flex items-center gap-2 border-b border-white/10 pb-1 overflow-x-auto scrollbar-none">
+        {[
+          { id: "discussion", label: "💬 Discussion", count: logs.length },
+          { id: "activities", label: "⚡ Activities", count: culture.rituals?.length || 1 },
+          { id: "resources", label: "📚 Resources", count: resources.length },
+          { id: "about", label: "ℹ️ About Club" },
+        ].map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 ${
+                isActive
+                  ? "bg-white text-neutral-950 shadow-md scale-102"
+                  : "text-neutral-400 hover:text-white hover:bg-neutral-900"
+              }`}
+            >
+              <span>{tab.label}</span>
+              {tab.count !== undefined && (
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                    isActive ? "bg-neutral-900 text-white" : "bg-neutral-800 text-neutral-400"
+                  }`}
                 >
-                  <span>📜</span> Weekly Summary
-                </button>
-                {isCreator && (
-                  <button
-                    type="button"
-                    onClick={() => setShowEditModal(true)}
-                    className="text-neutral-400 hover:text-white transition-colors"
-                  >
-                    ✎ Edit Community
-                  </button>
-                )}
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 3. TAB 1: DISCUSSION (FIRST-CLASS FORUM EXPERIENCE) */}
+      {activeTab === "discussion" && (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Post box for members */}
+          {isMember ? (
+            <div className="playful-card p-4 sm:p-5 border border-white/10 space-y-3">
+              <div className="flex items-center justify-between text-xs text-neutral-400">
+                <span className="font-bold text-white flex items-center gap-1.5">
+                  <span>✍️</span> Ask a question or share a thought
+                </span>
+                <span>Shape community memory</span>
               </div>
+
+              <form onSubmit={handlePostDiscussion} className="space-y-3">
+                <textarea
+                  value={newDiscussion}
+                  onChange={(e) => setNewDiscussion(e.target.value)}
+                  placeholder={`What are you working on or curious about in ${culture.name}? Ask a doubt, share an idea...`}
+                  rows={3}
+                  maxLength={2000}
+                  className="w-full px-4 py-3 bg-neutral-900/90 border border-white/10 rounded-2xl text-neutral-100 placeholder-neutral-500 text-sm focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/30 transition-all resize-none leading-relaxed"
+                />
+
+                {postSuccess && (
+                  <p className="text-xs text-emerald-400 font-medium">
+                    ✓ Posted to {culture.name}! Your thought is part of the community memory.
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between gap-3 pt-1">
+                  <div className="text-[11px] text-neutral-500">
+                    Press post to share with {membersCount} classmates
+                  </div>
+                  <GlowButton
+                    type="submit"
+                    variant="glow"
+                    size="sm"
+                    loading={postLoading}
+                    disabled={!newDiscussion.trim()}
+                    className="min-h-[38px] px-5"
+                  >
+                    Post Discussion →
+                  </GlowButton>
+                </div>
+              </form>
+            </div>
+          ) : (
+            <div className="p-4 rounded-2xl bg-neutral-900/60 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-xs text-neutral-300">
+                <span className="font-bold text-white block sm:inline mr-1">Want to join this discussion?</span>
+                Join this club to ask questions, share projects, and collaborate with members.
+              </div>
+              {user ? (
+                <GlowButton size="sm" variant="glow" onClick={handleJoin} loading={actionLoading}>
+                  Join Club
+                </GlowButton>
+              ) : (
+                <Link to="/signup">
+                  <GlowButton size="sm" variant="glow">
+                    Sign up to Join
+                  </GlowButton>
+                </Link>
+              )}
+            </div>
+          )}
+
+          {/* Discussion feed */}
+          <div className="space-y-3.5">
+            <div className="flex items-center justify-between text-xs text-neutral-400 px-1">
+              <span className="font-bold uppercase tracking-wider text-neutral-300">
+                Community Discussions &amp; Activity
+              </span>
+              <span>{logs.length} total</span>
+            </div>
+
+            {logs.length === 0 ? (
+              <div className="p-8 text-center rounded-2xl bg-neutral-900/40 border border-white/5 space-y-2">
+                <span className="text-3xl">💬</span>
+                <h4 className="text-sm font-bold text-white">No discussions yet</h4>
+                <p className="text-xs text-neutral-400">Be the first to ask a question or share an update!</p>
+              </div>
+            ) : (
+              logs.map((log) => {
+                const authorName = typeof log.userId === "object" ? log.userId?.name : "Student Member";
+                const initial = authorName ? authorName[0].toUpperCase() : "S";
+                const isDoubt = log.content?.includes("?") || log.content?.toLowerCase().includes("doubt");
+
+                return (
+                  <div
+                    key={log._id}
+                    className="p-4 sm:p-5 rounded-2xl bg-neutral-900/80 border border-white/10 hover:border-white/20 transition-all space-y-3"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm text-white shadow-sm"
+                          style={{ backgroundColor: `${accentColor}40` }}
+                        >
+                          {initial}
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white flex items-center gap-2">
+                            <span>{authorName}</span>
+                            <span className="text-[10px] text-neutral-400 font-normal">
+                              {formatTimeAgo(log.createdAt)}
+                            </span>
+                          </div>
+                          {log.ritualId?.title && (
+                            <p className="text-[11px] text-violet-400 font-medium truncate max-w-sm">
+                              Responding to: {log.ritualId.title}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <span
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                          isDoubt
+                            ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                            : "bg-violet-500/15 text-violet-300 border-violet-500/30"
+                        }`}
+                      >
+                        {isDoubt ? "❓ Question / Doubt" : "💡 Discussion"}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-neutral-200 leading-relaxed pl-12">
+                      {log.content}
+                    </p>
+
+                    <div className="flex items-center gap-4 pl-12 text-xs text-neutral-400 pt-1">
+                      <button
+                        type="button"
+                        className="hover:text-white transition-colors flex items-center gap-1 text-[11px]"
+                      >
+                        <span>👏</span> Helpful
+                      </button>
+                      <button
+                        type="button"
+                        className="hover:text-white transition-colors flex items-center gap-1 text-[11px]"
+                      >
+                        <span>💬</span> Reply
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 4. TAB 2: ACTIVITIES */}
+      {activeTab === "activities" && (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Today's Activity Card */}
+          <div
+            className="playful-card p-6 sm:p-7 relative overflow-hidden border border-white/10"
+            style={{ "--card-accent-glow": `${accentColor}30` }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-violet-400">
+                  <span>⚡</span> Today&apos;s Community Activity
+                </div>
+                <h3 className="text-xl font-bold text-white tracking-tight">
+                  {culture.rituals?.[0] || "Take part in today's activity"}
+                </h3>
+                <p className="text-xs text-neutral-400">
+                  Takes ~15 minutes • Builds your streak • Helps AI curate tomorrow&apos;s activity
+                </p>
+              </div>
+
+              {isMember ? (
+                <Link to={`/cultures/${id}/ritual`} className="shrink-0">
+                  <GlowButton variant="glow" size="md" className="min-h-[44px]">
+                    Start Today&apos;s Activity →
+                  </GlowButton>
+                </Link>
+              ) : (
+                <GlowButton variant="glow" size="md" onClick={handleJoin} loading={actionLoading}>
+                  Join to Participate →
+                </GlowButton>
+              )}
+            </div>
+          </div>
+
+          {/* Personal streak if member */}
+          {isMember && culture.participation && (
+            <StreakCard participation={culture.participation} />
+          )}
+
+          {/* Progression */}
+          {culture.progression && (
+            <ProgressionPanel progression={culture.progression} />
+          )}
+
+          {/* Social Loop Explainer */}
+          <div className="p-5 rounded-2xl bg-neutral-900/60 border border-white/10 space-y-3">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              How the Community Loop Works
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+              <div className="p-3 rounded-xl bg-neutral-900/80 border border-white/5 space-y-1">
+                <span className="font-bold text-violet-300">1. Join Club</span>
+                <p className="text-[11px] text-neutral-400">Connect with fellow students</p>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-900/80 border border-white/5 space-y-1">
+                <span className="font-bold text-cyan-300">2. Discuss</span>
+                <p className="text-[11px] text-neutral-400">Ask questions &amp; doubts</p>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-900/80 border border-white/5 space-y-1">
+                <span className="font-bold text-amber-300">3. Do Activity</span>
+                <p className="text-[11px] text-neutral-400">Daily practice task</p>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-900/80 border border-white/5 space-y-1">
+                <span className="font-bold text-emerald-300">4. AI Remembers</span>
+                <p className="text-[11px] text-neutral-400">Next activities adapt</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. TAB 3: RESOURCES */}
+      {activeTab === "resources" && (
+        <div className="space-y-4 animate-fadeIn">
+          <div className="flex items-center justify-between text-xs text-neutral-400">
+            <span className="font-bold uppercase tracking-wider text-neutral-300">
+              Curated Community Learning Resources
+            </span>
+            <span>{resources.length} guides</span>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            {resources.map((res, i) => (
+              <div
+                key={i}
+                className="p-5 rounded-2xl bg-neutral-900/80 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between space-y-3"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-300 border border-violet-500/25">
+                      {res.tag}
+                    </span>
+                    <span className="text-neutral-500 text-xs">⭐ Student Pick</span>
+                  </div>
+                  <h4 className="text-base font-bold text-white">
+                    {res.title}
+                  </h4>
+                  <p className="text-xs text-neutral-300 leading-relaxed">
+                    {res.desc}
+                  </p>
+                </div>
+
+                <a
+                  href={res.link}
+                  target={res.link.startsWith("http") ? "_blank" : "_self"}
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-400 hover:text-violet-300 transition-colors pt-2 border-t border-white/5"
+                >
+                  <span>Open Resource</span>
+                  <span>→</span>
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 6. TAB 4: ABOUT CLUB */}
+      {activeTab === "about" && (
+        <div className="space-y-6 animate-fadeIn">
+          <div className="grid md:grid-cols-2 gap-5">
+            {/* Core Values */}
+            <div className="p-5 rounded-2xl bg-neutral-900/80 border border-white/10 space-y-3">
+              <h4 className="text-xs font-bold text-violet-400 uppercase tracking-wider">
+                🌟 Club Values
+              </h4>
+              <ul className="space-y-2 text-sm">
+                {culture.values?.length > 0 ? (
+                  culture.values.map((v, i) => (
+                    <li key={i} className="flex items-center gap-2 text-neutral-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />
+                      <span>{v}</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-neutral-500 text-xs">No explicit values cataloged.</li>
+                )}
+              </ul>
+            </div>
+
+            {/* Vibe & Aesthetic */}
+            <div className="p-5 rounded-2xl bg-neutral-900/80 border border-white/10 space-y-3">
+              <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
+                🎨 Club Vibe &amp; Aesthetic
+              </h4>
+              <ul className="space-y-2 text-sm">
+                {culture.aesthetic?.length > 0 ? (
+                  culture.aesthetic.map((a, i) => (
+                    <li key={i} className="flex items-center gap-2 text-neutral-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
+                      <span>{a}</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-neutral-500 text-xs">Aesthetic is emerging naturally.</li>
+                )}
+              </ul>
+            </div>
+          </div>
+
+          {/* Jargon Dictionary */}
+          {culture.jargon?.length > 0 && (
+            <div className="p-5 rounded-2xl bg-neutral-900/80 border border-white/10 space-y-3">
+              <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                📖 Community Slang &amp; Terms
+              </h4>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {culture.jargon.map((j, i) => {
+                  const [term, def] = j.includes(":") ? j.split(":") : [j, ""];
+                  return (
+                    <div key={i} className="p-3 rounded-xl bg-neutral-950/60 border border-white/5 text-xs">
+                      <span className="font-bold text-white block">{term.trim()}</span>
+                      {def && <span className="text-neutral-400 text-[11px] mt-0.5 block">{def.trim()}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Member Controls & Weekly summary */}
+          {isMember && (
+            <div className="pt-4 border-t border-white/5 flex items-center justify-between text-xs text-neutral-400">
+              <button
+                type="button"
+                onClick={() => setShowSummaryModal(true)}
+                className="text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1.5 font-semibold"
+              >
+                <span>📜</span> View Weekly Summary
+              </button>
 
               {!isCreator && (
                 <button
@@ -273,320 +719,54 @@ export default function CultureDetail() {
                 </button>
               )}
             </div>
-          </div>
-        )}
-      </GlassPanel>
-
-      {/* Visitor Onboarding Explainer if not member */}
-      {!isMember && (
-        <GlassPanel className="p-6 bg-violet-950/20 border-violet-500/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="space-y-1 text-center sm:text-left">
-            <h3 className="text-sm font-semibold text-violet-300">
-              What happens when you join?
-            </h3>
-            <p className="text-xs text-neutral-400 max-w-xl">
-              You join the daily activity, share reflections, and help shape what the community does next. AI learns from everyone&apos;s contributions.
-            </p>
-          </div>
-          {user ? (
-            <GlowButton size="sm" variant="glow" onClick={handleJoin} loading={actionLoading}>
-              Join Now
-            </GlowButton>
-          ) : (
-            <Link to="/signup">
-              <GlowButton size="sm" variant="glow">
-                Sign Up
-              </GlowButton>
-            </Link>
           )}
-        </GlassPanel>
-      )}
-
-      {/* Culture Evolution / Progression */}
-      {culture.progression && (
-        <ProgressionPanel progression={culture.progression} />
-      )}
-
-      {/* Community Memory Section */}
-      <GlassPanel className="p-5 sm:p-8 space-y-5 bg-gradient-to-br from-neutral-900/90 via-neutral-900/60 to-violet-950/20 border-violet-500/20 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-amber-400 text-sm">✦</span>
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                Community Memory
-              </h2>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 uppercase font-bold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Active
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-neutral-300">
-              Activities and reflections from members help shape what this community does next.
-            </p>
-          </div>
-
-          <Link to={`/cultures/${id}/feed`} className="self-start sm:self-auto">
-            <span className="text-xs text-violet-400 hover:text-violet-300 font-medium underline py-1 inline-block">
-              View Community Feed →
-            </span>
-          </Link>
         </div>
-
-        {/* Real Data Metrics */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div className="p-3.5 rounded-xl bg-neutral-900/70 border border-neutral-800">
-            <div className="text-lg sm:text-xl font-bold text-white">
-              {weekLogs.length > 0 ? `${weekLogs.length} this week` : `${totalCompletedCount} total`}
-            </div>
-            <div className="text-[11px] text-neutral-400 mt-0.5">
-              Activities completed
-            </div>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-neutral-900/70 border border-neutral-800">
-            <div className="text-lg sm:text-xl font-bold text-violet-400">
-              {participatingMembersCount > 0 ? participatingMembersCount : (culture.members?.length || 0)}
-            </div>
-            <div className="text-[11px] text-neutral-400 mt-0.5">
-              {participatingMembersCount > 0 ? "Members participated" : "Members joined"}
-            </div>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-neutral-900/70 border border-neutral-800 col-span-2 sm:col-span-1">
-            <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-              <span>●</span> Memory Loop Active
-            </div>
-            <div className="text-[11px] text-neutral-400 mt-1 leading-snug">
-              Recent reflections are shaping future activities
-            </div>
-          </div>
-        </div>
-
-        {/* Real latest reflection snippet if available */}
-        {latestLog && (
-          <div className="p-3.5 rounded-xl bg-violet-950/25 border border-violet-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="min-w-0">
-              <div className="text-[10px] uppercase font-bold tracking-wider text-violet-400 mb-0.5">
-                Recent Member Reflection
-              </div>
-              <p className="text-xs text-neutral-200 italic truncate">
-                &ldquo;{latestLog.content}&rdquo;
-              </p>
-            </div>
-            <span className="text-[11px] text-neutral-400 shrink-0 font-medium">
-              — {typeof latestLog.userId === "object" ? latestLog.userId?.name : "Member"}
-            </span>
-          </div>
-        )}
-
-        {/* How your community grows 4-step */}
-        <div className="pt-3 border-t border-white/5">
-          <div className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-2.5">
-            How your community grows
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
-            <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-neutral-800/70">
-              <span className="text-violet-400 font-bold block mb-1">1. Do an activity</span>
-              <span className="text-neutral-400 text-[11px] leading-relaxed">Participate in daily community activities</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-neutral-800/70">
-              <span className="text-cyan-400 font-bold block mb-1">2. Share reflection</span>
-              <span className="text-neutral-400 text-[11px] leading-relaxed">Leave a brief thought on what you noticed</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-neutral-800/70">
-              <span className="text-amber-400 font-bold block mb-1">3. Community remembers</span>
-              <span className="text-neutral-400 text-[11px] leading-relaxed">Insights save to your community memory</span>
-            </div>
-            <div className="p-2.5 rounded-lg bg-neutral-900/50 border border-neutral-800/70">
-              <span className="text-emerald-400 font-bold block mb-1">4. AI uses memory</span>
-              <span className="text-neutral-400 text-[11px] leading-relaxed">Future activities evolve with the group</span>
-            </div>
-          </div>
-        </div>
-      </GlassPanel>
-
-      {/* Three Pillars Charter Grid */}
-      <div className="grid md:grid-cols-3 gap-6">
-        {/* Core Values */}
-        <GlassPanel className="p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span>✦</span> Values
-            </div>
-            <ul className="space-y-2.5 text-sm">
-              {culture.values?.length > 0 ? (
-                culture.values.map((v, i) => (
-                  <li key={i} className="flex items-center gap-2 text-neutral-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
-                    <span>{v}</span>
-                  </li>
-                ))
-              ) : (
-                <li className="text-neutral-500 text-xs">No explicit values cataloged.</li>
-              )}
-            </ul>
-          </div>
-        </GlassPanel>
-
-        {/* Aesthetic Direction */}
-        <GlassPanel className="p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-cyan-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span>✧</span> Vibe
-            </div>
-            <ul className="space-y-2.5 text-sm">
-              {culture.aesthetic?.length > 0 ? (
-                culture.aesthetic.map((a, i) => (
-                  <li key={i} className="flex items-center gap-2 text-neutral-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                    <span>{a}</span>
-                  </li>
-                ))
-              ) : (
-                <li className="text-neutral-500 text-xs">Aesthetic is purely emergent.</li>
-              )}
-            </ul>
-          </div>
-        </GlassPanel>
-
-        {/* AI Adaptation Status */}
-        <GlassPanel className="p-6 flex flex-col justify-between bg-neutral-900/60 border-amber-500/20">
-          <div>
-            <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span>★</span> AI Adaptation
-            </div>
-            <p className="text-xs text-neutral-300 leading-relaxed mb-4">
-              AI references your community&apos;s memory to create activities aligned with your group&apos;s values, pace, and recent discoveries.
-            </p>
-            <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 text-xs text-amber-200/90 flex items-center gap-2">
-              <span className="animate-pulse">●</span>
-              <span>AI Uses Community History</span>
-            </div>
-          </div>
-        </GlassPanel>
-      </div>
-
-      {/* Lexicon / Jargon Dictionary */}
-      {culture.jargon?.length > 0 && (
-        <GlassPanel className="p-6 sm:p-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2">
-              <span>📖</span> Community Words
-            </h2>
-            <span className="text-xs text-neutral-500">
-              {culture.jargon.length} terms
-            </span>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-3.5">
-            {culture.jargon.map((term, i) => {
-              const [word, def] = term.includes(":") ? term.split(/:(.+)/) : [term, ""];
-              return (
-                <div
-                  key={i}
-                  className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800/80 flex flex-col justify-between"
-                >
-                  <span className="font-semibold text-sm text-violet-300 tracking-wide font-mono">
-                    {word.trim()}
-                  </span>
-                  {def && (
-                    <span className="text-xs text-neutral-400 mt-1 leading-relaxed">
-                      {def.trim()}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </GlassPanel>
-      )}
-
-      {/* Starter & Active Rituals */}
-      {culture.activeRituals?.length > 0 && (
-        <GlassPanel className="p-6 sm:p-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-300 mb-4 flex items-center gap-2">
-            <span>🕯</span> Traditions
-          </h2>
-          <div className="space-y-2.5">
-            {culture.activeRituals.map((r) => (
-              <div
-                key={r._id}
-                className="p-3.5 rounded-xl bg-neutral-900/40 border border-neutral-800/60 text-sm text-neutral-300 flex items-center gap-3"
-              >
-                <span className="text-neutral-500">·</span>
-                <span>{r.text}</span>
-              </div>
-            ))}
-          </div>
-        </GlassPanel>
       )}
 
       {/* Weekly Summary Modal */}
-      <WeeklySummaryModal
-        cultureId={id}
-        cultureName={culture.name}
-        isOpen={showSummaryModal}
-        onClose={() => setShowSummaryModal(false)}
-      />
+      {showSummaryModal && (
+        <WeeklySummaryModal cultureId={id} onClose={() => setShowSummaryModal(false)} />
+      )}
 
-      {/* Founder Edit Modal */}
+      {/* Edit Modal */}
       {showEditModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn"
-          onClick={() => setShowEditModal(false)}
-        >
-          <GlassPanel
-            className="max-w-md w-full max-h-[85vh] overflow-y-auto p-4 sm:p-6 bg-neutral-900 border-white/10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-lg font-bold text-white mb-4">Edit Community</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+          <div className="playful-card p-6 w-full max-w-md border border-white/15 space-y-4">
+            <h3 className="text-lg font-bold text-white">Edit Community</h3>
             <form onSubmit={handleSaveEdit} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-neutral-400 mb-1">
-                  Culture Symbol (Emoji)
-                </label>
+                <label className="text-xs text-neutral-400 block mb-1">Club Symbol</label>
                 <input
+                  type="text"
                   value={editSymbol}
                   onChange={(e) => setEditSymbol(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-neutral-800 text-sm text-white focus:outline-none focus:border-violet-500"
+                  className="w-full px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-white text-sm"
                 />
               </div>
-
               <div>
-                <label className="block text-xs font-medium text-neutral-400 mb-1">
-                  Description
-                </label>
+                <label className="text-xs text-neutral-400 block mb-1">Description</label>
                 <textarea
-                  rows={4}
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-neutral-800 text-sm text-white focus:outline-none focus:border-violet-500 resize-none"
+                  rows={4}
+                  className="w-full px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-700 text-white text-sm"
                 />
               </div>
-
-              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2">
                 <GlowButton
+                  type="button"
+                  variant="secondary"
                   size="sm"
-                  variant="ghost"
                   onClick={() => setShowEditModal(false)}
-                  className="w-full sm:w-auto justify-center min-h-[40px]"
                 >
                   Cancel
                 </GlowButton>
-                <GlowButton
-                  type="submit"
-                  size="sm"
-                  variant="glow"
-                  loading={actionLoading}
-                  className="w-full sm:w-auto justify-center min-h-[40px]"
-                >
+                <GlowButton type="submit" variant="glow" size="sm" loading={actionLoading}>
                   Save Changes
                 </GlowButton>
               </div>
             </form>
-          </GlassPanel>
+          </div>
         </div>
       )}
     </div>

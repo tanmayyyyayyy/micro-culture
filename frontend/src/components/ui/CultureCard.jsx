@@ -1,155 +1,130 @@
 import { Link } from "react-router-dom";
-import GlassPanel from "./GlassPanel.jsx";
-import CultureEmblem from "./CultureEmblem.jsx";
-import { ProgressionBadge } from "./ProgressionBadge.jsx";
 
 export default function CultureCard({ culture, actionText, actionLink, isMember = false }) {
   if (!culture) return null;
 
-  const formattedRecentActivity = culture.discovery?.recentActivityText
-    ? culture.discovery.recentActivityText
-        .replace(/(\d+)\s+rites\s+this\s+week/i, "$1 activities this week")
-        .replace(/(\d+)\s+rite\s+this\s+week/i, "$1 activity this week")
-    : null;
+  const accentColor = culture.color || "#8b5cf6";
+  const membersCount = culture.membersCount ?? (culture.members?.length || 1);
+
+  // Friendly status badge
+  let statusBadge = null;
+  if (culture.discovery?.badge === "TRENDING" || culture.discovery?.isTrending) {
+    statusBadge = { text: "🔥 Trending", style: "bg-amber-500/15 text-amber-300 border-amber-500/30" };
+  } else if (culture.discovery?.badge === "NEW" || culture.discovery?.isNew) {
+    statusBadge = { text: "✦ New", style: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" };
+  } else if (culture.discovery?.isGrowing) {
+    statusBadge = { text: "🌱 Growing", style: "bg-teal-500/15 text-teal-300 border-teal-500/30" };
+  } else {
+    statusBadge = { text: "● Active now", style: "bg-violet-500/15 text-violet-300 border-violet-500/30" };
+  }
+
+  // Friendly category tag
+  const categoryTag = culture.vibeWords?.slice(0, 3).join(" • ") || "Community";
 
   return (
-    <GlassPanel interactive className="group p-5 flex flex-col justify-between h-full relative overflow-hidden">
-      {/* Community color accent line */}
+    <div
+      className="playful-card group relative overflow-hidden p-5 sm:p-6 flex flex-col justify-between h-full cursor-pointer"
+      style={{
+        "--card-accent-glow": `${accentColor}35`,
+      }}
+    >
+      {/* Top pastel accent border */}
       <div
-        className="absolute top-0 left-0 right-0 h-[2px] opacity-70 pointer-events-none"
-        style={{ backgroundColor: culture.color || "#8b5cf6" }}
-      />
-      {/* Subtle ambient tint on hover */}
-      <div
-        className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl pointer-events-none opacity-0 group-hover:opacity-15 transition-opacity duration-300"
-        style={{ backgroundColor: culture.color || "#8b5cf6" }}
+        className="absolute top-0 left-0 right-0 h-1.5 opacity-85"
+        style={{
+          background: `linear-gradient(90deg, ${accentColor}, ${accentColor}40, transparent)`,
+        }}
       />
 
-      <Link to={`/cultures/${culture._id}`} className="block relative z-10">
-        {/* 1. Community Identity Header */}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div className="flex items-center gap-3">
-            <CultureEmblem
-              symbol={culture.symbol}
-              color={culture.color}
-              size="md"
-            />
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-semibold text-neutral-100 group-hover:text-white transition-colors">
-                  {culture.name}
-                </h3>
-                {isMember && (
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                    Member
-                  </span>
-                )}
-                {culture.discovery?.badge && (
-                  <span
-                    className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${
-                      culture.discovery.badge === "TRENDING"
-                        ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-                        : culture.discovery.badge === "NEW"
-                        ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
-                        : "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
-                    }`}
-                  >
-                    {culture.discovery.badge === "TRENDING"
-                      ? "🔥 Trending"
-                      : culture.discovery.badge === "NEW"
-                      ? "✦ New"
-                      : "⚡ Active"}
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-neutral-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
-                <span>{culture.membersCount ?? (culture.members?.length || 1)} members</span>
-                {formattedRecentActivity && (
-                  <>
-                    <span className="text-neutral-600">•</span>
-                    <span className="text-neutral-300 font-medium text-[11px]">
-                      {formattedRecentActivity}
-                    </span>
-                  </>
-                )}
-              </p>
-            </div>
+      {/* Ambient background blob */}
+      <div
+        className="absolute -top-10 -right-10 w-36 h-36 rounded-full blur-3xl pointer-events-none opacity-10 group-hover:opacity-25 transition-opacity duration-300"
+        style={{ backgroundColor: accentColor }}
+      />
+
+      {/* Decorative tiny stars & dots */}
+      <div className="absolute top-3.5 right-4 flex items-center gap-1.5 text-[11px] text-white/20 select-none pointer-events-none">
+        <span>✦</span>
+        <span>•</span>
+      </div>
+
+      <Link to={`/cultures/${culture._id}`} className="block relative z-10 flex-1">
+        {/* Card Header: Large playful icon + status tag */}
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div
+            className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/10 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-3deg]"
+            style={{
+              backgroundColor: `${accentColor}25`,
+              boxShadow: `0 4px 14px ${accentColor}25`,
+            }}
+          >
+            {culture.symbol || "✨"}
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-wrap justify-end pt-0.5">
+            {isMember && (
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                Joined
+              </span>
+            )}
+            {statusBadge && (
+              <span className={`text-[10px] font-semibold tracking-wide px-2.5 py-0.5 rounded-full border ${statusBadge.style}`}>
+                {statusBadge.text}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* 2. What people do here / Community description */}
-        <p className="text-sm text-neutral-300 line-clamp-2 leading-relaxed mb-3">
+        {/* Title & Tagline */}
+        <div className="space-y-1 mb-2.5">
+          <h3 className="text-lg font-bold text-white tracking-tight group-hover:text-violet-200 transition-colors">
+            {culture.name}
+          </h3>
+          <p className="text-[11px] font-medium text-neutral-400 capitalize truncate">
+            {categoryTag}
+          </p>
+        </div>
+
+        {/* Short description */}
+        <p className="text-xs text-neutral-300/90 line-clamp-2 leading-relaxed mb-4">
           {culture.description}
         </p>
 
-        {/* 3. Vibe tags */}
-        {culture.vibeWords?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {culture.vibeWords.slice(0, 3).map((word, i) => (
-              <span
-                key={i}
-                className="text-[11px] px-2 py-0.5 rounded-md bg-neutral-800/80 text-neutral-300 border border-neutral-700/60"
-              >
-                #{word}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* 4. Today's Activity (feature of the community) */}
+        {/* Today's Activity Teaser */}
         {culture.rituals?.[0] && (
-          <div className="p-3 rounded-xl bg-neutral-900/70 border border-neutral-800/80 mb-3 space-y-1">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-violet-400 font-medium text-[11px]">
-                Today&apos;s Activity
+          <div className="p-2.5 rounded-xl bg-neutral-900/60 border border-white/5 mb-4 group-hover:border-white/10 transition-colors">
+            <div className="flex items-center justify-between text-[10px] text-neutral-400 mb-0.5">
+              <span className="font-semibold text-violet-300 flex items-center gap-1">
+                <span>⚡</span> Today&apos;s activity
               </span>
-              <span className="text-neutral-500 font-mono text-[10px]">Daily</span>
+              <span>Daily</span>
             </div>
-            <p className="text-xs font-medium text-neutral-200 line-clamp-1">
+            <p className="text-xs text-neutral-200 font-medium line-clamp-1">
               {culture.rituals[0]}
             </p>
           </div>
         )}
       </Link>
 
-      {/* Progression mini-row */}
-      {culture.progression && (
-        <div style={{ marginBottom: "0.75rem" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.35rem" }}>
-            <ProgressionBadge progression={culture.progression} />
-            <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.35)" }}>
-              {culture.progression.progress}%
-            </span>
-          </div>
-          <div style={{ height: "3px", borderRadius: "999px", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
-            <div
-              style={{
-                height: "100%",
-                width: `${culture.progression.progress}%`,
-                borderRadius: "999px",
-                background: "linear-gradient(90deg, #8b5cf699, #8b5cf6)",
-                animation: "progressFill 0.7s cubic-bezier(0.22,0.61,0.36,1) both",
-              }}
-            />
-          </div>
+      {/* Bottom Footer: Stats + Action Arrow */}
+      <div className="pt-3 border-t border-white/5 flex items-center justify-between relative z-10 text-xs">
+        <div className="text-neutral-400 font-medium flex items-center gap-2">
+          <span>{membersCount} {membersCount === 1 ? "member" : "members"}</span>
         </div>
-      )}
 
-      {/* Action Row */}
-      <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs gap-2">
-        <Link
-          to={`/cultures/${culture._id}`}
-          className="text-neutral-400 hover:text-white transition-colors py-2 min-h-[38px] inline-flex items-center"
-        >
-          View Community
-        </Link>
         <Link
           to={actionLink || `/cultures/${culture._id}`}
-          className="inline-flex items-center gap-1 font-medium text-violet-400 hover:text-violet-300 transition-colors py-2 min-h-[38px]"
+          className="inline-flex items-center gap-1.5 font-semibold text-white/90 group-hover:text-white group-hover:translate-x-0.5 transition-all"
         >
-          {actionText || (isMember ? "Today's Activity →" : "Join Community →")}
+          <span className="text-xs">{actionText || (isMember ? "Open Club" : "Join Club")}</span>
+          <div
+            className="w-7 h-7 rounded-full flex items-center justify-center border border-white/10 group-hover:border-white/25 transition-all shadow-sm"
+            style={{ backgroundColor: `${accentColor}20` }}
+          >
+            →
+          </div>
         </Link>
       </div>
-    </GlassPanel>
+    </div>
   );
 }
