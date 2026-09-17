@@ -1,10 +1,12 @@
 /**
- * P3.3 — Demo Data Seeding & Showcase Readiness Test Suite
+ * P3.3 / P5.1 — Demo Data Seeding & Showcase Readiness Test Suite
  *
  * Focused tests for demo seed:
  * 1. Production safety (throws error when NODE_ENV === 'production')
  * 2. Idempotency (running seed twice produces identical record counts)
  * 3. Schema validity and relationship integrity
+ *
+ * P5.1 update: 10 demo users (4 original + 6 new), 14 communities (4 original + 10 accessible).
  */
 import assert from "assert";
 import mongoose from "mongoose";
@@ -67,10 +69,16 @@ async function runTests() {
     await runDemoSeed();
 
     const usersCount = await User.countDocuments({ email: { $regex: /@microculture\.local$/i } });
-    const culturesCount = await Culture.countDocuments({ name: { $in: ["Nocturne Lens", "Sub Rosa Codex", "Concrete Frequency", "Circuit & Solder"] } });
-    
-    assert.strictEqual(usersCount, 4, "Must seed exactly 4 demo users");
-    assert.strictEqual(culturesCount, 4, "Must seed exactly 4 demo cultures");
+    const ALL_DEMO_CULTURE_NAMES = [
+      "Nocturne Lens", "Sub Rosa Codex", "Concrete Frequency", "Circuit & Solder",
+      "Cricket Club", "Lo-fi Corner", "DSA & Coding", "Gaming Lounge",
+      "Book Club", "Movie Nights", "Photography Walks", "Fitness Together",
+      "Music Discovery", "Travel Stories",
+    ];
+    const culturesCount = await Culture.countDocuments({ name: { $in: ALL_DEMO_CULTURE_NAMES } });
+
+    assert.strictEqual(usersCount, 10, "Must seed exactly 10 demo users");
+    assert.strictEqual(culturesCount, 14, "Must seed exactly 14 demo cultures");
   });
 
   // Test 3: Idempotency (run second time)
@@ -79,10 +87,16 @@ async function runTests() {
     await runDemoSeed();
 
     const usersCount = await User.countDocuments({ email: { $regex: /@microculture\.local$/i } });
-    const culturesCount = await Culture.countDocuments({ name: { $in: ["Nocturne Lens", "Sub Rosa Codex", "Concrete Frequency", "Circuit & Solder"] } });
+    const ALL_DEMO_CULTURE_NAMES = [
+      "Nocturne Lens", "Sub Rosa Codex", "Concrete Frequency", "Circuit & Solder",
+      "Cricket Club", "Lo-fi Corner", "DSA & Coding", "Gaming Lounge",
+      "Book Club", "Movie Nights", "Photography Walks", "Fitness Together",
+      "Music Discovery", "Travel Stories",
+    ];
+    const culturesCount = await Culture.countDocuments({ name: { $in: ALL_DEMO_CULTURE_NAMES } });
 
-    assert.strictEqual(usersCount, 4, "User count must remain 4 after re-seeding");
-    assert.strictEqual(culturesCount, 4, "Culture count must remain 4 after re-seeding");
+    assert.strictEqual(usersCount, 10, "User count must remain 10 after re-seeding");
+    assert.strictEqual(culturesCount, 14, "Culture count must remain 14 after re-seeding");
   });
 
   // Test 4: Relationship & Schema Integrity
@@ -98,6 +112,20 @@ async function runTests() {
 
     const logs = await RitualLog.find({ cultureId: culture._id });
     assert.strictEqual(logs.length > 0, true, "Must have ritual logs for Nocturne Lens");
+
+    // P5.1: Verify accessible communities seeded correctly
+    const cricket = await Culture.findOne({ name: "Cricket Club" });
+    assert.notStrictEqual(cricket, null, "Cricket Club must exist");
+    assert.strictEqual(cricket.symbol, "🏏");
+    assert.strictEqual(cricket.members.length >= 10, true, "Cricket Club should have 10+ members");
+
+    const dsaCoding = await Culture.findOne({ name: "DSA & Coding" });
+    assert.notStrictEqual(dsaCoding, null, "DSA & Coding must exist");
+    assert.strictEqual(dsaCoding.symbol, "💻");
+
+    // Aetheria Collective must be removed
+    const aetheria = await Culture.findOne({ name: "Aetheria Collective" });
+    assert.strictEqual(aetheria, null, "Aetheria Collective (QA artifact) must have been removed");
   });
 
   console.log("\n==========================================");
