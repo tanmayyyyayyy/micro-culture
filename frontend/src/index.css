@@ -55,16 +55,32 @@
 }
 
 @keyframes floatSubtleA {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50%       { transform: translateY(-7px) rotate(1deg); }
+  0%, 100% { transform: translateY(0) rotate(var(--sticker-rotation, 0deg)); }
+  50%       { transform: translateY(-7px) rotate(calc(var(--sticker-rotation, 0deg) + 1deg)); }
 }
 @keyframes floatSubtleB {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50%       { transform: translateY(-9px) rotate(-1.2deg); }
+  0%, 100% { transform: translateY(0) rotate(var(--sticker-rotation, 0deg)); }
+  50%       { transform: translateY(-9px) rotate(calc(var(--sticker-rotation, 0deg) - 1.2deg)); }
 }
 @keyframes floatSubtleC {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50%       { transform: translateY(-6px) rotate(0.8deg); }
+  0%, 100% { transform: translateY(0) rotate(var(--sticker-rotation, 0deg)); }
+  50%       { transform: translateY(-6px) rotate(calc(var(--sticker-rotation, 0deg) + .8deg)); }
+}
+
+.floating-sticker {
+  transition: box-shadow 150ms ease-out, transform 150ms ease-out;
+}
+
+.floating-sticker:hover {
+  animation: none;
+  transform: translateY(-2px) rotate(var(--sticker-rotation, 0deg)) scale(1.04);
+}
+
+.floating-sticker.is-dragging {
+  animation: none;
+  transform: rotate(var(--sticker-rotation, 0deg)) scale(1.05);
+  box-shadow: 0 18px 30px rgba(23, 23, 43, 0.18);
+  opacity: .95;
 }
 
 .animate-float-a {

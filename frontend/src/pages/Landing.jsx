@@ -127,7 +127,7 @@ const POPULAR_ROW = [
  * Uses CSS percentage positioning for instant layout, and pointer delta
  * transforms for smooth dragging that stays where released.
  */
-function DraggableSticker({ item, targetId, containerRef }) {
+function DraggableSticker({ item, culture, containerRef }) {
   const navigate = useNavigate();
   const stickerRef = useRef(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -182,13 +182,14 @@ function DraggableSticker({ item, targetId, containerRef }) {
         const cRect = containerRef.current.getBoundingClientRect();
         const sRect = stickerRef.current.getBoundingClientRect();
 
-        const currentLeft = sRect.left - cRect.left;
-        const currentTop = sRect.top - cRect.top;
-
-        const maxDx = cRect.width - sRect.width - (currentLeft - offset.x) - 4;
-        const minDx = -(currentLeft - offset.x) + 4;
-        const maxDy = cRect.height - sRect.height - (currentTop - offset.y) - 4;
-        const minDy = -(currentTop - offset.y) + 4;
+        // Remove the current translation to calculate the sticker's fixed
+        // percentage position, then clamp its next translation inside the canvas.
+        const baseLeft = sRect.left - cRect.left - offset.x;
+        const baseTop = sRect.top - cRect.top - offset.y;
+        const minDx = 4 - baseLeft;
+        const maxDx = cRect.width - sRect.width - 4 - baseLeft;
+        const minDy = 4 - baseTop;
+        const maxDy = cRect.height - sRect.height - 4 - baseTop;
 
         const clampedX = Math.max(minDx, Math.min(maxDx, dragStart.current.offsetX + dx));
         const clampedY = Math.max(minDy, Math.min(maxDy, dragStart.current.offsetY + dy));
@@ -215,8 +216,8 @@ function DraggableSticker({ item, targetId, containerRef }) {
 
     if (!wasDrag) {
       // Intentional click/tap -> navigate
-      if (targetId) {
-        navigate(`/cultures/${targetId}`);
+      if (culture?._id) {
+        navigate(`/cultures/${culture._id}`);
       } else {
         navigate(`/explore?q=${encodeURIComponent(item.name)}`);
       }
@@ -231,6 +232,22 @@ function DraggableSticker({ item, targetId, containerRef }) {
   const config = isMobile ? item.mobile : item.desktop;
   if (isMobile && !item.mobile) return null;
 
+  const navigateWithKeyboard = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (culture?._id) {
+        navigate(`/cultures/${culture._id}`);
+      } else {
+        navigate(`/explore?q=${encodeURIComponent(item.name)}`);
+      }
+    }
+  };
+
+  const memberCount = culture?.members?.length;
+  const descriptor = memberCount
+    ? `${memberCount} ${memberCount === 1 ? "member" : "members"}`
+    : item.subtext;
+
   return (
     <div
       ref={stickerRef}
@@ -238,6 +255,7 @@ function DraggableSticker({ item, targetId, containerRef }) {
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
+      onKeyDown={navigateWithKeyboard}
       className={`absolute select-none z-20 ${
         isDragging ? "z-30 cursor-grabbing" : "cursor-grab"
       }`}
@@ -253,15 +271,15 @@ function DraggableSticker({ item, targetId, containerRef }) {
       title={`${item.name} — Click to view, drag to move`}
     >
       <div
-        className={`px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-full flex items-center gap-2 sm:gap-2.5 shadow-sm transition-shadow duration-150 max-w-[145px] sm:max-w-none ${
+        className={`floating-sticker px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-full flex items-center gap-2 sm:gap-2.5 shadow-sm max-w-[145px] sm:max-w-none ${
           isDragging
-            ? "scale-105 shadow-xl opacity-95"
-            : `hover:shadow-md hover:scale-105 ${item.floatAnim}`
+            ? "is-dragging"
+            : `${item.floatAnim} hover:shadow-md`
         }`}
         style={{
           backgroundColor: item.bg,
           border: `1.5px solid ${item.border}`,
-          transform: isDragging ? "scale(1.05)" : `rotate(${item.rotation || 0}deg)`,
+          "--sticker-rotation": `${item.rotation || 0}deg`,
         }}
       >
         <span className="text-base sm:text-xl leading-none pointer-events-none flex-shrink-0">
@@ -272,7 +290,7 @@ function DraggableSticker({ item, targetId, containerRef }) {
             {item.name}
           </div>
           <div className="text-[10px] text-[#687085] font-medium truncate">
-            {item.subtext}
+            {descriptor}
           </div>
         </div>
         {item.arrow && (
@@ -399,7 +417,7 @@ export default function Landing() {
           <DraggableSticker
             key={sticker.id}
             item={sticker}
-            targetId={findId(sticker.name)}
+            culture={cultures.find((culture) => culture.name.toLowerCase().trim() === sticker.name.toLowerCase())}
             containerRef={heroCanvasRef}
           />
         ))}
