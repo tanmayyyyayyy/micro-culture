@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client.js";
+import { trackEvent } from "../analytics.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import GlassPanel from "../components/ui/GlassPanel.jsx";
 import GlowButton from "../components/ui/GlowButton.jsx";
@@ -80,6 +81,7 @@ export default function CreateCulture() {
 
       // Refresh user context so dashboard sees the new culture (B2 fix)
       await refreshUser();
+      trackEvent("community_created", { community_id: data._id });
       // Directly transition to the newly consecrated culture
       navigate(`/cultures/${data._id}`);
     } catch (err) {

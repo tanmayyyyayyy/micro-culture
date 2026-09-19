@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api/client.js";
+import { trackEvent } from "../analytics.js";
 import GlowButton from "../components/ui/GlowButton.jsx";
 import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
@@ -113,6 +114,7 @@ export default function DailyRitualPage() {
         content: content.trim(),
       });
       setCompleted(true);
+      trackEvent("activity_completed", { community_id: id });
       try {
         const { data } = await api.get(`/cultures/${id}`);
         if (data.participation) setParticipation(data.participation);

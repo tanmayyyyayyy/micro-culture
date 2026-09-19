@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api/client.js";
+import { trackEvent } from "../analytics.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import GlassPanel from "../components/ui/GlassPanel.jsx";
 import GlowButton from "../components/ui/GlowButton.jsx";
@@ -136,6 +137,7 @@ export default function CultureDetail() {
     setError("");
     try {
       await api.post(`/cultures/${id}/join`);
+      trackEvent("community_join", { community_id: id });
       await Promise.all([loadCulture(), refreshUser()]);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to join community.");

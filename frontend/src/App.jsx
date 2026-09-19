@@ -1,4 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { initGA, trackPageView } from "./analytics.js";
 import NavBar from "./components/NavBar.jsx";
 import MobileBottomNav from "./components/MobileBottomNav.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -14,9 +16,15 @@ import DailyRitualPage from "./pages/DailyRitualPage.jsx";
 import CultureFeed from "./pages/CultureFeed.jsx";
 import Profile from "./pages/Profile.jsx";
 
-/** Wraps each page in a keyed div so the page-enter animation retriggers on navigation. */
+/** Wraps each page in a keyed div so the page-enter animation retriggers on navigation.
+ *  Also fires a GA4 page_view on every route change. */
 function PageTransition({ children }) {
   const location = useLocation();
+
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
+
   return (
     <div key={location.pathname} className="page-enter">
       {children}
@@ -25,6 +33,9 @@ function PageTransition({ children }) {
 }
 
 export default function App() {
+  // Initialise GA4 once (no-op if VITE_GA_MEASUREMENT_ID is unset)
+  useEffect(() => { initGA(); }, []);
+
   return (
     <div
       className="min-h-screen flex flex-col relative overflow-x-hidden"
