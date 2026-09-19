@@ -5,18 +5,6 @@ import GlassPanel from "../components/ui/GlassPanel.jsx";
 import GlowButton from "../components/ui/GlowButton.jsx";
 import MicroCultureLogo from "../components/ui/MicroCultureLogo.jsx";
 
-const inputStyle = {
-  background: "#fff",
-  border: "1.5px solid rgba(26,26,46,0.12)",
-  color: "#1A1A2E",
-  boxShadow: "0 1px 4px rgba(26,26,46,0.04)",
-};
-
-const inputFocusStyle = {
-  border: "1.5px solid rgba(124,58,237,0.4)",
-  boxShadow: "0 0 0 3px rgba(124,58,237,0.1)",
-};
-
 function WarmInput({ label, ...props }) {
   return (
     <div>
@@ -24,10 +12,8 @@ function WarmInput({ label, ...props }) {
         {label}
       </label>
       <input
-        className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none transition-all"
-        style={inputStyle}
-        onFocus={(e) => Object.assign(e.target.style, inputFocusStyle)}
-        onBlur={(e) => Object.assign(e.target.style, inputStyle)}
+        className="form-input w-full px-4 py-3 rounded-2xl text-sm"
+        style={{ background: "#fff", color: "#1A1A2E" }}
         {...props}
       />
     </div>

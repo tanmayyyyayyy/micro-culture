@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/client.js";
 import CultureCard from "../components/ui/CultureCard.jsx";
 import GlowButton from "../components/ui/GlowButton.jsx";
-import LoadingState from "../components/ui/LoadingState.jsx";
 import ErrorState from "../components/ui/ErrorState.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 
@@ -20,45 +19,97 @@ const INTEREST_CATEGORIES = [
   { id: "travel",   label: "Travel",    emoji: "✈️" },
 ];
 
+/** Skeleton card — matches real CultureCard dimensions to avoid CLS. */
+function SkeletonCard() {
+  return (
+    <div
+      className="skeleton-shimmer"
+      style={{ height: "200px", minHeight: "200px" }}
+      aria-hidden="true"
+    />
+  );
+}
+
+/** 6 skeleton cards in the same grid as the real cards. */
+function SkeletonGrid() {
+  return (
+    <div className="space-y-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Explore() {
-  const [cultures, setCultures] = useState([]);
+  const [allCultures, setAllCultures] = useState([]); // raw from API
   const [q, setQ] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
-  const [loading, setLoading] = useState(true);
+  // null = data not yet arrived; false = arrived fast (no skeleton shown)
+  const [showSkeleton, setShowSkeleton] = useState(null);
   const [error, setError] = useState("");
+  // key incremented on filter change to retrigger grid-enter animation
+  const [gridKey, setGridKey] = useState(0);
+  const skeletonTimerRef = useRef(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   async function loadCultures(query = q, filter = activeFilter) {
-    setLoading(true);
     setError("");
+
+    // 150ms threshold: only show skeleton if request takes longer
+    skeletonTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setShowSkeleton(true);
+    }, 150);
+
     try {
       const params = {};
       if (query && query.trim()) params.q = query.trim();
       if (filter && filter !== "all") params.filter = filter;
 
       const { data } = await api.get("/cultures", { params });
-      setCultures(data);
+
+      clearTimeout(skeletonTimerRef.current);
+      if (!mountedRef.current) return;
+
+      setAllCultures(data);
+      setShowSkeleton(false);
     } catch (err) {
+      clearTimeout(skeletonTimerRef.current);
+      if (!mountedRef.current) return;
+      setShowSkeleton(false);
       setError(err.response?.data?.error || "Failed to discover communities.");
-    } finally {
-      setLoading(false);
     }
   }
 
   useEffect(() => {
     loadCultures(q, activeFilter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleFilterClick(filterId) {
     setActiveFilter(filterId);
+    setGridKey((k) => k + 1); // retrigger grid-enter CSS
+    // Always do a fresh API call (keeps behaviour identical to before)
     loadCultures(q, filterId);
   }
 
   function handleSearchSubmit(e) {
     e.preventDefault();
+    setGridKey((k) => k + 1);
     loadCultures(q, activeFilter);
   }
 
-  const popularCultures = cultures
+  // Derived — used only when data is loaded
+  const loading = showSkeleton === null || showSkeleton === true;
+
+  const popularCultures = allCultures
     .filter((c) => c.discovery?.isTrending || c.discovery?.isActive || (c.members?.length || 0) >= 4)
     .slice(0, 3);
 
@@ -103,21 +154,8 @@ export default function Explore() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search communities..."
-            className="w-full pl-11 pr-5 py-3 rounded-full text-sm font-medium focus:outline-none transition-all duration-200"
-            style={{
-              background: "#fff",
-              border: "1.5px solid rgba(26,26,46,0.12)",
-              boxShadow: "0 2px 8px rgba(26,26,46,0.06)",
-              color: "#1A1A2E",
-            }}
-            onFocus={(e) => {
-              e.target.style.border = "1.5px solid rgba(124,58,237,0.4)";
-              e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)";
-            }}
-            onBlur={(e) => {
-              e.target.style.border = "1.5px solid rgba(26,26,46,0.12)";
-              e.target.style.boxShadow = "0 2px 8px rgba(26,26,46,0.06)";
-            }}
+            className="form-input w-full pl-11 pr-5 py-3 rounded-full text-sm font-medium"
+            style={{ background: "#fff", color: "#1A1A2E", boxShadow: "0 2px 8px rgba(26,26,46,0.06)" }}
           />
         </form>
         <Link to="/create" className="w-full sm:w-auto">
@@ -192,10 +230,10 @@ export default function Explore() {
           COMMUNITIES GRID
       ══════════════════════════════════════════ */}
       {loading ? (
-        <LoadingState message="Finding communities..." subtext="Connecting you with clubs, prep circles, and builders." />
+        <SkeletonGrid />
       ) : error ? (
         <ErrorState message={error} onRetry={() => loadCultures(q, activeFilter)} />
-      ) : cultures.length === 0 ? (
+      ) : allCultures.length === 0 ? (
         <EmptyState
           icon="🔍"
           title="No communities found"
@@ -223,12 +261,12 @@ export default function Explore() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold" style={{ color: "#64748B" }}>
-              {cultures.length} {cultures.length === 1 ? "community" : "communities"}
+              {allCultures.length} {allCultures.length === 1 ? "community" : "communities"}
             </span>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-fadeIn">
-            {cultures.map((c) => (
+          <div key={gridKey} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 grid-enter">
+            {allCultures.map((c) => (
               <CultureCard
                 key={c._id}
                 culture={c}

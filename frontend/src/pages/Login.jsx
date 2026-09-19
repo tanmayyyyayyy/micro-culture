@@ -64,21 +64,8 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none transition-all"
-              style={{
-                background: "#fff",
-                border: "1.5px solid rgba(26,26,46,0.12)",
-                color: "#1A1A2E",
-                boxShadow: "0 1px 4px rgba(26,26,46,0.04)",
-              }}
-              onFocus={(e) => {
-                e.target.style.border = "1.5px solid rgba(124,58,237,0.4)";
-                e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)";
-              }}
-              onBlur={(e) => {
-                e.target.style.border = "1.5px solid rgba(26,26,46,0.12)";
-                e.target.style.boxShadow = "0 1px 4px rgba(26,26,46,0.04)";
-              }}
+              className="form-input w-full px-4 py-3 rounded-2xl text-sm"
+              style={{ background: "#fff", color: "#1A1A2E" }}
             />
           </div>
 
@@ -95,21 +82,8 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none transition-all"
-              style={{
-                background: "#fff",
-                border: "1.5px solid rgba(26,26,46,0.12)",
-                color: "#1A1A2E",
-                boxShadow: "0 1px 4px rgba(26,26,46,0.04)",
-              }}
-              onFocus={(e) => {
-                e.target.style.border = "1.5px solid rgba(124,58,237,0.4)";
-                e.target.style.boxShadow = "0 0 0 3px rgba(124,58,237,0.1)";
-              }}
-              onBlur={(e) => {
-                e.target.style.border = "1.5px solid rgba(26,26,46,0.12)";
-                e.target.style.boxShadow = "0 1px 4px rgba(26,26,46,0.04)";
-              }}
+              className="form-input w-full px-4 py-3 rounded-2xl text-sm"
+              style={{ background: "#fff", color: "#1A1A2E" }}
             />
           </div>
 
