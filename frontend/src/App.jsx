@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
 import MobileBottomNav from "./components/MobileBottomNav.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -13,6 +13,16 @@ import Dashboard from "./pages/Dashboard.jsx";
 import DailyRitualPage from "./pages/DailyRitualPage.jsx";
 import CultureFeed from "./pages/CultureFeed.jsx";
 import Profile from "./pages/Profile.jsx";
+
+/** Wraps each page in a keyed div so the page-enter animation retriggers on navigation. */
+function PageTransition({ children }) {
+  const location = useLocation();
+  return (
+    <div key={location.pathname} className="page-enter">
+      {children}
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -40,54 +50,56 @@ export default function App() {
       <NavBar />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 pb-24 md:pb-8 relative z-10">
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/cultures/:id" element={<CultureDetail />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+        <PageTransition>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/cultures/:id" element={<CultureDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
-          <Route
-            path="/create"
-            element={
-              <ProtectedRoute>
-                <CreateCulture />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/cultures/:id/ritual"
-            element={
-              <ProtectedRoute>
-                <DailyRitualPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/cultures/:id/feed"
-            element={
-              <ProtectedRoute>
-                <CultureFeed />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+            <Route
+              path="/create"
+              element={
+                <ProtectedRoute>
+                  <CreateCulture />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cultures/:id/ritual"
+              element={
+                <ProtectedRoute>
+                  <DailyRitualPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cultures/:id/feed"
+              element={
+                <ProtectedRoute>
+                  <CultureFeed />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </PageTransition>
       </main>
 
       <footer

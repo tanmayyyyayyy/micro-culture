@@ -29,6 +29,17 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Page-level route transition — subtle fade + 6px slide up */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: pageEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
 @keyframes fadeInFast {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -74,6 +85,12 @@
 .floating-sticker:hover {
   animation: none;
   transform: translateY(-2px) rotate(var(--sticker-rotation, 0deg)) scale(1.04);
+}
+
+.floating-sticker:active {
+  animation: none;
+  transform: translateY(0) rotate(var(--sticker-rotation, 0deg)) scale(0.97);
+  transition-duration: 80ms;
 }
 
 .animate-float-a {
@@ -403,6 +420,31 @@
 }
 
 /* ============================================================
+   BUTTON / INTERACTIVE PRESS FEEDBACK
+   ============================================================ */
+
+/* Utility class for primary action buttons — subtle press */
+.btn-press {
+  transition: transform 150ms ease-out, opacity 150ms ease-out, filter 150ms ease-out;
+}
+.btn-press:hover  { filter: brightness(1.04); }
+.btn-press:active { transform: scale(0.98); filter: brightness(0.97); }
+
+/* Tailwind active:scale-[0.98] helper (used inline in JSX) */
+.active\:scale-98:active,
+[class*="active:scale-98"]:active {
+  transform: scale(0.98);
+}
+
+/* Card hover lift — applied to warm-card already via .warm-card:hover */
+/* Extra link / nav item press */
+a:active,
+button:active {
+  transform: scale(0.98);
+  transition-duration: 80ms;
+}
+
+/* ============================================================
    REDUCED MOTION
    ============================================================ */
 
@@ -413,5 +455,17 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .page-enter {
+    animation: none !important;
+  }
+
+  .btn-press:active,
+  a:active,
+  button:active,
+  .floating-sticker:active,
+  .floating-sticker:hover {
+    transform: none !important;
   }
 }
