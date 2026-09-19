@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/client.js";
 
@@ -123,25 +123,14 @@ const POPULAR_ROW = [
 ];
 
 /**
- * Draggable floating community sticker.
- * Uses CSS percentage positioning for instant layout, and pointer delta
- * transforms for smooth dragging that stays where released.
+ * Floating community sticker.
+ * Fixed CSS-percentage position (no user dragging). Gentle automatic float
+ * animation via the `animate-float-*` classes; click/tap navigates to the
+ * community and is keyboard-accessible.
  */
-function DraggableSticker({ item, culture, containerRef }) {
+function FloatingSticker({ item, culture }) {
   const navigate = useNavigate();
-  const stickerRef = useRef(null);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
-
-  const dragStart = useRef({
-    pointerX: 0,
-    pointerY: 0,
-    offsetX: 0,
-    offsetY: 0,
-    hasMoved: false,
-    pointerId: null,
-  });
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -149,99 +138,23 @@ function DraggableSticker({ item, culture, containerRef }) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const handlePointerDown = (e) => {
-    if (e.button !== 0 && e.pointerType === "mouse") return;
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch (_) {}
-
-    dragStart.current = {
-      pointerX: e.clientX,
-      pointerY: e.clientY,
-      offsetX: offset.x,
-      offsetY: offset.y,
-      hasMoved: false,
-      pointerId: e.pointerId,
-    };
-    setIsDragging(true);
-  };
-
-  const handlePointerMove = (e) => {
-    if (!isDragging || dragStart.current.pointerId !== e.pointerId) return;
-
-    const dx = e.clientX - dragStart.current.pointerX;
-    const dy = e.clientY - dragStart.current.pointerY;
-
-    if (!dragStart.current.hasMoved && Math.hypot(dx, dy) >= 6) {
-      dragStart.current.hasMoved = true;
-    }
-
-    if (dragStart.current.hasMoved) {
-      // Clamping within container bounds
-      if (containerRef?.current && stickerRef?.current) {
-        const cRect = containerRef.current.getBoundingClientRect();
-        const sRect = stickerRef.current.getBoundingClientRect();
-
-        // Remove the current translation to calculate the sticker's fixed
-        // percentage position, then clamp its next translation inside the canvas.
-        const baseLeft = sRect.left - cRect.left - offset.x;
-        const baseTop = sRect.top - cRect.top - offset.y;
-        const minDx = 4 - baseLeft;
-        const maxDx = cRect.width - sRect.width - 4 - baseLeft;
-        const minDy = 4 - baseTop;
-        const maxDy = cRect.height - sRect.height - 4 - baseTop;
-
-        const clampedX = Math.max(minDx, Math.min(maxDx, dragStart.current.offsetX + dx));
-        const clampedY = Math.max(minDy, Math.min(maxDy, dragStart.current.offsetY + dy));
-
-        setOffset({ x: clampedX, y: clampedY });
-      } else {
-        setOffset({
-          x: dragStart.current.offsetX + dx,
-          y: dragStart.current.offsetY + dy,
-        });
-      }
+  const navigateToCommunity = () => {
+    if (culture?._id) {
+      navigate(`/cultures/${culture._id}`);
+    } else {
+      navigate(`/explore?q=${encodeURIComponent(item.name)}`);
     }
   };
 
-  const handlePointerUp = (e) => {
-    if (dragStart.current.pointerId !== e.pointerId) return;
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch (_) {}
-
-    const wasDrag = dragStart.current.hasMoved;
-    setIsDragging(false);
-    dragStart.current.pointerId = null;
-
-    if (!wasDrag) {
-      // Intentional click/tap -> navigate
-      if (culture?._id) {
-        navigate(`/cultures/${culture._id}`);
-      } else {
-        navigate(`/explore?q=${encodeURIComponent(item.name)}`);
-      }
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigateToCommunity();
     }
-  };
-
-  const handlePointerCancel = () => {
-    setIsDragging(false);
-    dragStart.current.pointerId = null;
   };
 
   const config = isMobile ? item.mobile : item.desktop;
   if (isMobile && !item.mobile) return null;
-
-  const navigateWithKeyboard = (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      if (culture?._id) {
-        navigate(`/cultures/${culture._id}`);
-      } else {
-        navigate(`/explore?q=${encodeURIComponent(item.name)}`);
-      }
-    }
-  };
 
   const memberCount = culture?.members?.length;
   const descriptor = memberCount
@@ -250,32 +163,20 @@ function DraggableSticker({ item, culture, containerRef }) {
 
   return (
     <div
-      ref={stickerRef}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerCancel}
-      onKeyDown={navigateWithKeyboard}
-      className={`absolute select-none z-20 ${
-        isDragging ? "z-30 cursor-grabbing" : "cursor-grab"
-      }`}
+      onClick={navigateToCommunity}
+      onKeyDown={handleKeyDown}
+      className="absolute select-none z-20 cursor-pointer"
       style={{
         left: `${config.left}%`,
         top: `${config.top}%`,
-        transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
-        touchAction: "none",
       }}
       role="button"
       tabIndex={0}
       aria-label={`Community: ${item.name}`}
-      title={`${item.name} — Click to view, drag to move`}
+      title={`${item.name} — Click to view`}
     >
       <div
-        className={`floating-sticker px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-full flex items-center gap-2 sm:gap-2.5 shadow-sm max-w-[145px] sm:max-w-none ${
-          isDragging
-            ? "is-dragging"
-            : `${item.floatAnim} hover:shadow-md`
-        }`}
+        className={`floating-sticker px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-full flex items-center gap-2 sm:gap-2.5 shadow-sm max-w-[145px] sm:max-w-none ${item.floatAnim} hover:shadow-md`}
         style={{
           backgroundColor: item.bg,
           border: `1.5px solid ${item.border}`,
@@ -309,7 +210,6 @@ function DraggableSticker({ item, culture, containerRef }) {
 }
 
 export default function Landing() {
-  const heroCanvasRef = useRef(null);
   const [cultures, setCultures] = useState([]);
 
   useEffect(() => {
@@ -340,7 +240,6 @@ export default function Landing() {
           HERO SECTION — OPEN CANVAS
       ══════════════════════════════════════════ */}
       <div
-        ref={heroCanvasRef}
         className="relative w-full min-h-[720px] sm:min-h-[660px] lg:min-h-[720px] flex flex-col items-center justify-center text-center overflow-hidden pt-6 pb-12"
       >
         {/* Soft pastel ambient background blobs */}
@@ -412,13 +311,12 @@ export default function Landing() {
           <path d="M10 5 C 15 9 15 19 10 23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
 
-        {/* Floating Draggable Community Stickers */}
+        {/* Floating Community Stickers */}
         {FLOATING_STICKERS.map((sticker) => (
-          <DraggableSticker
+          <FloatingSticker
             key={sticker.id}
             item={sticker}
             culture={cultures.find((culture) => culture.name.toLowerCase().trim() === sticker.name.toLowerCase())}
-            containerRef={heroCanvasRef}
           />
         ))}
 
