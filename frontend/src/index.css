@@ -25,8 +25,8 @@
    ============================================================ */
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Page-level route transition — Apple-style ease-out spring */
@@ -88,18 +88,15 @@
 }
 
 .floating-sticker {
-  transition: box-shadow 150ms ease-out, transform 150ms ease-out;
+  transition: box-shadow 150ms ease-out;
 }
 
 .floating-sticker:hover {
-  animation: none;
-  transform: translateY(-2px) rotate(var(--sticker-rotation, 0deg)) scale(1.04);
+  box-shadow: 0 4px 14px rgba(23, 23, 43, 0.12);
 }
 
 .floating-sticker:active {
-  animation: none;
-  transform: translateY(0) rotate(var(--sticker-rotation, 0deg)) scale(0.97);
-  transition-duration: 80ms;
+  box-shadow: 0 2px 6px rgba(23, 23, 43, 0.08);
 }
 
 .animate-float-a {
@@ -178,13 +175,13 @@
   border: 1.5px solid rgba(23, 23, 43, 0.06);
   box-shadow: 0 8px 30px rgba(23, 23, 43, 0.06);
   transition:
-    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.25s ease-out;
 }
 
 .warm-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px rgba(23, 23, 43, 0.09);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(23, 23, 43, 0.08);
 }
 
 /* ============================================================
@@ -198,15 +195,15 @@
   border: 1.5px solid rgba(23, 23, 43, 0.06);
   box-shadow: 0 8px 30px rgba(23, 23, 43, 0.06);
   transition:
-    transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.28s ease-out;
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease-out;
   cursor: pointer;
   position: relative;
 }
 
 .community-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 20px 40px rgba(23, 23, 43, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(23, 23, 43, 0.09);
 }
 
 /* ============================================================
@@ -261,12 +258,11 @@
   color: #1A1A2E;
   border-color: rgba(26, 26, 46, 0.22);
   box-shadow: 0 2px 8px rgba(26, 26, 46, 0.08);
-  transform: translateY(-1px);
 }
 
 .pill-btn:active {
   transform: scale(0.97);
-  transition-duration: 0.08s;
+  transition-duration: 0.1s;
 }
 
 .pill-btn.active {
@@ -319,13 +315,13 @@
   border: 1.5px solid rgba(26, 26, 46, 0.07);
   box-shadow: 0 4px 16px rgba(26, 26, 46, 0.07), 0 1px 4px rgba(26, 26, 46, 0.04);
   transition:
-    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.25s ease-out;
 }
 
 .playful-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px rgba(26, 26, 46, 0.1), 0 4px 10px rgba(26, 26, 46, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(26, 26, 46, 0.09), 0 4px 10px rgba(26, 26, 46, 0.05);
 }
 
 /* ============================================================
@@ -379,9 +375,11 @@
   box-shadow: 0 1px 4px rgba(26, 26, 46, 0.04);
 }
 
-.form-input:focus {
-  border-color: rgba(124, 58, 237, 0.4);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+.form-input:focus,
+.form-input:focus-visible {
+  outline: none;
+  border-color: rgba(124, 58, 237, 0.5);
+  box-shadow: 0 0 0 3.5px rgba(124, 58, 237, 0.12);
 }
 
 @keyframes progressFill {
@@ -469,12 +467,22 @@
    BUTTON / INTERACTIVE PRESS FEEDBACK
    ============================================================ */
 
-/* Utility class for primary action buttons — subtle press */
-.btn-press {
-  transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), filter 0.15s ease-out;
+/* Utility class & global button feedback — subtle Apple-like press */
+button:not(:disabled),
+.btn-press:not(:disabled) {
+  transition:
+    transform 0.1s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.15s ease-out,
+    background-color 0.15s ease-out,
+    border-color 0.15s ease-out,
+    opacity 0.15s ease-out,
+    filter 0.15s ease-out;
 }
-.btn-press:hover  { filter: brightness(1.03); }
-.btn-press:active { transform: scale(0.97); filter: brightness(0.96); }
+button:not(:disabled):active,
+.btn-press:not(:disabled):active {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
+}
 
 /* ============================================================
    REDUCED MOTION
@@ -494,11 +502,14 @@
     animation: none !important;
   }
 
+  button:active,
   .btn-press:active,
   .pill-btn:active,
   .pill-btn:hover,
   .floating-sticker:active,
-  .floating-sticker:hover {
+  .floating-sticker:hover,
+  .warm-card:hover,
+  .community-card:hover {
     transform: none !important;
   }
 

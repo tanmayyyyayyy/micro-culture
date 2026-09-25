@@ -246,7 +246,7 @@ export default function Dashboard() {
                   <div className="shrink-0 w-full sm:w-auto">
                     <Link to={`/cultures/${spotlightCulture._id}/ritual`} className="block w-full sm:w-auto">
                       <button
-                        className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-white transition-all duration-200 hover:opacity-95 active:scale-98 shadow-md flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-white transition-all duration-200 hover:opacity-95 active:scale-[0.97] shadow-md flex items-center justify-center gap-2 cursor-pointer"
                         style={{ background: "#17172B" }}
                       >
                         <span>{isSpotlightCompleted ? "Review activity" : "Start activity"}</span>

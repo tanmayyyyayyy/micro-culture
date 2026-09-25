@@ -95,7 +95,7 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
 
         {/* Oversized icon */}
         <div
-          className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-sm group-hover:scale-105 group-hover:-rotate-3 transition-transform duration-300"
+          className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-sm group-hover:scale-105 transition-transform duration-200"
           style={{
             background: "rgba(255,255,255,0.92)",
             border: `2px solid ${identity.primary}35`,
@@ -168,7 +168,7 @@ export default function CultureCard({ culture, actionText, actionLink, isMember 
         </span>
         <Link
           to={actionLink || `/cultures/${culture._id}`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold pl-3 pr-2 py-1 rounded-full transition-all duration-200 group-hover:scale-105"
+          className="inline-flex items-center gap-1.5 text-xs font-bold pl-3 pr-2 py-1 rounded-full transition-all duration-150 group-hover:opacity-90"
           style={{
             background: "#17172B",
             color: "#fff",

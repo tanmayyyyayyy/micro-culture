@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import api from "../api/client.js";
 import CultureCard from "../components/ui/CultureCard.jsx";
 import GlowButton from "../components/ui/GlowButton.jsx";
@@ -19,18 +19,61 @@ const INTEREST_CATEGORIES = [
   { id: "travel",   label: "Travel",    emoji: "✈️" },
 ];
 
-/** Skeleton card — matches real CultureCard dimensions to avoid CLS. */
+const CATEGORY_MAP = {
+  tech:     /\b(tech|code|coding|software|developer|programming|web|java|dsa|blockchain|cloud|devops|docker|ai|ml|security)\b/i,
+  sports:   /\b(sports|cricket|football|matches|game|athlete|ipl|scorecard)\b/i,
+  music:    /\b(music|lofi|lo-fi|playlists|beats|audio|sound|track|songs|synth)\b/i,
+  books:    /\b(books|reading|literature|novels|fiction|non-fiction|author|library|gate|exam|study)\b/i,
+  gaming:   /\b(gaming|games|co-op|multiplayer|esports|speedrun|arcade)\b/i,
+  design:   /\b(design|ui|ux|figma|designer|layout|visual|typography|prototyping)\b/i,
+  creative: /\b(creative|art|photography|photos|cameras|drawing|illustration|sketching|movies|cinema|film)\b/i,
+  fitness:  /\b(fitness|workout|gym|running|health|sports|stamina|endurance)\b/i,
+  travel:   /\b(travel|wander|trips|backpacking|explore|adventure|itinerary)\b/i,
+};
+
+function filterCultures(cultures, filterId) {
+  if (!filterId || filterId === "all") return cultures;
+  const matcher = CATEGORY_MAP[filterId];
+  const fallbackRegex = new RegExp(`\\b${filterId}\\b`, "i");
+  return cultures.filter((c) => {
+    const words = (c.vibeWords || []).map((w) => (w || "").toLowerCase());
+    const combinedText = `${c.name || ""} ${c.description || ""} ${words.join(" ")}`;
+    return (
+      words.includes(filterId) ||
+      (matcher && matcher.test(combinedText)) ||
+      fallbackRegex.test(combinedText)
+    );
+  });
+}
+
+/** Skeleton card — matches real CultureCard dimensions (288px) to avoid CLS. */
 function SkeletonCard() {
   return (
     <div
-      className="skeleton-shimmer"
-      style={{ height: "200px", minHeight: "200px" }}
+      className="community-card flex flex-col h-[288px] overflow-hidden select-none pointer-events-none"
       aria-hidden="true"
-    />
+    >
+      <div
+        className="skeleton-shimmer"
+        style={{ height: "110px", borderRadius: "1.75rem 1.75rem 0 0" }}
+      />
+      <div className="flex-1 p-5 space-y-3">
+        <div className="skeleton-shimmer h-5 w-3/4 rounded-md" />
+        <div className="skeleton-shimmer h-3 w-1/3 rounded-md" />
+        <div className="space-y-1.5 pt-1">
+          <div className="skeleton-shimmer h-3 w-full rounded-md" />
+          <div className="skeleton-shimmer h-3 w-4/5 rounded-md" />
+        </div>
+      </div>
+      <div className="mx-5 mb-4 pt-3 flex items-center justify-between border-t border-[rgba(23,23,43,0.06)]">
+        <div className="skeleton-shimmer h-3 w-16 rounded-md" />
+        <div className="skeleton-shimmer h-6 w-16 rounded-full" />
+      </div>
+    </div>
   );
 }
 
-/** 6 skeleton cards in the same grid as the real cards. */
+/** 6 skeleton cards in the exact same grid as real cards. */
 function SkeletonGrid() {
   return (
     <div className="space-y-4">
@@ -44,24 +87,30 @@ function SkeletonGrid() {
 }
 
 export default function Explore() {
+  const [searchParams] = useSearchParams();
   const [allCultures, setAllCultures] = useState([]); // raw from API
-  const [q, setQ] = useState("");
-  const [activeFilter, setActiveFilter] = useState("all");
-  // null = data not yet arrived; false = arrived fast (no skeleton shown)
+  const [q, setQ] = useState(() => searchParams.get("q") || "");
+  const [activeFilter, setActiveFilter] = useState(() => searchParams.get("filter") || "all");
+  // null = initial before arrival; true = slow response (show skeleton); false = fast response or loaded
   const [showSkeleton, setShowSkeleton] = useState(null);
   const [error, setError] = useState("");
-  // key incremented on filter change to retrigger grid-enter animation
+  // key incremented on filter change to trigger grid-enter animation
   const [gridKey, setGridKey] = useState(0);
   const skeletonTimerRef = useRef(null);
   const mountedRef = useRef(true);
 
   useEffect(() => {
     mountedRef.current = true;
-    return () => { mountedRef.current = false; };
+    return () => {
+      mountedRef.current = false;
+      if (skeletonTimerRef.current) clearTimeout(skeletonTimerRef.current);
+    };
   }, []);
 
-  async function loadCultures(query = q, filter = activeFilter) {
+  async function loadCultures(query = q) {
     setError("");
+
+    if (skeletonTimerRef.current) clearTimeout(skeletonTimerRef.current);
 
     // 150ms threshold: only show skeleton if request takes longer
     skeletonTimerRef.current = setTimeout(() => {
@@ -71,14 +120,13 @@ export default function Explore() {
     try {
       const params = {};
       if (query && query.trim()) params.q = query.trim();
-      if (filter && filter !== "all") params.filter = filter;
 
       const { data } = await api.get("/cultures", { params });
 
       clearTimeout(skeletonTimerRef.current);
       if (!mountedRef.current) return;
 
-      setAllCultures(data);
+      setAllCultures(Array.isArray(data) ? data : []);
       setShowSkeleton(false);
     } catch (err) {
       clearTimeout(skeletonTimerRef.current);
@@ -88,25 +136,45 @@ export default function Explore() {
     }
   }
 
+  // Initial load
   useEffect(() => {
-    loadCultures(q, activeFilter);
+    loadCultures(q);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Sync external search params changes (e.g. clicking stickers or URL navigation)
+  useEffect(() => {
+    const urlQ = searchParams.get("q") || "";
+    const urlFilter = searchParams.get("filter") || "all";
+    if (urlQ !== q) {
+      setQ(urlQ);
+      loadCultures(urlQ);
+    }
+    if (urlFilter !== activeFilter) {
+      setActiveFilter(urlFilter);
+      setGridKey((k) => k + 1);
+    }
+  }, [searchParams]);
+
+  // Immediate in-memory filter: no network call, no spinner, no skeleton flash
   function handleFilterClick(filterId) {
+    if (filterId === activeFilter) return;
     setActiveFilter(filterId);
-    setGridKey((k) => k + 1); // retrigger grid-enter CSS
-    // Always do a fresh API call (keeps behaviour identical to before)
-    loadCultures(q, filterId);
+    setGridKey((k) => k + 1); // trigger smooth grid-enter animation
   }
 
   function handleSearchSubmit(e) {
     e.preventDefault();
     setGridKey((k) => k + 1);
-    loadCultures(q, activeFilter);
+    loadCultures(q);
   }
 
-  // Derived — used only when data is loaded
+  const displayedCultures = useMemo(
+    () => filterCultures(allCultures, activeFilter),
+    [allCultures, activeFilter]
+  );
+
+  // Derived loading state — only true if request exceeds 150ms
   const loading = showSkeleton === null || showSkeleton === true;
 
   const popularCultures = allCultures
@@ -232,12 +300,16 @@ export default function Explore() {
       {loading ? (
         <SkeletonGrid />
       ) : error ? (
-        <ErrorState message={error} onRetry={() => loadCultures(q, activeFilter)} />
-      ) : allCultures.length === 0 ? (
+        <ErrorState message={error} onRetry={() => loadCultures(q)} />
+      ) : displayedCultures.length === 0 ? (
         <EmptyState
           icon="🔍"
           title="No communities found"
-          description="Try a different topic or create your own club!"
+          description={
+            activeFilter !== "all"
+              ? `No communities found under "${activeFilter}". Try another category or create one!`
+              : "Try a different topic or create your own club!"
+          }
           action={
             <div className="flex items-center gap-3 flex-wrap justify-center">
               <GlowButton
@@ -246,7 +318,7 @@ export default function Explore() {
                 onClick={() => {
                   setQ("");
                   setActiveFilter("all");
-                  loadCultures("", "all");
+                  loadCultures("");
                 }}
               >
                 Show all
@@ -261,12 +333,12 @@ export default function Explore() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold" style={{ color: "#64748B" }}>
-              {allCultures.length} {allCultures.length === 1 ? "community" : "communities"}
+              {displayedCultures.length} {displayedCultures.length === 1 ? "community" : "communities"}
             </span>
           </div>
 
           <div key={gridKey} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 grid-enter">
-            {allCultures.map((c) => (
+            {displayedCultures.map((c) => (
               <CultureCard
                 key={c._id}
                 culture={c}

@@ -165,7 +165,7 @@ function FloatingSticker({ item, culture }) {
     <div
       onClick={navigateToCommunity}
       onKeyDown={handleKeyDown}
-      className="absolute select-none z-20 cursor-pointer"
+      className="absolute select-none z-20 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 rounded-full"
       style={{
         left: `${config.left}%`,
         top: `${config.top}%`,
@@ -176,7 +176,7 @@ function FloatingSticker({ item, culture }) {
       title={`${item.name} — Click to view`}
     >
       <div
-        className={`floating-sticker px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-full flex items-center gap-2 sm:gap-2.5 shadow-sm max-w-[145px] sm:max-w-none ${item.floatAnim} hover:shadow-md`}
+        className={`floating-sticker px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-full flex items-center gap-2 sm:gap-2.5 shadow-sm max-w-[135px] sm:max-w-none ${item.floatAnim} hover:shadow-md`}
         style={{
           backgroundColor: item.bg,
           border: `1.5px solid ${item.border}`,
@@ -316,7 +316,7 @@ export default function Landing() {
           <FloatingSticker
             key={sticker.id}
             item={sticker}
-            culture={cultures.find((culture) => culture.name.toLowerCase().trim() === sticker.name.toLowerCase())}
+            culture={cultures.find((culture) => culture.name.toLowerCase().trim() === sticker.name.toLowerCase().trim())}
           />
         ))}
 
@@ -371,7 +371,7 @@ export default function Landing() {
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-7 w-full px-6 sm:w-auto">
           <Link to="/explore" className="w-full sm:w-auto">
             <button
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-white transition-all duration-200 hover:opacity-95 active:scale-98 shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-white transition-all duration-200 hover:opacity-95 active:scale-[0.97] shadow-md flex items-center justify-center gap-2 cursor-pointer"
               style={{ background: "#17172B" }}
             >
               <span>Explore communities</span>
@@ -380,7 +380,7 @@ export default function Landing() {
           </Link>
           <Link to="/create" className="w-full sm:w-auto">
             <button
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-[#17172B] bg-white transition-all duration-200 hover:bg-neutral-50 active:scale-98 shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full text-sm font-extrabold text-[#17172B] bg-white transition-all duration-200 hover:bg-neutral-50 active:scale-[0.97] shadow-xs flex items-center justify-center gap-2 cursor-pointer"
               style={{ border: "1.5px solid rgba(23,23,43,0.12)" }}
             >
               <span>+ Create a community</span>
@@ -653,7 +653,7 @@ export default function Landing() {
 
               <Link to="/explore">
                 <button
-                  className="w-full py-2.5 rounded-full text-xs font-extrabold text-white cursor-pointer shadow-xs hover:opacity-90 active:scale-98 transition-all"
+                  className="w-full py-2.5 rounded-full text-xs font-extrabold text-white cursor-pointer shadow-xs hover:opacity-90 active:scale-[0.97] transition-all"
                   style={{ background: "#17172B" }}
                 >
                   Get started →

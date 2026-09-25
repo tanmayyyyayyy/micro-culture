@@ -300,6 +300,7 @@ npm run build
 - **Publish Directory**: `dist`
 - **Environment Variables**:
   - `VITE_API_URL`: Production backend URL (e.g., `https://micro-culture-api.onrender.com`)
+  - `VITE_GA_MEASUREMENT_ID`: Google Analytics 4 Measurement ID (`G-8LG06KBT5M`)
 
 ---
 
